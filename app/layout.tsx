@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <a href="/" style={{
               fontFamily: "Cinzel, serif", fontSize: "18px",
               fontWeight: 600, textDecoration: "none",
-              background: "linear-gradient(135deg, #1a8fe3, #4da2ff, #00d4ff)",
+              background: "linear-gradient(135deg, #ffffff, #4da2ff, #00d4ff)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
               backgroundClip: "text", flexShrink: 0,
             }}>WaveTCG</a>
