@@ -56,16 +56,23 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
     localStorage.setItem("wavetcg_wallet_address", address);
     window.location.href = "/api/auth/discord";
   }
-
-  sed -n '60,67p' app/profile/\[address\]/page.tsx
+  async function connectLinkedIn() {
     localStorage.setItem("wavetcg_wallet_address", address);
-    const params = new URLSearchParams({
-      bot_id: "8756021324",
-      origin: window.location.origin,
-      return_to: window.location.origin + "/api/auth/telegram",
-      request_access: "write",
-    });
-    window.open("https://oauth.telegram.org/auth?" + params.toString(), "TelegramAuth", "width=550,height=470,resizable=yes");
+    window.location.href = "/api/auth/linkedin";
+  }
+
+  async function connectTelegram() {
+    const username = window.prompt("Enter your Telegram username (without @):");
+    if (username && username.trim()) {
+      const clean = username.trim().replace("@", "");
+      await supabase.from("profiles").upsert({
+        wallet_address: address,
+        telegram: clean,
+      }, { onConflict: "wallet_address" });
+      await fetchProfile();
+    }
+  }
+
   async function saveProfile() {
     const { error } = await supabase.from("profiles").upsert({
       wallet_address: address,
