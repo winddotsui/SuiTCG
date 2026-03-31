@@ -190,3 +190,4 @@ export default function Home() {
     </div>
   );
 }
+// WaveTCG v2
