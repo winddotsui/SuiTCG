@@ -5,10 +5,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 import { mainnet, polygon, optimism, arbitrum, base } from "wagmi/chains";
+import { createNetworkConfig } from "@mysten/dapp-kit";
 import "@mysten/dapp-kit/dist/index.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
-const suiNetworks = { testnet: { url: "https://fullnode.testnet.sui.io:443" } };
+const { networkConfig } = createNetworkConfig({
+  testnet: { url: "https://fullnode.testnet.sui.io:443" },
+});
+
 const queryClient = new QueryClient();
 
 const wagmiConfig = getDefaultConfig({
@@ -33,7 +37,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <WagmiProvider config={wagmiConfig}>
         <RainbowKitProvider>
-          <SuiClientProvider networks={suiNetworks} defaultNetwork="testnet">
+          <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
             <WalletProvider autoConnect>
               {children}
             </WalletProvider>
