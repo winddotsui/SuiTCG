@@ -57,12 +57,15 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
     window.location.href = "/api/auth/discord";
   }
 
-  async function connectTelegram() {
+  sed -n '60,67p' app/profile/\[address\]/page.tsx
     localStorage.setItem("wavetcg_wallet_address", address);
-    const redirectUrl = encodeURIComponent(window.location.origin + "/api/auth/telegram");
-    window.open("https://oauth.telegram.org/auth?bot_id=8756021324&origin=" + encodeURIComponent(window.location.origin) + "&return_to=" + redirectUrl, "telegram_auth", "width=550,height=470");
-  }
-
+    const params = new URLSearchParams({
+      bot_id: "8756021324",
+      origin: window.location.origin,
+      return_to: window.location.origin + "/api/auth/telegram",
+      request_access: "write",
+    });
+    window.open("https://oauth.telegram.org/auth?" + params.toString(), "TelegramAuth", "width=550,height=470,resizable=yes");
   async function saveProfile() {
     const { error } = await supabase.from("profiles").upsert({
       wallet_address: address,
