@@ -1,13 +1,16 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Providers from "./providers";
-import WalletButton from "./components/WalletButton";
-import MobileNav from "./components/MobileNav";
+import NavClient from "./components/NavClient";
 
 export const metadata: Metadata = {
   title: "WaveTCG — TCG Marketplace",
   description: "Buy, sell and trade TCG cards on any blockchain.",
-  viewport: "width=device-width, initial-scale=1",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -45,32 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
               backgroundClip: "text", flexShrink: 0,
             }}>WaveTCG</a>
-
-            {/* Desktop Nav */}
-            <div className="desktop-nav" style={{ gap: "20px", alignItems: "center" }}>
-              {[
-                { href: "/marketplace", label: "Marketplace" },
-                { href: "/price-checker", label: "Prices" },
-                { href: "/oracle", label: "AI Oracle" },
-                { href: "/sell", label: "Sell" },
-                { href: "/dashboard", label: "Dashboard" },
-              ].map(link => (
-                <a key={link.href} href={link.href} style={{
-                  fontSize: "11px", letterSpacing: "0.08em",
-                  textTransform: "uppercase", color: "#888898",
-                  textDecoration: "none",
-                }}>{link.label}</a>
-              ))}
-              <WalletButton />
-            </div>
-
-            {/* Mobile Nav */}
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <div className="mobile-menu-btn" style={{ display: "none" }}>
-                <WalletButton />
-                <MobileNav />
-              </div>
-            </div>
+            <NavClient />
           </nav>
           <main style={{ paddingTop: "56px" }}>
             {children}
