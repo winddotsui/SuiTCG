@@ -1,4 +1,6 @@
 "use client";
+import dynamic from "next/dynamic";
+const FloatingCharacters = dynamic(() => import("./components/FloatingCharacters"), { ssr: false });
 import { useEffect, useState } from "react";
 
 interface CardImage {
@@ -100,6 +102,7 @@ export default function Home() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0f", overflow: "hidden" }}>
+      <FloatingCharacters />
 
       <style>{`
         @keyframes floatCard {
@@ -339,6 +342,7 @@ export default function Home() {
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4da2ff", marginBottom: "16px" }}>Why WaveTCG</div>
         <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 600, color: "#e6e4f0", marginBottom: "48px" }}>Built for collectors</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2px", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", overflow: "hidden" }}>
+      <FloatingCharacters />
           {[
             { icon: "🃏", title: "Free Listings", desc: "List any card for free. We only take 1% when it sells — paid automatically on-chain." },
             { icon: "⛓️", title: "Multi-Chain", desc: "Trade on Sui, Ethereum, Solana and more. Use any wallet you already have." },
@@ -361,6 +365,7 @@ export default function Home() {
 
       {/* CTA */}
       <section style={{ padding: "100px 48px", textAlign: "center", borderTop: "1px solid rgba(255,255,255,0.07)", position: "relative", overflow: "hidden" }}>
+      <FloatingCharacters />
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, rgba(77,162,255,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
         <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 900, color: "#e6e4f0", marginBottom: "16px" }}>Ready to ride the wave?</h2>
         <p style={{ fontSize: "16px", color: "#888898", marginBottom: "40px", fontWeight: 300 }}>Join thousands of collectors on WaveTCG.</p>

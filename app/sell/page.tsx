@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { supabase } from "../../lib/supabase";
-import dynamic from "next/dynamic";
 
 const WalrusUpload = dynamic(() => import("../components/WalrusUpload"), { ssr: false });
 

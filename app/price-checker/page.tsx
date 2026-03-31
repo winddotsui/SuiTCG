@@ -1,170 +1,397 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
-const MOCK_PRICES = [
-  { card: "Charizard EX", set: "Obsidian Flames", tcgplayer: 285, cardkingdom: 310, suitcg: 295, trend: "up" },
-  { card: "Black Lotus", set: "Alpha Edition", tcgplayer: 4100, cardkingdom: 4400, suitcg: 4200, trend: "up" },
-  { card: "Blue-Eyes White Dragon", set: "LOB 1st Ed", tcgplayer: 820, cardkingdom: 890, suitcg: 850, trend: "down" },
-  { card: "Pikachu Promo", set: "World Championship", tcgplayer: 85, cardkingdom: 95, suitcg: 90, trend: "up" },
-  { card: "Mox Sapphire", set: "Beta Edition", tcgplayer: 1800, cardkingdom: 1950, suitcg: 1850, trend: "up" },
-  { card: "Mewtwo V Alt Art", set: "Lost Origin", tcgplayer: 115, cardkingdom: 130, suitcg: 120, trend: "down" },
-];
+interface CardResult {
+  id: string;
+  name: string;
+  set: string;
+  setCode: string;
+  imageUrl: string;
+  prices: any;
+  game: string;
+  rarity?: string;
+  number?: string;
+}
 
 export default function PriceChecker() {
-  const [search, setSearch] = useState("");
-  const [searched, setSearched] = useState(false);
+  const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [selectedCard, setSelectedCard] = useState<CardResult | null>(null);
+  const [allVersions, setAllVersions] = useState<CardResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [game, setGame] = useState("all");
+  const debounceRef = useRef<any>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const results = MOCK_PRICES.filter(c =>
-    c.card.toLowerCase().includes(search.toLowerCase()) ||
-    c.set.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    if (query.length < 2) {
+      setSuggestions([]);
+      setShowDropdown(false);
+      return;
+    }
+
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      fetchSuggestions(query);
+    }, 300);
+
+    return () => clearTimeout(debounceRef.current);
+  }, [query, game]);
+
+  async function fetchSuggestions(q: string) {
+    setLoading(true);
+    try {
+      const results: any[] = [];
+
+      if (game === "all" || game === "magic") {
+        const res = await fetch(`https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        if (data.data) {
+          data.data.slice(0, 5).forEach((name: string) => {
+            results.push({ name, game: "magic", icon: "✨" });
+          });
+        }
+      }
+
+      if (game === "all" || game === "pokemon") {
+        const res = await fetch(`https://api.pokemontcg.io/v2/cards?q=name:${encodeURIComponent(q)}*&pageSize=5`);
+        const data = await res.json();
+        if (data.data) {
+          const seen = new Set();
+          data.data.forEach((card: any) => {
+            if (!seen.has(card.name)) {
+              seen.add(card.name);
+              results.push({ name: card.name, game: "pokemon", icon: "⚡" });
+            }
+          });
+        }
+      }
+
+      if (game === "all" || game === "yugioh") {
+        const res = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?fname=${encodeURIComponent(q)}&num=5&offset=0`);
+        const data = await res.json();
+        if (data.data) {
+          data.data.slice(0, 5).forEach((card: any) => {
+            results.push({ name: card.name, game: "yugioh", icon: "👁️" });
+          });
+        }
+      }
+
+      setSuggestions(results.slice(0, 10));
+      setShowDropdown(results.length > 0);
+    } catch (e) {
+      console.error(e);
+    }
+    setLoading(false);
+  }
+
+  async function selectCard(suggestion: any) {
+    setQuery(suggestion.name);
+    setShowDropdown(false);
+    setLoading(true);
+    setAllVersions([]);
+    setSelectedCard(null);
+
+    try {
+      if (suggestion.game === "magic") {
+        const res = await fetch(`https://api.scryfall.com/cards/search?q=!"${encodeURIComponent(suggestion.name)}"&unique=prints&order=released`);
+        const data = await res.json();
+        if (data.data) {
+          const versions: CardResult[] = data.data.map((card: any) => ({
+            id: card.id,
+            name: card.name,
+            set: card.set_name,
+            setCode: card.set,
+            imageUrl: card.image_uris?.normal || card.card_faces?.[0]?.image_uris?.normal,
+            prices: {
+              usd: card.prices?.usd,
+              usd_foil: card.prices?.usd_foil,
+              eur: card.prices?.eur,
+            },
+            game: "magic",
+            rarity: card.rarity,
+            number: card.collector_number,
+          }));
+          setAllVersions(versions);
+          setSelectedCard(versions[0]);
+        }
+      } else if (suggestion.game === "pokemon") {
+        const res = await fetch(`https://api.pokemontcg.io/v2/cards?q=name:"${encodeURIComponent(suggestion.name)}"&orderBy=-set.releaseDate&pageSize=30`);
+        const data = await res.json();
+        if (data.data) {
+          const versions: CardResult[] = data.data.map((card: any) => ({
+            id: card.id,
+            name: card.name,
+            set: card.set?.name,
+            setCode: card.set?.id,
+            imageUrl: card.images?.large,
+            prices: card.tcgplayer?.prices,
+            game: "pokemon",
+            rarity: card.rarity,
+            number: card.number,
+          }));
+          setAllVersions(versions);
+          setSelectedCard(versions[0]);
+        }
+      } else if (suggestion.game === "yugioh") {
+        const res = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?name=${encodeURIComponent(suggestion.name)}`);
+        const data = await res.json();
+        if (data.data?.[0]) {
+          const card = data.data[0];
+          const versions: CardResult[] = card.card_sets?.map((set: any, i: number) => ({
+            id: `${card.id}-${i}`,
+            name: card.name,
+            set: set.set_name,
+            setCode: set.set_code,
+            imageUrl: card.card_images[0].image_url,
+            prices: card.card_prices?.[0],
+            game: "yugioh",
+            rarity: set.set_rarity,
+            number: set.set_code,
+          })) || [];
+          setAllVersions(versions);
+          setSelectedCard(versions[0]);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setLoading(false);
+  }
+
+  function getPriceDisplay(card: CardResult) {
+    if (!card.prices) return null;
+    if (card.game === "magic") {
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          {card.prices.usd && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#18181f", borderRadius: "8px" }}>
+            <span style={{ fontSize: "13px", color: "#888898" }}>TCGPlayer (Normal)</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#4da2ff" }}>${card.prices.usd}</span>
+          </div>}
+          {card.prices.usd_foil && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#18181f", borderRadius: "8px" }}>
+            <span style={{ fontSize: "13px", color: "#888898" }}>TCGPlayer (Foil)</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#e8c97a" }}>${card.prices.usd_foil}</span>
+          </div>}
+          {card.prices.eur && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#18181f", borderRadius: "8px" }}>
+            <span style={{ fontSize: "13px", color: "#888898" }}>CardMarket</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#78bfff" }}>€{card.prices.eur}</span>
+          </div>}
+        </div>
+      );
+    }
+    if (card.game === "pokemon") {
+      const p = card.prices;
+      const types = Object.entries(p || {});
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          {types.map(([type, vals]: any) => vals?.market && (
+            <div key={type} style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#18181f", borderRadius: "8px" }}>
+              <span style={{ fontSize: "13px", color: "#888898", textTransform: "capitalize" }}>{type.replace(/([A-Z])/g, ' $1')}</span>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: "15px", fontWeight: 600, color: "#4da2ff" }}>${vals.market?.toFixed(2)}</div>
+                <div style={{ fontSize: "11px", color: "#555562" }}>Low: ${vals.low?.toFixed(2)} · High: ${vals.high?.toFixed(2)}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    if (card.game === "yugioh") {
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          {card.prices.tcgplayer_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#18181f", borderRadius: "8px" }}>
+            <span style={{ fontSize: "13px", color: "#888898" }}>TCGPlayer</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#4da2ff" }}>${card.prices.tcgplayer_price}</span>
+          </div>}
+          {card.prices.cardmarket_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#18181f", borderRadius: "8px" }}>
+            <span style={{ fontSize: "13px", color: "#888898" }}>CardMarket</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#78bfff" }}>€{card.prices.cardmarket_price}</span>
+          </div>}
+          {card.prices.ebay_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#18181f", borderRadius: "8px" }}>
+            <span style={{ fontSize: "13px", color: "#888898" }}>eBay</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#e8c97a" }}>${card.prices.ebay_price}</span>
+          </div>}
+          {card.prices.amazon_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#18181f", borderRadius: "8px" }}>
+            <span style={{ fontSize: "13px", color: "#888898" }}>Amazon</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#e8c97a" }}>${card.prices.amazon_price}</span>
+          </div>}
+        </div>
+      );
+    }
+    return null;
+  }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0f', padding: '48px' }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+    <div style={{ minHeight: "100vh", background: "#0a0a0f", padding: "40px 24px" }}>
+      <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
 
         {/* Header */}
-        <div style={{ marginBottom: '48px', textAlign: 'center' }}>
-          <div style={{
-            fontSize: '11px', letterSpacing: '0.2em',
-            textTransform: 'uppercase', color: '#4da2ff', marginBottom: '12px',
-          }}>TCGPlayer · CardKingdom · SuiTCG</div>
-          <h1 style={{
-            fontFamily: 'Cinzel, serif', fontSize: 'clamp(28px, 4vw, 48px)',
-            fontWeight: 700, color: '#e6e4f0', marginBottom: '16px',
-          }}>Price Checker</h1>
-          <p style={{ fontSize: '15px', color: '#888898', fontWeight: 300 }}>
-            Compare prices across platforms instantly
-          </p>
+        <div style={{ textAlign: "center", marginBottom: "48px" }}>
+          <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4da2ff", marginBottom: "12px" }}>Live Prices · All Expansions · All Versions</div>
+          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, color: "#e6e4f0", marginBottom: "12px" }}>Price Checker</h1>
+          <p style={{ fontSize: "15px", color: "#888898" }}>Search any card — see all versions with live market prices</p>
         </div>
 
-        {/* Search */}
-        <div style={{
-          display: 'flex', gap: '12px', marginBottom: '48px',
-        }}>
-          <input
-            value={search}
-            onChange={e => { setSearch(e.target.value); setSearched(false); }}
-            placeholder="Search any TCG card e.g. Charizard EX..."
-            style={{
-              flex: 1, background: '#111118',
-              border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: '8px', padding: '14px 20px',
-              fontSize: '15px', color: '#e6e4f0',
-              fontFamily: 'DM Sans, sans-serif', outline: 'none',
-            }}
-            onKeyDown={e => e.key === 'Enter' && setSearched(true)}
-          />
-          <button
-            onClick={() => setSearched(true)}
-            style={{
-              background: '#c9a84c', color: '#0a0a0f',
-              border: 'none', borderRadius: '8px',
-              padding: '14px 28px', fontSize: '14px',
-              fontWeight: 500, cursor: 'pointer',
-              fontFamily: 'DM Sans, sans-serif',
-              letterSpacing: '0.05em', textTransform: 'uppercase',
-            }}>Search</button>
+        {/* Game filter */}
+        <div style={{ display: "flex", gap: "8px", justifyContent: "center", marginBottom: "24px", flexWrap: "wrap" }}>
+          {[
+            { id: "all", label: "All Games", icon: "🃏" },
+            { id: "pokemon", label: "Pokémon", icon: "⚡" },
+            { id: "magic", label: "Magic", icon: "✨" },
+            { id: "yugioh", label: "Yu-Gi-Oh!", icon: "👁️" },
+          ].map(g => (
+            <button key={g.id} onClick={() => setGame(g.id)} style={{
+              padding: "8px 18px", borderRadius: "20px", cursor: "pointer",
+              fontFamily: "DM Sans, sans-serif", fontSize: "13px",
+              border: game === g.id ? "1px solid #4da2ff" : "1px solid rgba(255,255,255,0.12)",
+              background: game === g.id ? "rgba(77,162,255,0.1)" : "transparent",
+              color: game === g.id ? "#78bfff" : "#888898",
+            }}>{g.icon} {g.label}</button>
+          ))}
+        </div>
+
+        {/* Search box */}
+        <div style={{ position: "relative", marginBottom: "40px" }}>
+          <div style={{ position: "relative" }}>
+            <input
+              ref={inputRef}
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
+              placeholder="Search any card... e.g. Lightning Bolt, Charizard, Dark Magician"
+              style={{
+                width: "100%", background: "#111118",
+                border: "1px solid rgba(255,255,255,0.15)",
+                borderRadius: showDropdown ? "12px 12px 0 0" : "12px",
+                padding: "16px 50px 16px 20px",
+                fontSize: "16px", color: "#e6e4f0",
+                fontFamily: "DM Sans, sans-serif", outline: "none",
+                boxSizing: "border-box",
+                transition: "border-color 0.2s",
+              }}
+              onFocusCapture={e => (e.currentTarget.style.borderColor = "rgba(77,162,255,0.5)")}
+              onBlurCapture={e => {
+                setTimeout(() => setShowDropdown(false), 200);
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+              }}
+            />
+            <div style={{
+              position: "absolute", right: "16px", top: "50%",
+              transform: "translateY(-50%)", color: "#555562", fontSize: "18px",
+            }}>
+              {loading ? "⏳" : "🔍"}
+            </div>
+          </div>
+
+          {/* Dropdown suggestions */}
+          {showDropdown && suggestions.length > 0 && (
+            <div style={{
+              position: "absolute", top: "100%", left: 0, right: 0,
+              background: "#111118", border: "1px solid rgba(77,162,255,0.3)",
+              borderTop: "none", borderRadius: "0 0 12px 12px",
+              zIndex: 100, maxHeight: "320px", overflowY: "auto",
+              boxShadow: "0 16px 48px rgba(0,0,0,0.8)",
+            }}>
+              {suggestions.map((s, i) => (
+                <div
+                  key={i}
+                  onMouseDown={() => selectCard(s)}
+                  style={{
+                    padding: "12px 20px", cursor: "pointer",
+                    display: "flex", alignItems: "center", gap: "12px",
+                    borderBottom: i < suggestions.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                    transition: "background 0.15s",
+                  }}
+                  onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#18181f"}
+                  onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = "transparent"}
+                >
+                  <span style={{ fontSize: "18px" }}>{s.icon}</span>
+                  <div>
+                    <div style={{ fontSize: "14px", color: "#e6e4f0", fontWeight: 500 }}>{s.name}</div>
+                    <div style={{ fontSize: "11px", color: "#555562", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                      {s.game === "magic" ? "Magic: The Gathering" : s.game === "pokemon" ? "Pokémon TCG" : "Yu-Gi-Oh!"}
+                    </div>
+                  </div>
+                  <div style={{ marginLeft: "auto", fontSize: "11px", color: "#4da2ff" }}>View all versions →</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Results */}
-        {(searched || search.length > 0) && (
-          <div>
-            {/* Table Header */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
-              gap: '16px', padding: '12px 20px',
-              fontSize: '10px', letterSpacing: '0.12em',
-              textTransform: 'uppercase', color: '#555562',
-              borderBottom: '1px solid rgba(255,255,255,0.07)',
-              marginBottom: '8px',
-            }}>
-              <div>Card</div>
-              <div style={{ textAlign: 'right' }}>TCGPlayer</div>
-              <div style={{ textAlign: 'right' }}>CardKingdom</div>
-              <div style={{ textAlign: 'right' }}>SuiTCG</div>
-              <div style={{ textAlign: 'right' }}>Trend</div>
+        {selectedCard && (
+          <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: "32px", alignItems: "start" }}>
+
+            {/* Selected card image + info */}
+            <div>
+              <img
+                src={selectedCard.imageUrl}
+                alt={selectedCard.name}
+                style={{ width: "100%", borderRadius: "12px", boxShadow: "0 8px 40px rgba(0,0,0,0.7)", marginBottom: "16px" }}
+              />
+              <div style={{ background: "#111118", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "16px" }}>
+                <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", fontWeight: 600, color: "#e6e4f0", marginBottom: "6px" }}>{selectedCard.name}</div>
+                <div style={{ fontSize: "12px", color: "#4da2ff", marginBottom: "4px" }}>{selectedCard.set}</div>
+                {selectedCard.rarity && <div style={{ fontSize: "11px", color: "#888898", textTransform: "capitalize" }}>⭐ {selectedCard.rarity}</div>}
+              </div>
             </div>
 
-            {results.length === 0 ? (
-              <div style={{
-                textAlign: 'center', padding: '60px 20px', color: '#555562',
-              }}>
-                <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.4 }}>🔍</div>
-                <p>No cards found. Try a different search.</p>
+            {/* Prices + versions */}
+            <div>
+              <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", color: "#e6e4f0", marginBottom: "20px" }}>
+                💰 Live Market Prices
               </div>
-            ) : results.map((c, i) => (
-              <div key={i} style={{
-                display: 'grid',
-                gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
-                gap: '16px', padding: '16px 20px',
-                background: i % 2 === 0 ? '#111118' : 'transparent',
-                borderRadius: '8px', alignItems: 'center',
-                marginBottom: '4px',
-              }}>
-                <div>
-                  <div style={{
-                    fontFamily: 'Cinzel, serif', fontSize: '13px',
-                    fontWeight: 600, color: '#e6e4f0', marginBottom: '2px',
-                  }}>{c.card}</div>
-                  <div style={{
-                    fontSize: '11px', color: '#555562',
-                    textTransform: 'uppercase', letterSpacing: '0.06em',
-                  }}>{c.set}</div>
-                </div>
-                <div style={{ textAlign: 'right', fontSize: '14px', color: '#e6e4f0', fontWeight: 500 }}>
-                  ${c.tcgplayer.toLocaleString()}
-                </div>
-                <div style={{ textAlign: 'right', fontSize: '14px', color: '#e6e4f0', fontWeight: 500 }}>
-                  ${c.cardkingdom.toLocaleString()}
-                </div>
-                <div style={{ textAlign: 'right', fontSize: '14px', color: '#e8c97a', fontWeight: 500 }}>
-                  ${c.suitcg.toLocaleString()}
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <span style={{
-                    fontSize: '12px', fontWeight: 500,
-                    color: c.trend === 'up' ? '#4caf7d' : '#e05555',
-                  }}>
-                    {c.trend === 'up' ? '↑ Rising' : '↓ Falling'}
-                  </span>
-                </div>
-              </div>
-            ))}
+              {getPriceDisplay(selectedCard)}
 
-            {results.length > 0 && (
-              <div style={{
-                marginTop: '24px', padding: '16px 20px',
-                background: 'rgba(77,162,255,0.05)',
-                border: '1px solid rgba(77,162,255,0.15)',
-                borderRadius: '8px', fontSize: '12px', color: '#78bfff',
-              }}>
-                💡 Prices are updated regularly. SuiTCG prices reflect live listings.
-                TCGPlayer & CardKingdom prices are for reference.
-              </div>
-            )}
+              {/* All versions */}
+              {allVersions.length > 1 && (
+                <div style={{ marginTop: "32px" }}>
+                  <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#e6e4f0", marginBottom: "16px" }}>
+                    📦 All {allVersions.length} Versions / Expansions
+                  </div>
+                  <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                    {allVersions.map((v, i) => (
+                      <div
+                        key={v.id}
+                        onClick={() => setSelectedCard(v)}
+                        style={{
+                          cursor: "pointer",
+                          border: selectedCard.id === v.id ? "2px solid #4da2ff" : "1px solid rgba(255,255,255,0.07)",
+                          borderRadius: "8px", overflow: "hidden",
+                          width: "72px", transition: "all 0.15s",
+                          opacity: selectedCard.id === v.id ? 1 : 0.6,
+                        }}
+                        onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.opacity = "1"}
+                        onMouseLeave={e => {
+                          if (selectedCard.id !== v.id) (e.currentTarget as HTMLDivElement).style.opacity = "0.6";
+                        }}
+                      >
+                        <img src={v.imageUrl} alt={v.set} style={{ width: "100%", display: "block" }} />
+                        <div style={{ padding: "4px 6px", background: "#18181f", fontSize: "8px", color: "#888898", textAlign: "center", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v.set}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
-        {/* Default state */}
-        {!searched && search.length === 0 && (
-          <div>
-            <div style={{
-              fontSize: '12px', letterSpacing: '0.1em',
-              textTransform: 'uppercase', color: '#555562', marginBottom: '16px',
-            }}>Popular Searches</div>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              {['Charizard EX', 'Black Lotus', 'Blue-Eyes White Dragon', 'Pikachu Promo', 'Mox Sapphire'].map((s, i) => (
-                <button key={i}
-                  onClick={() => { setSearch(s); setSearched(true); }}
-                  style={{
-                    padding: '8px 16px',
-                    border: '1px solid rgba(255,255,255,0.12)',
-                    borderRadius: '20px', background: '#111118',
-                    color: '#888898', fontSize: '13px',
-                    cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
-                  }}>{s}</button>
+        {/* Empty state */}
+        {!selectedCard && !loading && query.length === 0 && (
+          <div style={{ textAlign: "center", padding: "60px 20px" }}>
+            <div style={{ fontSize: "64px", marginBottom: "20px" }}>🔍</div>
+            <p style={{ fontSize: "15px", color: "#888898", marginBottom: "32px" }}>Start typing to search any TCG card</p>
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
+              {["Lightning Bolt", "Charizard EX", "Blue-Eyes White Dragon", "Luffy OP-01"].map((s, i) => (
+                <button key={i} onClick={() => { setQuery(s); inputRef.current?.focus(); }} style={{
+                  padding: "8px 16px", border: "1px solid rgba(255,255,255,0.12)",
+                  borderRadius: "20px", background: "#111118",
+                  color: "#888898", fontSize: "13px", cursor: "pointer",
+                  fontFamily: "DM Sans, sans-serif",
+                }}>{s}</button>
               ))}
             </div>
           </div>

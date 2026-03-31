@@ -8,11 +8,13 @@ const MobileNav = dynamic(() => import("./MobileNav"), { ssr: false });
 export default function NavClient() {
   return (
     <>
-      <div className="desktop-nav" style={{ gap: "20px", alignItems: "center" }}>
+      <div className="desktop-nav" style={{ gap: "16px", alignItems: "center" }}>
         {[
           { href: "/marketplace", label: "Marketplace" },
           { href: "/price-checker", label: "Prices" },
           { href: "/oracle", label: "AI Oracle" },
+          { href: "/optcg", label: "🏴‍☠️ OPTCG" },
+          { href: "/download", label: "Download" },
           { href: "/sell", label: "Sell" },
           { href: "/dashboard", label: "Dashboard" },
         ].map(link => (

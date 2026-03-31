@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }
         `}</style>
       </head>
-      <body>
+      <body style={{ position: "relative" }}>
         <Providers>
           <nav style={{
             position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
@@ -44,13 +44,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <a href="/" style={{
               fontFamily: "Cinzel, serif", fontSize: "18px",
               fontWeight: 600, textDecoration: "none",
-              background: "linear-gradient(135deg, #ffffff, #4da2ff, #00d4ff)",
+              background: "linear-gradient(135deg, #1a8fe3, #4da2ff, #00d4ff)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-              backgroundClip: "text", flexShrink: 0,
+              backgroundClip: "text", flexShrink: 0, position: "relative", zIndex: 101,
             }}>WaveTCG</a>
             <NavClient />
           </nav>
-          <main style={{ paddingTop: "56px" }}>
+          <main style={{ paddingTop: "56px", position: "relative", zIndex: 1 }}>
             {children}
           </main>
         </Providers>
@@ -58,4 +58,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
-
