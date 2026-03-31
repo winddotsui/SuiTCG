@@ -53,7 +53,8 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
   }
 
   async function connectDiscord() {
-    alert("Enter your Discord username manually in the Edit Profile form below!");
+    localStorage.setItem("wavetcg_wallet_address", address);
+    window.location.href = "/api/auth/discord";
   }
 
   async function connectTelegram() {
