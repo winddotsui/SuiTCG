@@ -1,6 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { supabase } from "../../lib/supabase";
+import dynamic from "next/dynamic";
+
+const WalrusUpload = dynamic(() => import("../components/WalrusUpload"), { ssr: false });
 
 const inputStyle = {
   width: "100%", background: "#18181f",
@@ -38,7 +41,6 @@ export default function Sell() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  const [walletAddress, setWalletAddress] = useState("anonymous");
 
   const [form, setForm] = useState({
     game: "Pokémon TCG",
@@ -51,15 +53,6 @@ export default function Sell() {
     description: "",
     image_url: "",
   });
-
-  useEffect(() => {
-    async function getWallet() {
-      try {
-        const { useCurrentAccount } = await import("@mysten/dapp-kit");
-      } catch {}
-    }
-    getWallet();
-  }, []);
 
   function updateForm(key: string, val: string) {
     if (key === "price_usd" && val) {
@@ -84,7 +77,7 @@ export default function Sell() {
         price_sui: parseFloat(form.price_sui),
         description: form.description,
         image_url: form.image_url,
-        seller_address: walletAddress,
+        seller_address: "anonymous",
         status: "active",
       });
       if (error) throw error;
@@ -103,6 +96,7 @@ export default function Sell() {
           <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", fontWeight: 700, color: "#e6e4f0", marginBottom: "12px" }}>Card Listed!</h1>
           <p style={{ fontSize: "14px", color: "#888898", marginBottom: "32px", lineHeight: 1.75 }}>
             Your card is now live on WaveTCG Marketplace!
+            {form.image_url && <><br /><span style={{ color: "#4da2ff" }}>◈ Image stored on Sui Walrus</span></>}
           </p>
           <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
             <a href="/marketplace" style={{ ...btnPrimary, display: "inline-block", textDecoration: "none", width: "auto", padding: "12px 24px" }}>View Marketplace</a>
@@ -118,7 +112,7 @@ export default function Sell() {
       <div style={{ maxWidth: "680px", margin: "0 auto" }}>
 
         <div style={{ marginBottom: "40px" }}>
-          <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4da2ff", marginBottom: "12px" }}>Free to List · 1% on Sale</div>
+          <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4da2ff", marginBottom: "12px" }}>Free to List · 1% on Sale · Images on Walrus</div>
           <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "36px", fontWeight: 700, color: "#e6e4f0" }}>List a Card</h1>
         </div>
 
@@ -136,28 +130,39 @@ export default function Sell() {
           {step === 1 && (
             <div>
               <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "20px", color: "#e6e4f0", marginBottom: "28px" }}>Card Details</h2>
+
               <div style={{ marginBottom: "20px" }}>
                 <label style={labelStyle}>Game</label>
                 <select style={inputStyle} value={form.game} onChange={e => updateForm("game", e.target.value)}>
                   {["Pokémon TCG","Magic: The Gathering","Yu-Gi-Oh!","One Piece","Dragon Ball","Lorcana","Flesh & Blood","Digimon"].map((o,j) => <option key={j}>{o}</option>)}
                 </select>
               </div>
+
               <div style={{ marginBottom: "20px" }}>
                 <label style={labelStyle}>Card Name</label>
                 <input style={inputStyle} type="text" placeholder="e.g. Charizard EX" value={form.name} onChange={e => updateForm("name", e.target.value)} />
               </div>
+
               <div style={{ marginBottom: "20px" }}>
                 <label style={labelStyle}>Set / Edition</label>
                 <input style={inputStyle} type="text" placeholder="e.g. Obsidian Flames" value={form.set_name} onChange={e => updateForm("set_name", e.target.value)} />
               </div>
+
               <div style={{ marginBottom: "20px" }}>
                 <label style={labelStyle}>Card Number</label>
                 <input style={inputStyle} type="text" placeholder="e.g. 125/197" value={form.card_number} onChange={e => updateForm("card_number", e.target.value)} />
               </div>
+
               <div style={{ marginBottom: "28px" }}>
-                <label style={labelStyle}>Image URL (optional)</label>
-                <input style={inputStyle} type="text" placeholder="https://..." value={form.image_url} onChange={e => updateForm("image_url", e.target.value)} />
+                <label style={labelStyle}>Card Photo · Stored on Sui Walrus ◈</label>
+                <WalrusUpload onUpload={(url) => updateForm("image_url", url)} />
+                {form.image_url && (
+                  <div style={{ marginTop: "8px", fontSize: "11px", color: "#4da2ff" }}>
+                    ✅ Image on Walrus: {form.image_url.slice(0, 50)}...
+                  </div>
+                )}
               </div>
+
               <button style={btnPrimary} onClick={() => { if (!form.name) { setError("Please enter a card name"); return; } setError(""); setStep(2); }}>Next Step →</button>
               {error && <div style={{ color: "#e05555", fontSize: "13px", marginTop: "12px" }}>{error}</div>}
             </div>
@@ -166,6 +171,7 @@ export default function Sell() {
           {step === 2 && (
             <div>
               <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "20px", color: "#e6e4f0", marginBottom: "28px" }}>Condition & Price</h2>
+
               <div style={{ marginBottom: "20px" }}>
                 <label style={labelStyle}>Condition</label>
                 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
@@ -181,15 +187,18 @@ export default function Sell() {
                   ))}
                 </div>
               </div>
+
               <div style={{ marginBottom: "20px" }}>
                 <label style={labelStyle}>Price (USD)</label>
                 <input style={inputStyle} type="number" placeholder="0.00" value={form.price_usd} onChange={e => updateForm("price_usd", e.target.value)} />
                 {form.price_sui && <div style={{ fontSize: "12px", color: "#4da2ff", marginTop: "6px" }}>≈ {form.price_sui} SUI · Platform fee: 1% on sale</div>}
               </div>
+
               <div style={{ marginBottom: "28px" }}>
                 <label style={labelStyle}>Description (optional)</label>
                 <textarea placeholder="Describe the card condition, shipping info..." rows={4} style={{ ...inputStyle, resize: "vertical" }} value={form.description} onChange={e => updateForm("description", e.target.value)} />
               </div>
+
               <div style={{ display: "flex", gap: "12px" }}>
                 <button style={btnSecondary} onClick={() => setStep(1)}>← Back</button>
                 <button style={btnPrimary} onClick={() => { if (!form.price_usd) { setError("Please enter a price"); return; } setError(""); setStep(3); }}>Review Listing →</button>
@@ -201,6 +210,14 @@ export default function Sell() {
           {step === 3 && (
             <div>
               <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "20px", color: "#e6e4f0", marginBottom: "28px" }}>Review & Publish</h2>
+
+              {form.image_url && (
+                <div style={{ marginBottom: "20px", textAlign: "center" }}>
+                  <img src={form.image_url} alt={form.name} style={{ width: "120px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.12)" }} />
+                  <div style={{ fontSize: "11px", color: "#4da2ff", marginTop: "6px" }}>◈ Stored on Walrus</div>
+                </div>
+              )}
+
               <div style={{ background: "#18181f", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "20px", marginBottom: "24px" }}>
                 {[
                   { label: "Card", val: form.name },
@@ -217,7 +234,9 @@ export default function Sell() {
                   </div>
                 ))}
               </div>
+
               {error && <div style={{ color: "#e05555", fontSize: "13px", marginBottom: "12px" }}>{error}</div>}
+
               <div style={{ display: "flex", gap: "12px" }}>
                 <button style={btnSecondary} onClick={() => setStep(2)}>← Back</button>
                 <button style={{ ...btnPrimary, opacity: loading ? 0.6 : 1 }} onClick={publishListing} disabled={loading}>
