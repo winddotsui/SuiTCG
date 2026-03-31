@@ -1,10 +1,48 @@
 "use client";
-import { useState } from "react";
-import { useConnectWallet, useWallets } from "@mysten/dapp-kit";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useState, useEffect } from "react";
 
 export default function WalletButton() {
   const [showModal, setShowModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [suiWallets, setSuiWallets] = useState<any[]>([]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  async function connectSuiWallet(wallet: any) {
+    try {
+      const { useConnectWallet } = await import("@mysten/dapp-kit");
+      setShowModal(false);
+    } catch {}
+  }
+
+  async function connectEVM() {
+    try {
+      const { getDefaultConfig } = await import("@rainbow-me/rainbowkit");
+      setShowModal(false);
+    } catch {}
+  }
+
+  if (!mounted) {
+    return (
+      <button style={{
+        background: "linear-gradient(135deg, #1a8fe3, #4da2ff)",
+        color: "#fff", border: "none", borderRadius: "6px",
+        padding: "7px 14px", fontSize: "11px", fontWeight: 500,
+        cursor: "pointer", letterSpacing: "0.06em",
+        textTransform: "uppercase", fontFamily: "DM Sans, sans-serif",
+      }}>Connect</button>
+    );
+  }
+
+  return <WalletButtonInner />;
+}
+
+function WalletButtonInner() {
+  const [showModal, setShowModal] = useState(false);
+  const { useConnectWallet, useWallets } = require("@mysten/dapp-kit");
+  const { useConnectModal } = require("@rainbow-me/rainbowkit");
   const { mutate: connectSui } = useConnectWallet();
   const suiWallets = useWallets();
   const { openConnectModal } = useConnectModal();
@@ -52,7 +90,7 @@ export default function WalletButton() {
             {suiWallets.length > 0 && (
               <div style={{ marginBottom: "12px" }}>
                 <div style={{ fontSize: "9px", letterSpacing: "0.14em", textTransform: "uppercase", color: "#4da2ff", marginBottom: "8px" }}>◈ Sui Wallets</div>
-                {suiWallets.map(wallet => (
+                {suiWallets.map((wallet: any) => (
                   <button key={wallet.name} onClick={() => { connectSui({ wallet }); setShowModal(false); }} style={{
                     display: "flex", alignItems: "center", gap: "12px",
                     width: "100%", padding: "10px 14px", marginBottom: "6px",

@@ -1,171 +1,207 @@
 "use client";
+import { useState, useEffect } from "react";
+import { supabase, Listing } from "../../lib/supabase";
+
+const MOCK_CARDS = [
+  { id:"m1", name:"Charizard EX", set_name:"Obsidian Flames", game:"Pokémon TCG", price_usd:295, price_sui:40.5, condition:"PSA 10", art:"🔥", bg:"#2a0808" },
+  { id:"m2", name:"Black Lotus", set_name:"Alpha Edition", game:"Magic: The Gathering", price_usd:4200, price_sui:577, condition:"PSA 9", art:"✨", bg:"#14082a" },
+  { id:"m3", name:"Blue-Eyes White Dragon", set_name:"LOB 1st Ed", game:"Yu-Gi-Oh!", price_usd:850, price_sui:117, condition:"Mint", art:"⚡", bg:"#080820" },
+  { id:"m4", name:"Pikachu Promo", set_name:"World Championship", game:"Pokémon TCG", price_usd:90, price_sui:12.4, condition:"NM", art:"⚡", bg:"#1a1400" },
+  { id:"m5", name:"Mox Sapphire", set_name:"Beta Edition", game:"Magic: The Gathering", price_usd:1850, price_sui:254, condition:"PSA 9", art:"💎", bg:"#040e1c" },
+  { id:"m6", name:"Mewtwo V Alt Art", set_name:"Lost Origin", game:"Pokémon TCG", price_usd:120, price_sui:16.5, condition:"NM", art:"🌌", bg:"#14082a" },
+];
+
+const GAME_ICONS: Record<string, string> = {
+  "Pokémon TCG": "⚡",
+  "Magic: The Gathering": "✨",
+  "Yu-Gi-Oh!": "👁️",
+  "One Piece": "🗡️",
+  "Dragon Ball": "🐉",
+  "Lorcana": "🌟",
+  "Flesh & Blood": "⚔️",
+  "Digimon": "🎭",
+};
 
 export default function Marketplace() {
-  const cards = [
-    { id:1, name:"Charizard EX", set:"Obsidian Flames", game:"Pokémon", price:295, sui:40.5, cond:"PSA 10", art:"🔥", bg:"#2a0808" },
-    { id:2, name:"Black Lotus", set:"Alpha Edition", game:"Magic", price:4200, sui:577, cond:"PSA 9", art:"✨", bg:"#14082a" },
-    { id:3, name:"Blue-Eyes White Dragon", set:"LOB 1st Ed", game:"Yu-Gi-Oh!", price:850, sui:117, cond:"Mint", art:"⚡", bg:"#080820" },
-    { id:4, name:"Pikachu Promo", set:"World Championship", game:"Pokémon", price:90, sui:12.4, cond:"NM", art:"⚡", bg:"#1a1400" },
-    { id:5, name:"Mox Sapphire", set:"Beta Edition", game:"Magic", price:1850, sui:254, cond:"PSA 9", art:"💎", bg:"#040e1c" },
-    { id:6, name:"Mewtwo V Alt Art", set:"Lost Origin", game:"Pokémon", price:120, sui:16.5, cond:"NM", art:"🌌", bg:"#14082a" },
-    { id:7, name:"Dark Magician Ghost", set:"Duelist Pack", game:"Yu-Gi-Oh!", price:340, sui:46.7, cond:"PSA 10", art:"🔮", bg:"#080808" },
-    { id:8, name:"Ancestral Recall", set:"Alpha Edition", game:"Magic", price:3200, sui:439, cond:"LP", art:"📜", bg:"#040e1c" },
-    { id:9, name:"Rayquaza VMAX", set:"Evolving Skies", game:"Pokémon", price:220, sui:30.2, cond:"PSA 10", art:"🐉", bg:"#0a1408" },
-    { id:10, name:"Exodia Complete Set", set:"LOB 1st Ed", game:"Yu-Gi-Oh!", price:3500, sui:481, cond:"PSA 9", art:"👁️", bg:"#080808" },
-    { id:11, name:"Umbreon VMAX Alt Art", set:"Evolving Skies", game:"Pokémon", price:480, sui:66, cond:"NM", art:"🌙", bg:"#080808" },
-    { id:12, name:"Time Walk", set:"Alpha Edition", game:"Magic", price:2800, sui:385, cond:"MP", art:"⏳", bg:"#040e1c" },
-  ];
+  const [listings, setListings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [game, setGame] = useState("All Games");
+  const [sort, setSort] = useState("newest");
+
+  useEffect(() => {
+    fetchListings();
+  }, []);
+
+  async function fetchListings() {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("listings")
+      .select("*")
+      .eq("status", "active")
+      .order("created_at", { ascending: false });
+
+    if (data && data.length > 0) {
+      setListings([...data, ...MOCK_CARDS]);
+    } else {
+      setListings(MOCK_CARDS);
+    }
+    setLoading(false);
+  }
+
+  const filtered = listings.filter(c => {
+    const matchSearch = !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.set_name?.toLowerCase().includes(search.toLowerCase());
+    const matchGame = game === "All Games" || c.game === game;
+    return matchSearch && matchGame;
+  }).sort((a, b) => {
+    if (sort === "price-asc") return a.price_usd - b.price_usd;
+    if (sort === "price-desc") return b.price_usd - a.price_usd;
+    return 0;
+  });
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0f', display: 'flex' }}>
+    <div style={{ minHeight: "100vh", background: "#0a0a0f", display: "flex" }}>
 
       {/* SIDEBAR */}
       <aside style={{
-        width: '256px', flexShrink: 0,
-        borderRight: '1px solid rgba(255,255,255,0.07)',
-        padding: '28px 20px', background: '#111118',
-        position: 'sticky', top: '60px',
-        height: 'calc(100vh - 60px)', overflowY: 'auto',
+        width: "240px", flexShrink: 0,
+        borderRight: "1px solid rgba(255,255,255,0.07)",
+        padding: "24px 16px", background: "#111118",
+        position: "sticky", top: "56px",
+        height: "calc(100vh - 56px)", overflowY: "auto",
       }}>
-        <div style={{ marginBottom: '28px' }}>
-          <div style={{
-            fontSize: '10px', letterSpacing: '0.16em',
-            textTransform: 'uppercase', color: '#555562', marginBottom: '12px',
-          }}>Game</div>
-          {['All Games', 'Pokémon', 'Magic: TG', 'Yu-Gi-Oh!', 'One Piece', 'Others'].map((g, i) => (
-            <button key={i} style={{
-              display: 'flex', alignItems: 'center', gap: '10px',
-              padding: '9px 12px', width: '100%', textAlign: 'left',
-              background: i === 0 ? 'rgba(201,168,76,0.1)' : 'transparent',
-              border: i === 0 ? '1px solid rgba(201,168,76,0.2)' : '1px solid transparent',
-              borderRadius: '8px', color: i === 0 ? '#e8c97a' : '#888898',
-              fontSize: '13px', cursor: 'pointer', marginBottom: '4px',
-              fontFamily: 'DM Sans, sans-serif',
-            }}>{g}</button>
+        <div style={{ marginBottom: "28px" }}>
+          <div style={{ fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#555562", marginBottom: "12px" }}>Game</div>
+          {["All Games","Pokémon TCG","Magic: The Gathering","Yu-Gi-Oh!","One Piece","Dragon Ball","Others"].map((g) => (
+            <button key={g} onClick={() => setGame(g)} style={{
+              display: "flex", alignItems: "center", gap: "8px",
+              padding: "8px 10px", width: "100%", textAlign: "left",
+              background: game === g ? "rgba(77,162,255,0.08)" : "transparent",
+              border: game === g ? "1px solid rgba(77,162,255,0.2)" : "1px solid transparent",
+              borderRadius: "8px", color: game === g ? "#78bfff" : "#888898",
+              fontSize: "13px", cursor: "pointer", marginBottom: "3px",
+              fontFamily: "DM Sans, sans-serif",
+            }}>
+              {GAME_ICONS[g] && <span>{GAME_ICONS[g]}</span>}
+              {g}
+            </button>
           ))}
         </div>
 
-        <div style={{ marginBottom: '28px' }}>
-          <div style={{
-            fontSize: '10px', letterSpacing: '0.16em',
-            textTransform: 'uppercase', color: '#555562', marginBottom: '12px',
-          }}>Price Range (USD)</div>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <input placeholder="Min" style={{
-              flex: 1, background: '#18181f',
-              border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: '6px', padding: '8px 10px',
-              fontSize: '13px', color: '#e6e4f0',
-              fontFamily: 'DM Sans, sans-serif', outline: 'none',
-            }} />
-            <input placeholder="Max" style={{
-              flex: 1, background: '#18181f',
-              border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: '6px', padding: '8px 10px',
-              fontSize: '13px', color: '#e6e4f0',
-              fontFamily: 'DM Sans, sans-serif', outline: 'none',
-            }} />
-          </div>
-        </div>
-
-        <div style={{ marginBottom: '28px' }}>
-          <div style={{
-            fontSize: '10px', letterSpacing: '0.16em',
-            textTransform: 'uppercase', color: '#555562', marginBottom: '12px',
-          }}>Condition</div>
-          {['PSA 10', 'PSA 9', 'Mint', 'NM', 'LP', 'MP'].map((c, i) => (
-            <button key={i} style={{
-              padding: '6px 12px', margin: '3px',
-              border: '1px solid rgba(255,255,255,0.07)',
-              borderRadius: '6px', background: 'transparent',
-              color: '#888898', fontSize: '11px',
-              cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
+        <div style={{ marginBottom: "28px" }}>
+          <div style={{ fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#555562", marginBottom: "12px" }}>Condition</div>
+          {["PSA 10","PSA 9","Mint","NM","LP","MP"].map((c) => (
+            <button key={c} style={{
+              padding: "5px 10px", margin: "3px",
+              border: "1px solid rgba(255,255,255,0.07)",
+              borderRadius: "6px", background: "transparent",
+              color: "#888898", fontSize: "11px",
+              cursor: "pointer", fontFamily: "DM Sans, sans-serif",
             }}>{c}</button>
           ))}
         </div>
+
+        <a href="/sell" style={{
+          display: "block", textAlign: "center",
+          background: "linear-gradient(135deg, #1a8fe3, #4da2ff)",
+          color: "#fff", padding: "10px",
+          borderRadius: "8px", fontSize: "12px",
+          fontWeight: 500, textDecoration: "none",
+          letterSpacing: "0.06em", textTransform: "uppercase",
+        }}>+ List a Card</a>
       </aside>
 
       {/* MAIN */}
-      <main style={{ flex: 1, padding: '28px 32px' }}>
-        <div style={{ marginBottom: '24px', display: 'flex', gap: '12px' }}>
+      <main style={{ flex: 1, padding: "24px 28px" }}>
+        <div style={{ marginBottom: "20px", display: "flex", gap: "12px", flexWrap: "wrap" }}>
           <input
             placeholder="🔍  Search cards, sets, games..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
             style={{
-              flex: 1, background: '#111118',
-              border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: '8px', padding: '11px 16px',
-              fontSize: '14px', color: '#e6e4f0',
-              fontFamily: 'DM Sans, sans-serif', outline: 'none',
+              flex: 1, minWidth: "200px", background: "#111118",
+              border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: "8px", padding: "10px 16px",
+              fontSize: "14px", color: "#e6e4f0",
+              fontFamily: "DM Sans, sans-serif", outline: "none",
             }}
           />
-          <select style={{
-            background: '#111118',
-            border: '1px solid rgba(255,255,255,0.12)',
-            borderRadius: '8px', padding: '11px 16px',
-            fontSize: '13px', color: '#e6e4f0',
-            fontFamily: 'DM Sans, sans-serif', outline: 'none', cursor: 'pointer',
-          }}>
-            <option>Most Popular</option>
-            <option>Price: Low to High</option>
-            <option>Price: High to Low</option>
-            <option>Newest First</option>
+          <select
+            value={sort}
+            onChange={e => setSort(e.target.value)}
+            style={{
+              background: "#111118", border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: "8px", padding: "10px 16px",
+              fontSize: "13px", color: "#e6e4f0",
+              fontFamily: "DM Sans, sans-serif", outline: "none", cursor: "pointer",
+            }}>
+            <option value="newest">Newest First</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
           </select>
         </div>
 
-        <div style={{ fontSize: '13px', color: '#888898', marginBottom: '20px' }}>
-          <strong style={{ color: '#e6e4f0' }}>{cards.length}</strong> cards available
+        <div style={{ fontSize: "13px", color: "#888898", marginBottom: "20px" }}>
+          <strong style={{ color: "#e6e4f0" }}>{filtered.length}</strong> cards available
+          {loading && <span style={{ color: "#4da2ff", marginLeft: "8px" }}>· Loading...</span>}
         </div>
 
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-          gap: '16px',
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+          gap: "14px",
         }}>
-          {cards.map(card => (
-            <a key={card.id} href={`/card/${card.id}`} style={{ textDecoration: 'none' }}>
+          {filtered.map(card => (
+            <a key={card.id} href={`/card/${card.id}`} style={{ textDecoration: "none" }}>
               <div style={{
-                background: '#111118',
-                border: '1px solid rgba(255,255,255,0.07)',
-                borderRadius: '12px', overflow: 'hidden', cursor: 'pointer',
-                transition: 'transform 0.2s ease, border-color 0.2s ease',
+                background: "#111118",
+                border: "1px solid rgba(255,255,255,0.07)",
+                borderRadius: "12px", overflow: "hidden", cursor: "pointer",
+                transition: "transform 0.2s ease, border-color 0.2s ease",
               }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)';
-                  (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(201,168,76,0.3)';
+                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)";
+                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(77,162,255,0.3)";
                 }}
                 onMouseLeave={e => {
-                  (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)';
-                  (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.07)';
+                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.07)";
                 }}
               >
                 <div style={{
-                  width: '100%', aspectRatio: '3/2',
-                  background: card.bg,
-                  display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', fontSize: '52px',
-                }}>{card.art}</div>
-                <div style={{ padding: '12px 14px' }}>
+                  width: "100%", aspectRatio: "3/2",
+                  background: card.bg || "#18181f",
+                  display: "flex", alignItems: "center",
+                  justifyContent: "center", fontSize: "48px",
+                  overflow: "hidden",
+                }}>
+                  {card.image_url ? (
+                    <img src={card.image_url} alt={card.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : (
+                    card.art || GAME_ICONS[card.game] || "🃏"
+                  )}
+                </div>
+                <div style={{ padding: "10px 12px" }}>
                   <div style={{
-                    fontFamily: 'Cinzel, serif', fontSize: '12.5px',
-                    fontWeight: 600, color: '#e6e4f0', marginBottom: '3px',
-                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                    fontFamily: "Cinzel, serif", fontSize: "12px",
+                    fontWeight: 600, color: "#e6e4f0", marginBottom: "2px",
+                    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
                   }}>{card.name}</div>
                   <div style={{
-                    fontSize: '11px', color: '#555562',
-                    textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '10px',
-                  }}>{card.game} · {card.cond}</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                    fontSize: "10px", color: "#555562",
+                    textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "8px",
+                  }}>{card.game} · {card.condition}</div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
                     <div>
-                      <div style={{ fontSize: '15px', fontWeight: 500, color: '#e8c97a' }}>${card.price.toLocaleString()}</div>
-                      <div style={{ fontSize: '10px', color: '#4da2ff' }}>{card.sui} SUI</div>
+                      <div style={{ fontSize: "14px", fontWeight: 500, color: "#78bfff" }}>${card.price_usd?.toLocaleString()}</div>
+                      <div style={{ fontSize: "10px", color: "#4da2ff" }}>{card.price_sui} SUI</div>
                     </div>
                     <button style={{
-                      background: 'transparent',
-                      border: '1px solid rgba(255,255,255,0.12)',
-                      borderRadius: '6px', padding: '6px 12px',
-                      fontSize: '11px', color: '#888898',
-                      cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
-                      textTransform: 'uppercase', letterSpacing: '0.06em',
+                      background: "transparent",
+                      border: "1px solid rgba(255,255,255,0.12)",
+                      borderRadius: "6px", padding: "5px 10px",
+                      fontSize: "10px", color: "#888898",
+                      cursor: "pointer", fontFamily: "DM Sans, sans-serif",
                     }}>Buy</button>
                   </div>
                 </div>

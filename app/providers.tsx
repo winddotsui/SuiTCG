@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
@@ -14,9 +15,20 @@ const wagmiConfig = getDefaultConfig({
   appName: "WaveTCG Marketplace",
   projectId: "b326c469cb92aa4415951f5d9646139f",
   chains: [mainnet, polygon, optimism, arbitrum, base],
+  ssr: true,
 });
 
 export default function Providers({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <>{children}</>;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <WagmiProvider config={wagmiConfig}>
