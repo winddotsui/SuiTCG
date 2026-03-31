@@ -26,6 +26,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(BASE_URL + "/auth/linkedin/callback?error=" + error);
   }
 
+  console.log("LinkedIn REDIRECT_URI:", REDIRECT_URI);
   if (!code) {
     const state = generateState();
     const params = new URLSearchParams({
@@ -33,7 +34,7 @@ export async function GET(req: NextRequest) {
       client_id: CLIENT_ID,
       redirect_uri: REDIRECT_URI,
       state: state,
-      scope: "openid profile",
+      scope: "openid profile email",
     });
     const response = NextResponse.redirect("https://www.linkedin.com/oauth/v2/authorization?" + params.toString());
     response.cookies.set("linkedin_state", state, { httpOnly: true, maxAge: 600, sameSite: "lax" });
