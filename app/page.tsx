@@ -18,8 +18,8 @@ interface CardImage {
 const OPTCG_FLAGSHIP = [
   { code: "OP05-119", name: "Monkey D. Luffy", label: "OP05 SEC · Gear 5" },
   { code: "OP02-013", name: "Monkey D. Luffy", label: "OP02 SEC · Purple" },
-  { code: "OP01-025_p1", name: "Roronoa Zoro", label: "OP01 SR Alt Art" },
-  { code: "OP01-070_p1", name: "Dracule Mihawk", label: "OP01 SR Alt Art" },
+  { code: "OP01-025", name: "Roronoa Zoro", label: "OP01 SR" },
+  { code: "OP01-070", name: "Dracule Mihawk", label: "OP01 SR" },
   { code: "OP06-001", name: "Shanks", label: "OP06 Leader" },
   { code: "OP08-001", name: "Gol D. Roger", label: "OP08 Leader" },
 ];
@@ -47,7 +47,7 @@ export default function Home() {
     setHeroCards([
       { name: "Monkey D. Luffy", images: { large: "https://images.ryanmichaelhirst.us/OP05-119.png" }, game: "OP05 SEC · Gear 5 Luffy", priceDisplay: "$380" },
       { name: "Monkey D. Luffy", images: { large: "https://images.ryanmichaelhirst.us/OP02-013.png" }, game: "OP02 SEC · Purple Luffy", priceDisplay: "$290" },
-      { name: "Roronoa Zoro", images: { large: "https://images.ryanmichaelhirst.us/OP01-025_p1.png" }, game: "OP01 SR Alt Art · Red", priceDisplay: "$120" },
+      { name: "Roronoa Zoro", images: { large: "https://images.ryanmichaelhirst.us/OP01-025.png" }, game: "OP01 SR · Red", priceDisplay: "$120" },
       { name: "Gol D. Roger", images: { large: "https://images.ryanmichaelhirst.us/OP08-001.png" }, game: "OP08 Leader · Roger", priceDisplay: "$95" },
     ]);
   }, []);
