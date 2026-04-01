@@ -41,7 +41,7 @@ export default function SwapPage() {
       </div>
 
       {/* Cetus Terminal */}
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "40px 24px" }}>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "600px", padding: "40px 24px" }}>
         <div
           id="cetus-terminal"
           style={{
