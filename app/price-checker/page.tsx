@@ -284,7 +284,7 @@ export default function PriceChecker() {
         </div>
 
         {/* Game filter */}
-        <div style={{ display: "flex", gap: "8px", justifyContent: "center", marginBottom: "24px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "6px", justifyContent: "center", marginBottom: "24px", flexWrap: "wrap", padding: "0 12px" }}>
           {[
             { id: "all", label: "All Games", icon: "🃏" },
             { id: "onepiece", label: "One Piece", icon: "🏴‍☠️" },

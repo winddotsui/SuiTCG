@@ -116,7 +116,7 @@ export default function UsersPage() {
         </div>
 
         {/* Stats */}
-        <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
+        <div style={{ display: "flex", gap: "10px", marginBottom: "24px", flexWrap: "wrap" }}>
           <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "12px", padding: "16px 20px", flex: 1, textAlign: "center" }}>
             <div style={{ fontFamily: "Cinzel, serif", fontSize: "28px", color: "#0099ff" }}>{allUsers.length}</div>
             <div style={{ fontSize: "11px", color: "#c8d8f0", textTransform: "uppercase", letterSpacing: "0.08em" }}>Traders</div>
@@ -147,7 +147,7 @@ export default function UsersPage() {
               const displayName = user.username || shortAddress(user.wallet_address);
               return (
                 <a key={i} href={`/profile/${user.wallet_address}`} style={{ textDecoration: "none" }}>
-                  <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "16px", padding: "20px", display: "flex", alignItems: "center", gap: "16px", transition: "all 0.2s", cursor: "pointer" }}
+                  <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "16px", padding: "20px", display: "flex", alignItems: "flex-start", gap: "12px", flexWrap: "wrap", transition: "all 0.2s", cursor: "pointer" }}
                     onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,153,255,0.4)"; (e.currentTarget as HTMLDivElement).style.background = "#0a1628"; }}
                     onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,153,255,0.15)"; (e.currentTarget as HTMLDivElement).style.background = "#050515"; }}>
 

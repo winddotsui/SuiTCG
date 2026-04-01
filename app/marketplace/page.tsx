@@ -75,10 +75,10 @@ export default function Marketplace() {
   });
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000008", display: "flex" }}>
+    <div style={{ minHeight: "100vh", background: "#000008", display: "flex", flexWrap: "wrap" }}>
 
       {/* SIDEBAR */}
-      <aside style={{
+      <aside className="desktop-only" style={{
         width: "240px", flexShrink: 0,
         borderRight: "1px solid rgba(255,255,255,0.06)",
         padding: "24px 16px", background: "#050515",
@@ -89,7 +89,7 @@ export default function Marketplace() {
           <div style={{ fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#8899bb", marginBottom: "12px" }}>Game</div>
           {["All Games","Pokémon TCG","Magic: The Gathering","Yu-Gi-Oh!","One Piece","Dragon Ball","Others"].map((g) => (
             <button key={g} onClick={() => setGame(g)} style={{
-              display: "flex", alignItems: "center", gap: "8px",
+              display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px",
               padding: "8px 10px", width: "100%", textAlign: "left",
               background: game === g ? "rgba(0,180,255,0.08)" : "transparent",
               border: game === g ? "1px solid rgba(0,180,255,0.2)" : "1px solid transparent",
@@ -128,7 +128,7 @@ export default function Marketplace() {
 
       {/* MAIN */}
       <main style={{ flex: 1, padding: "24px 28px" }}>
-        <div style={{ marginBottom: "20px", display: "flex", gap: "12px", flexWrap: "wrap" }}>
+        <div style={{ marginBottom: "20px", display: "flex", flexWrap: "wrap", gap: "12px", flexWrap: "wrap" }}>
           <div style={{ flex: 1, minWidth: "200px", position: "relative" }}>
             <input
               placeholder="🔍  Search cards, sets, games..."
@@ -156,7 +156,7 @@ export default function Marketplace() {
                   <div key={i}
                     onClick={() => { setSearch(card.name); setShowSuggestions(false); }}
                     style={{
-                      display: "flex", alignItems: "center", gap: "12px",
+                      display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px",
                       padding: "10px 16px", cursor: "pointer",
                       borderBottom: i < suggestions.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
                       transition: "background 0.15s",
@@ -224,7 +224,7 @@ export default function Marketplace() {
                 <div style={{
                   width: "100%", aspectRatio: "3/2",
                   background: card.bg || "#0a1628",
-                  display: "flex", alignItems: "center",
+                  display: "flex", flexWrap: "wrap", alignItems: "center",
                   justifyContent: "center", fontSize: "48px",
                   overflow: "hidden",
                 }}>
@@ -244,7 +244,7 @@ export default function Marketplace() {
                     fontSize: "10px", color: "#8899bb",
                     textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "8px",
                   }}>{card.game} · {card.condition}</div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-end" }}>
                     <div>
                       <div style={{ fontSize: "14px", fontWeight: 500, color: "#00d4ff" }}>${card.price_usd?.toLocaleString()}</div>
                       <div style={{ fontSize: "10px", color: "#0099ff" }}>{card.price_sui} SUI</div>

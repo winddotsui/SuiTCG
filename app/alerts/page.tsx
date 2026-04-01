@@ -133,7 +133,7 @@ export default function AlertsPage() {
           <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.2)", borderRadius: "16px", padding: "24px", marginBottom: "24px" }}>
             <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff", marginBottom: "20px" }}>Create Price Alert</div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "16px" }}>
               <div>
                 <label style={{ display: "block", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#c8d8f0", marginBottom: "6px" }}>Card Name *</label>
                 <div style={{ position: "relative" }}>
@@ -171,7 +171,7 @@ export default function AlertsPage() {
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px", marginBottom: "16px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "16px", marginBottom: "16px" }}>
               <div>
                 <label style={{ display: "block", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#c8d8f0", marginBottom: "6px" }}>Target Price ($) *</label>
                 <input value={targetPrice} onChange={e => setTargetPrice(e.target.value)} placeholder="e.g. 50.00" type="number" min="0"

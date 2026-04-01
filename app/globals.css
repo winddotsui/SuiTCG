@@ -80,3 +80,58 @@ body {
 @media (max-width: 480px) {
   .cards-grid { grid-template-columns: 1fr !important; }
 }
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  /* Fix body padding for fixed navbar */
+  body { padding-top: 56px !important; }
+
+  /* Marketplace sidebar + main */
+  aside { display: none !important; }
+  
+  /* All page headers */
+  div[style*="padding: 60px 48px"] {
+    padding: 32px 16px 24px !important;
+  }
+  div[style*="padding: 50px 48px"] {
+    padding: 32px 16px 24px !important;
+  }
+
+  /* Max width containers */
+  div[style*="maxWidth: \"1100px\""] {
+    padding: 20px 12px !important;
+  }
+  div[style*="maxWidth: \"900px\""] {
+    padding: 20px 12px !important;
+  }
+  div[style*="maxWidth: \"1200px\""] {
+    padding: 20px 12px !important;
+  }
+}
+
+.desktop-only {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+  
+  /* Fix all grid layouts */
+  [style*="gridTemplateColumns: \"400px"] {
+    grid-template-columns: 1fr !important;
+  }
+  [style*="gridTemplateColumns: \"420px"] {
+    grid-template-columns: 1fr !important;
+  }
+  [style*="gridTemplateColumns: \"480px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Fix font sizes on mobile */
+  h1 { font-size: clamp(24px, 6vw, 40px) !important; }
+  
+  /* Fix padding */
+  main { padding: 16px !important; }
+}
