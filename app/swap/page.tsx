@@ -69,7 +69,7 @@ export default function SwapPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           <div>
             <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff", marginBottom: "16px" }}>Other DEXs on Sui</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "10px" }}>
               {DEXS.map((dex, i) => (
                 <a key={i} href={dex.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
                   <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "12px", padding: "16px", cursor: "pointer", transition: "all 0.2s" }}
@@ -93,7 +93,7 @@ export default function SwapPage() {
           {/* Popular Pairs */}
           <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "16px", padding: "20px" }}>
             <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#ffffff", marginBottom: "14px" }}>🔥 Popular Pairs</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "8px" }}>
               {PAIRS.map((pair, i) => (
                 <a key={i} href={`https://app.cetus.zone/swap?from=0x2::sui::SUI&to=usdc`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "#0a1628", border: "1px solid rgba(0,153,255,0.1)", borderRadius: "8px", cursor: "pointer", transition: "border-color 0.2s" }}

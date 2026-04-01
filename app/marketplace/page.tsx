@@ -127,7 +127,7 @@ export default function Marketplace() {
       </aside>
 
       {/* MAIN */}
-      <main style={{ flex: 1, padding: "24px 28px" }}>
+      <main style={{ flex: 1, padding: "16px 12px" }}>
         <div style={{ marginBottom: "20px", display: "flex", flexWrap: "wrap", gap: "12px" }}>
           <div style={{ flex: 1, minWidth: "200px", position: "relative" }}>
             <input

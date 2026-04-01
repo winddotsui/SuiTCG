@@ -288,7 +288,7 @@ export default function OPTCGHub() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#000008" }}>
-      <div style={{ background: "linear-gradient(180deg, #000008 0%, #000008 50%, #000008 100%)", padding: "60px 48px 40px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center", position: "relative", overflow: "hidden" }}>
+      <div style={{ background: "linear-gradient(180deg, #000008 0%, #000008 50%, #000008 100%)", padding: "28px 16px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, rgba(0,85,255,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#00d4ff", marginBottom: "12px" }}>🏴‍☠️ WaveTCG · One Piece TCG Hub</div>
         <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(32px, 5vw, 60px)", fontWeight: 900, background: "linear-gradient(135deg, #0055ff, #0099ff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "16px" }}>One Piece TCG Hub</h1>

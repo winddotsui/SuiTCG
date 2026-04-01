@@ -81,9 +81,7 @@ body {
   .cards-grid { grid-template-columns: 1fr !important; }
 }
 
-/* ===== MOBILE RESPONSIVE ===== */
-@media (max-width: 768px) {
-  /* Fix body padding for fixed navbar */
+/* Fix body padding for fixed navbar */
   body { padding-top: 56px !important; }
 
   /* Marketplace sidebar + main */
@@ -109,16 +107,7 @@ body {
   }
 }
 
-.desktop-only {
-  display: block;
-}
-
-@media (max-width: 768px) {
-  .desktop-only {
-    display: none !important;
-  }
-  
-  /* Fix all grid layouts */
+/* Fix all grid layouts */
   [style*="gridTemplateColumns: \"400px"] {
     grid-template-columns: 1fr !important;
   }
@@ -134,4 +123,111 @@ body {
   
   /* Fix padding */
   main { padding: 16px !important; }
+}
+
+/* ============================================
+   COMPREHENSIVE MOBILE RESPONSIVE STYLES
+   ============================================ */
+@media (max-width: 768px) {
+
+  /* Prevent horizontal overflow on all elements */
+  * { box-sizing: border-box !important; }
+  body { overflow-x: hidden !important; max-width: 100vw !important; }
+
+  /* All containers */
+  div, main, section, aside, nav {
+    max-width: 100% !important;
+  }
+
+  /* Fix grids - make everything single column on mobile */
+  [style*="grid-template-columns: 400px"],
+  [style*="gridTemplateColumns: \"400px"],
+  [style*="grid-template-columns: 420px"],
+  [style*="gridTemplateColumns: \"420px"],
+  [style*="grid-template-columns: 480px"],
+  [style*="gridTemplateColumns: \"480px"],
+  [style*="grid-template-columns: 1fr 1fr"],
+  [style*="gridTemplateColumns: \"1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Fix page headers padding */
+  [style*="padding: 60px 48px"],
+  [style*="padding: 50px 48px"],
+  [style*="padding: 40px 48px"] {
+    padding: 28px 16px 20px !important;
+  }
+
+  /* Fix max width containers */
+  [style*="maxWidth: \"1100px\""],
+  [style*="maxWidth: \"1200px\""],
+  [style*="maxWidth: \"900px\""],
+  [style*="maxWidth: \"800px\""],
+  [style*="maxWidth: \"700px\""] {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    width: 100% !important;
+  }
+
+  /* Fix font sizes */
+  [style*="fontSize: \"clamp(32px"] {
+    font-size: clamp(22px, 6vw, 32px) !important;
+  }
+
+  /* Hide desktop sidebar */
+  aside { display: none !important; }
+
+  /* Fix flex layouts */
+  [style*="display: \"flex\""][style*="gap: \"32px\""] {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  /* Fix cards grid */
+  [style*="minmax(180px"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  [style*="minmax(220px"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Fix swap page */
+  #cetus-terminal {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Fix buttons */
+  [style*="display: \"flex\""][style*="gap: \"12px\""] {
+    flex-wrap: wrap !important;
+  }
+
+  /* Fix DEX grid on swap */
+  [style*="gridTemplateColumns: \"1fr 1fr\""] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Fix table/ranking on OPTCG */
+  [style*="minWidth: \"600px\""] {
+    min-width: unset !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+  }
+
+  /* Fix profile page */
+  [style*="gridTemplateColumns: \"200px"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small screens */
+  [style*="minmax(180px"],
+  [style*="minmax(140px"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  [style*="fontSize: \"48px\""] {
+    font-size: 28px !important;
+  }
 }

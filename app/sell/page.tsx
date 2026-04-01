@@ -126,7 +126,7 @@ export default function Sell() {
         <p style={{ fontSize: "14px", color: "#c8d8f0" }}>Sell your cards to the WaveTCG community</p>
       </div>
 
-      <div style={{ maxWidth: "700px", margin: "0 auto", padding: "40px 24px" }}>
+      <div style={{ maxWidth: "700px", margin: "0 auto", padding: "20px 12px" }}>
 
         {/* Verification Gate */}
         {!isVerified ? (

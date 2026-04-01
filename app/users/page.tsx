@@ -72,7 +72,7 @@ export default function UsersPage() {
         <p style={{ fontSize: "14px", color: "#c8d8f0", maxWidth: "500px", margin: "0 auto" }}>Search traders, check their cards, tournament stats and more</p>
       </div>
 
-      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "40px 24px" }}>
+      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "20px 12px" }}>
 
         {/* Search bar */}
         <div style={{ position: "relative", marginBottom: "32px" }}>

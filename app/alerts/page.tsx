@@ -116,7 +116,7 @@ export default function AlertsPage() {
         <p style={{ fontSize: "14px", color: "#c8d8f0", maxWidth: "500px", margin: "0 auto" }}>Set target prices for any TCG card — get notified when the price drops!</p>
       </div>
 
-      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "40px 24px" }}>
+      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "20px 12px" }}>
 
         {/* Create alert button */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
