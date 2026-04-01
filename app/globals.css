@@ -53,3 +53,30 @@ body {
   box-shadow: 0 12px 40px rgba(0,0,0,0.5);
   border-color: rgba(201,168,76,0.3);
 }
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  /* Marketplace */
+  .marketplace-layout { flex-direction: column !important; }
+  
+  /* Swap page */
+  .swap-grid { grid-template-columns: 1fr !important; }
+  
+  /* General padding */
+  .page-header { padding: 40px 20px 24px !important; }
+  
+  /* Cards grid */
+  .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  
+  /* Profile */
+  .profile-grid { grid-template-columns: 1fr !important; }
+
+  /* Deck builder */
+  .deckbuilder-grid { grid-template-columns: 1fr !important; }
+
+  /* Price checker */
+  .price-grid { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 480px) {
+  .cards-grid { grid-template-columns: 1fr !important; }
+}
