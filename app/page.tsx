@@ -16,12 +16,12 @@ interface CardImage {
 }
 
 const OPTCG_FLAGSHIP = [
-  { code: "OP05-119", name: "Monkey D. Luffy", label: "OP05 SEC · Gear 5" },
-  { code: "OP02-013", name: "Monkey D. Luffy", label: "OP02 SEC · Purple" },
-  { code: "OP01-025", name: "Roronoa Zoro", label: "OP01 SR" },
-  { code: "OP01-070", name: "Dracule Mihawk", label: "OP01 SR" },
-  { code: "OP06-001", name: "Shanks", label: "OP06 Leader" },
-  { code: "OP08-001", name: "Gol D. Roger", label: "OP08 Leader" },
+  { code: "OP01-001", name: "Roronoa Zoro", label: "OP01 Leader" },
+  { code: "OP01-003", name: "Monkey D. Luffy", label: "OP01 Leader" },
+  { code: "OP01-031", name: "Kouzuki Oden", label: "OP01 Leader" },
+  { code: "OP01-060", name: "Donquixote Doflamingo", label: "OP01 Leader" },
+  { code: "OP02-001", name: "Edward Newgate", label: "OP02 Leader" },
+  { code: "OP03-001", name: "Monkey D. Luffy", label: "OP03 Leader" },
 ];
 
 export default function Home() {
@@ -45,10 +45,10 @@ export default function Home() {
       price: "", ...positions[i],
     })));
     setHeroCards([
-      { name: "Monkey D. Luffy", images: { large: "https://images.ryanmichaelhirst.us/OP05-119.png" }, game: "OP05 SEC · Gear 5 Luffy", priceDisplay: "$380" },
-      { name: "Monkey D. Luffy", images: { large: "https://images.ryanmichaelhirst.us/OP02-013.png" }, game: "OP02 SEC · Purple Luffy", priceDisplay: "$290" },
-      { name: "Roronoa Zoro", images: { large: "https://images.ryanmichaelhirst.us/OP01-025.png" }, game: "OP01 SR · Red", priceDisplay: "$120" },
-      { name: "Gol D. Roger", images: { large: "https://images.ryanmichaelhirst.us/OP08-001.png" }, game: "OP08 Leader · Roger", priceDisplay: "$95" },
+      { name: "Roronoa Zoro", images: { large: "https://images.ryanmichaelhirst.us/OP01-001.png" }, game: "OP01 Leader · Red", priceDisplay: "$45" },
+      { name: "Monkey D. Luffy", images: { large: "https://images.ryanmichaelhirst.us/OP01-003.png" }, game: "OP01 Leader · Red/Green", priceDisplay: "$65" },
+      { name: "Edward Newgate", images: { large: "https://images.ryanmichaelhirst.us/OP02-001.png" }, game: "OP02 Leader · Black", priceDisplay: "$38" },
+      { name: "Kouzuki Oden", images: { large: "https://images.ryanmichaelhirst.us/OP01-031.png" }, game: "OP01 Leader · Green", priceDisplay: "$28" },
     ]);
   }, []);
 
