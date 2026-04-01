@@ -21,12 +21,12 @@ const STEPS_WIN = [
 
 const TOURNAMENT_STEPS = [
   { step: "1", title: "Connect Your Sui Wallet", desc: "Go to wave-tcg.vercel.app and click Connect. You need a Sui wallet with at least 10 SUI.", icon: "◈", color: "#0078ff" },
-  { step: "2", title: "Go to OPTCG Hub", desc: "Click OPTCG in the navbar to see the current tournament and prize pool.", icon: "🏴", color: "#ff3333" },
+  { step: "2", title: "Go to OPTCG Hub", desc: "Click OPTCG in the navbar to see the current tournament and prize pool.", icon: "🏴", color: "#0078ff" },
   { step: "3", title: "Pay 10 SUI Entry Fee", desc: "Click Join for 10 SUI. Your wallet will ask you to confirm. The SUI goes into the prize pool smart contract.", icon: "💰", color: "#4da8ff" },
-  { step: "4", title: "Minimum 8 Players Required", desc: "Tournament starts when at least 8 players register. Maximum 64 players. Register early!", icon: "👥", color: "#4caf7d" },
-  { step: "5", title: "Download OPTCGSim", desc: "Download OPTCGSim from this page. Build your deck and practice before the tournament starts.", icon: "📥", color: "#4caf7d" },
+  { step: "4", title: "Minimum 8 Players Required", desc: "Tournament starts when at least 8 players register. Maximum 64 players. Register early!", icon: "👥", color: "#0078ff" },
+  { step: "5", title: "Download OPTCGSim", desc: "Download OPTCGSim from this page. Build your deck and practice before the tournament starts.", icon: "📥", color: "#0078ff" },
   { step: "6", title: "Wait for Round 1 Pairings", desc: "When registration closes and minimum 8 players met, pairings will be announced on the OPTCG Hub page.", icon: "📋", color: "#666680" },
-  { step: "7", title: "Contact Your Opponent", desc: "Message your opponent on Discord. Share your OPTCGSim room code and play your match!", icon: "⚔️", color: "#ff3333" },
+  { step: "7", title: "Contact Your Opponent", desc: "Message your opponent on Discord. Share your OPTCGSim room code and play your match!", icon: "⚔️", color: "#0078ff" },
   { step: "8", title: "Report Your Score", desc: "After the match, both players report the result. Both must confirm.", icon: "📊", color: "#0078ff" },
   { step: "9", title: "Win SUI Prizes!", desc: "1st gets 40%, 2nd gets 25%, 3rd gets 20%. WaveTCG takes 15%. Prizes sent automatically!", icon: "🏆", color: "#4da8ff" },
 ];
@@ -51,17 +51,17 @@ export default function DownloadPage() {
     <div style={{ minHeight: "100vh", background: "#000000" }}>
       <div style={{ background: "linear-gradient(180deg, #000000 0%, #001a0a 50%, #000000 100%)", padding: "60px 48px 40px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, rgba(0,200,100,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
-        <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4caf7d", marginBottom: "12px" }}>WaveTCG OPTCG Hub</div>
+        <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0078ff", marginBottom: "12px" }}>WaveTCG OPTCG Hub</div>
         <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 900, color: "#ffffff", marginBottom: "16px" }}>Download and Play Guide</h1>
         <p style={{ fontSize: "16px", color: "#666680", maxWidth: "560px", margin: "0 auto 32px", lineHeight: 1.75 }}>Everything you need to download OPTCGSim and join WaveTCG weekly tournaments.</p>
-        <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #cc0000, #ff3333)", color: "#fff", padding: "14px 40px", borderRadius: "8px", fontSize: "15px", fontWeight: 600, textDecoration: "none", boxShadow: "0 4px 24px rgba(255,50,50,0.3)" }}>Go to OPTCGSim</a>
+        <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0050ff, #0078ff)", color: "#fff", padding: "14px 40px", borderRadius: "8px", fontSize: "15px", fontWeight: 600, textDecoration: "none", boxShadow: "0 4px 24px rgba(0,120,255,0.3)" }}>Go to OPTCGSim</a>
       </div>
 
       <div style={{ maxWidth: "900px", margin: "0 auto", padding: "60px 24px" }}>
         <div style={{ background: "linear-gradient(135deg, #000000, #050510)", border: "1px solid rgba(0,120,255,0.3)", borderRadius: "16px", padding: "24px 28px", marginBottom: "60px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "20px" }}>
           {[
             { label: "Entry Fee", val: "10 SUI", icon: "💰", color: "#4da8ff" },
-            { label: "Min Players", val: "8 players", icon: "👥", color: "#4caf7d" },
+            { label: "Min Players", val: "8 players", icon: "👥", color: "#0078ff" },
             { label: "Max Players", val: "64 players", icon: "🏆", color: "#0078ff" },
             { label: "Platform Fee", val: "15% of pot", icon: "⛓️", color: "#666680" },
           ].map((info, i) => (
@@ -74,18 +74,18 @@ export default function DownloadPage() {
         </div>
 
         <div style={{ marginBottom: "80px" }}>
-          <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4caf7d", marginBottom: "12px" }}>Step 1</div>
+          <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0078ff", marginBottom: "12px" }}>Step 1</div>
           <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "32px", color: "#ffffff", marginBottom: "8px" }}>Download OPTCGSim</h2>
           <p style={{ fontSize: "15px", color: "#666680", marginBottom: "32px" }}>Choose your operating system for step by step instructions.</p>
           <div style={{ display: "flex", gap: "8px", marginBottom: "32px" }}>
             {[{ id: "mac", label: "Mac" }, { id: "windows", label: "Windows" }].map(o => (
-              <button key={o.id} onClick={() => setOs(o.id)} style={{ padding: "10px 24px", borderRadius: "8px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontSize: "14px", fontWeight: 500, border: os === o.id ? "1px solid #4caf7d" : "1px solid rgba(255,255,255,0.1)", background: os === o.id ? "rgba(76,175,61,0.1)" : "transparent", color: os === o.id ? "#4caf7d" : "#666680" }}>{o.label}</button>
+              <button key={o.id} onClick={() => setOs(o.id)} style={{ padding: "10px 24px", borderRadius: "8px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontSize: "14px", fontWeight: 500, border: os === o.id ? "1px solid #0078ff" : "1px solid rgba(255,255,255,0.1)", background: os === o.id ? "rgba(0,120,255,0.1)" : "transparent", color: os === o.id ? "#0078ff" : "#666680" }}>{o.label}</button>
             ))}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {(os === "mac" ? STEPS_MAC : STEPS_WIN).map((s, i) => (
               <div key={i} style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "20px" }}>
-                <div style={{ width: "44px", height: "44px", borderRadius: "50%", flexShrink: 0, background: "rgba(76,175,61,0.1)", border: "1px solid rgba(76,175,61,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "16px", fontWeight: 600, color: "#4caf7d" }}>{s.step}</div>
+                <div style={{ width: "44px", height: "44px", borderRadius: "50%", flexShrink: 0, background: "rgba(0,120,255,0.1)", border: "1px solid rgba(0,120,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "16px", fontWeight: 600, color: "#0078ff" }}>{s.step}</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
                     <span style={{ fontSize: "20px" }}>{s.icon}</span>
@@ -93,7 +93,7 @@ export default function DownloadPage() {
                   </div>
                   <p style={{ fontSize: "14px", color: "#666680", lineHeight: 1.75, margin: 0 }}>{s.desc}</p>
                   {s.step === "5" && os === "mac" && (
-                    <div style={{ marginTop: "12px", background: "#000000", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "12px 16px", fontFamily: "monospace", fontSize: "12px", color: "#4caf7d" }}>
+                    <div style={{ marginTop: "12px", background: "#000000", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "12px 16px", fontFamily: "monospace", fontSize: "12px", color: "#0078ff" }}>
                       sudo xattr -rd com.apple.quarantine /Applications/OPTCGSim.app
                     </div>
                   )}
@@ -102,7 +102,7 @@ export default function DownloadPage() {
             ))}
           </div>
           <div style={{ marginTop: "24px", textAlign: "center" }}>
-            <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #cc0000, #ff3333)", color: "#fff", padding: "14px 32px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, textDecoration: "none" }}>Download OPTCGSim Now</a>
+            <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0050ff, #0078ff)", color: "#fff", padding: "14px 32px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, textDecoration: "none" }}>Download OPTCGSim Now</a>
           </div>
         </div>
 
@@ -168,7 +168,7 @@ export default function DownloadPage() {
           <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", color: "#ffffff", marginBottom: "12px" }}>Ready to become Pirate King?</h2>
           <p style={{ fontSize: "15px", color: "#666680", marginBottom: "32px" }}>Download OPTCGSim, join the WaveTCG tournament, and win SUI prizes every week!</p>
           <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #cc0000, #ff3333)", color: "#fff", padding: "14px 32px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, textDecoration: "none" }}>Download OPTCGSim</a>
+            <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0050ff, #0078ff)", color: "#fff", padding: "14px 32px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, textDecoration: "none" }}>Download OPTCGSim</a>
             <a href="/optcg" style={{ display: "inline-block", background: "linear-gradient(135deg, #0078ff, #4da8ff)", color: "#000000", padding: "14px 32px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, textDecoration: "none" }}>Join Tournament</a>
           </div>
         </div>

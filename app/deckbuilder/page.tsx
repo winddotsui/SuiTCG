@@ -153,7 +153,7 @@ export default function DeckBuilder() {
 
       {/* Header */}
       <div style={{ background: "linear-gradient(180deg, #000000 0%, #000000 50%, #000000 100%)", padding: "40px 24px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center" }}>
-        <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#ff6b6b", marginBottom: "8px" }}>🏴‍☠️ WaveTCG · One Piece TCG</div>
+        <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4da8ff", marginBottom: "8px" }}>🏴‍☠️ WaveTCG · One Piece TCG</div>
         <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 900, color: "#ffffff", marginBottom: "8px" }}>Deck Builder</h1>
         <p style={{ fontSize: "14px", color: "#666680" }}>Build your One Piece TCG deck · 1 Leader + 50 Main + 10 DON!!</p>
       </div>
@@ -225,7 +225,7 @@ export default function DeckBuilder() {
                       </div>
                     )}
                     {isLeader && leader?.code === card.code && (
-                      <div style={{ position: "absolute", top: "4px", left: "4px", background: "#ff3333", color: "#fff", borderRadius: "4px", padding: "2px 6px", fontSize: "9px", fontWeight: 700 }}>LDR</div>
+                      <div style={{ position: "absolute", top: "4px", left: "4px", background: "#0078ff", color: "#fff", borderRadius: "4px", padding: "2px 6px", fontSize: "9px", fontWeight: 700 }}>LDR</div>
                     )}
                     <div style={{ padding: "6px 8px", background: "#0a0a18" }}>
                       <div style={{ fontSize: "10px", color: "#ffffff", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.name}</div>
@@ -255,9 +255,9 @@ export default function DeckBuilder() {
           <div style={{ background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px", marginBottom: "12px" }}>
             <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#ffffff", marginBottom: "12px" }}>Deck Status</div>
             {[
-              { label: "Leader", current: leader ? 1 : 0, max: 1, color: leader ? "#4caf7d" : "#e05555" },
-              { label: "Main Deck", current: mainDeckCount, max: 50, color: mainDeckCount === 50 ? "#4caf7d" : mainDeckCount > 50 ? "#e05555" : "#0078ff" },
-              { label: "DON!! Deck", current: donCards, max: 10, color: donCards === 10 ? "#4caf7d" : "#e05555" },
+              { label: "Leader", current: leader ? 1 : 0, max: 1, color: leader ? "#0078ff" : "#0078ff" },
+              { label: "Main Deck", current: mainDeckCount, max: 50, color: mainDeckCount === 50 ? "#0078ff" : mainDeckCount > 50 ? "#0078ff" : "#0078ff" },
+              { label: "DON!! Deck", current: donCards, max: 10, color: donCards === 10 ? "#0078ff" : "#0078ff" },
             ].map((stat, i) => (
               <div key={i} style={{ marginBottom: "10px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
@@ -281,10 +281,10 @@ export default function DeckBuilder() {
 
           {/* Leader */}
           {leader && (
-            <div style={{ background: "#050510", border: "1px solid rgba(255,50,50,0.3)", borderRadius: "12px", padding: "12px", marginBottom: "12px", display: "flex", gap: "10px", alignItems: "center" }}>
+            <div style={{ background: "#050510", border: "1px solid rgba(0,120,255,0.3)", borderRadius: "12px", padding: "12px", marginBottom: "12px", display: "flex", gap: "10px", alignItems: "center" }}>
               <img src={getCardImage(leader)} alt={leader.name} style={{ width: "50px", borderRadius: "4px" }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "11px", color: "#ff6b6b", marginBottom: "2px" }}>LEADER</div>
+                <div style={{ fontSize: "11px", color: "#4da8ff", marginBottom: "2px" }}>LEADER</div>
                 <div style={{ fontFamily: "Cinzel, serif", fontSize: "13px", color: "#ffffff" }}>{leader.name}</div>
                 <div style={{ fontSize: "10px", color: "#666680" }}>{leader.code}</div>
               </div>
