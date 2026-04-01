@@ -117,7 +117,7 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
             </div>
             {/* Inner lid glow */}
             <div style={{ width: "158px", height: "28px", background: "#c8961b", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span style={{ color: "#5a3e00", fontSize: "10px", fontWeight: 700, letterSpacing: "1px" }}>suiUSDe</span>
+              <span style={{ color: "#5a3e00", fontSize: "10px", fontWeight: 700, letterSpacing: "1px" }}>SUI</span>
             </div>
           </div>
 
@@ -151,9 +151,9 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
       {/* Prize info below chest */}
       <div style={{ padding: "24px", textAlign: "center" }}>
         <div style={{ fontFamily: "Cinzel, serif", fontSize: "13px", letterSpacing: "0.15em", textTransform: "uppercase", color: "#4da2ff", marginBottom: "8px" }}>Tournament Prize Pool</div>
-        <div style={{ fontFamily: "Cinzel, serif", fontSize: "44px", fontWeight: 900, color: "#e8c97a", lineHeight: 1, marginBottom: "4px" }}>{pot} suiUSDe</div>
-        <div style={{ fontSize: "12px", color: "#888898", marginBottom: "6px" }}>≈ ${pot.toFixed(0)} USD</div>
-        <div style={{ fontSize: "11px", color: "#4da2ff", marginBottom: "20px" }}>◈ Powered by suiUSDe × Ethena on Sui</div>
+        <div style={{ fontFamily: "Cinzel, serif", fontSize: "44px", fontWeight: 900, color: "#e8c97a", lineHeight: 1, marginBottom: "4px" }}>{pot} SUI</div>
+        <div style={{ fontSize: "12px", color: "#888898", marginBottom: "6px" }}>≈ ${(pot * 0.88).toFixed(0)} USD</div>
+        <div style={{ fontSize: "11px", color: "#4da2ff", marginBottom: "20px" }}>◈ Powered by SUI × Ethena on Sui</div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", marginBottom: "20px" }}>
           {[
@@ -165,7 +165,7 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
               <div style={{ fontSize: "18px", marginBottom: "4px" }}>{prize.place.split(" ")[0]}</div>
               <div style={{ fontFamily: "Cinzel, serif", fontSize: "11px", color: "#4da2ff", marginBottom: "6px" }}>{prize.place.split(" ")[1]}</div>
               <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", fontWeight: 600, color: "#e8c97a" }}>{prize.amount}</div>
-              <div style={{ fontSize: "9px", color: "#888898" }}>suiUSDe · {prize.pct}%</div>
+              <div style={{ fontSize: "9px", color: "#888898" }}>SUI · {prize.pct}%</div>
             </div>
           ))}
         </div>
@@ -212,7 +212,9 @@ function JoinModal({ onClose, onJoin, pot }: { onClose: () => void; onJoin: (nam
             </div>
             <div style={{ background: "#18181f", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "16px", marginBottom: "20px" }}>
               {[
-                { label: "Entry Fee", val: "10 suiUSDe", color: "#e8c97a" },
+                { label: "Entry Fee", val: "10 SUI", color: "#e8c97a" },
+                { label: "Min Players", val: "8 players", color: "#4da2ff" },
+                { label: "Max Players", val: "64 players", color: "#4da2ff" },
                 { label: "Current Pot", val: `${pot} SUI`, color: "#4da2ff" },
                 { label: "1st Prize", val: `${Math.floor((pot + 10) * 0.5)} SUI`, color: "#4caf7d" },
                 { label: "2nd Prize", val: `${Math.floor((pot + 10) * 0.3)} SUI`, color: "#78bfff" },
@@ -231,7 +233,7 @@ function JoinModal({ onClose, onJoin, pot }: { onClose: () => void; onJoin: (nam
               <div style={{ background: "rgba(76,175,61,0.1)", border: "1px solid rgba(76,175,61,0.2)", borderRadius: "8px", padding: "10px", fontSize: "12px", color: "#4caf7d", textAlign: "center", marginBottom: "10px" }}>✅ Wallet connected</div>
             )}
             <button onClick={handleJoin} style={{ width: "100%", background: walletConnected ? "linear-gradient(135deg, #c9a84c, #e8c97a)" : "rgba(255,255,255,0.05)", color: walletConnected ? "#0a0a0f" : "#555562", border: "none", borderRadius: "8px", padding: "14px", fontSize: "14px", fontWeight: 600, cursor: walletConnected ? "pointer" : "not-allowed", fontFamily: "DM Sans, sans-serif" }}>
-              💰 Pay 10 suiUSDe & Join
+              💰 Pay 10 SUI & Join
             </button>
             <p style={{ fontSize: "11px", color: "#555562", textAlign: "center", marginTop: "12px" }}>Payment held on-chain · Auto-distributed to winners</p>
           </>
@@ -260,7 +262,7 @@ export default function OPTCGHub() {
   const [activeTab, setActiveTab] = useState("tournament");
   const [showSimulator, setShowSimulator] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
-  const [players, setPlayers] = useState(14);
+  const [players, setPlayers] = useState(8);
   const [registrations, setRegistrations] = useState<any[]>([]);
   useEffect(() => {
     fetchRegistrations();
@@ -339,7 +341,7 @@ export default function OPTCGHub() {
                   <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", color: "#e6e4f0" }}>WaveTCG Weekly #17</h2>
                   <span style={{ padding: "4px 12px", background: "rgba(76,175,61,0.1)", border: "1px solid rgba(76,175,61,0.2)", borderRadius: "20px", fontSize: "11px", color: "#4caf7d" }}>🟢 Open</span>
                 </div>
-                <p style={{ fontSize: "14px", color: "#888898", lineHeight: 1.75 }}>Weekly One Piece TCG tournament. Pay 10 suiUSDe to enter. Winners automatically receive SUI prizes on-chain.</p>
+                <p style={{ fontSize: "14px", color: "#888898", lineHeight: 1.75 }}>Weekly One Piece TCG tournament. Pay 10 SUI to enter. Winners automatically receive SUI prizes on-chain.</p>
               </div>
 
               <div style={{ background: "#111118", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "24px", marginBottom: "24px" }}>
@@ -386,9 +388,9 @@ export default function OPTCGHub() {
             <div style={{ position: "sticky", top: "80px" }}>
               <TreasureChest pot={pot} players={players} maxPlayers={maxPlayers} />
               <button onClick={() => setShowJoin(true)} style={{ width: "100%", marginTop: "16px", background: "linear-gradient(135deg, #c9a84c, #e8c97a)", color: "#0a0a0f", border: "none", borderRadius: "12px", padding: "18px", fontSize: "16px", fontWeight: 700, cursor: "pointer", fontFamily: "DM Sans, sans-serif", letterSpacing: "0.04em", textTransform: "uppercase", boxShadow: "0 8px 32px rgba(201,168,76,0.3)" }}>
-                💰 Join for 10 suiUSDe
+                💰 Join for 10 SUI
               </button>
-              <div style={{ textAlign: "center", marginTop: "12px", fontSize: "11px", color: "#555562" }}>⛓️ Powered by suiUSDe · Auto-distributed to winners</div>
+              <div style={{ textAlign: "center", marginTop: "12px", fontSize: "11px", color: "#555562" }}>⛓️ Powered by Sui Blockchain · Auto-distributed to winners</div>
 
               <div style={{ marginTop: "20px", background: "#111118", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "16px" }}>
                 <div style={{ fontSize: "12px", color: "#888898", marginBottom: "12px", letterSpacing: "0.06em", textTransform: "uppercase" }}>Recent Registrations</div>
@@ -419,7 +421,8 @@ export default function OPTCGHub() {
               {[
                 { label: "Players", val: players, icon: "👥" },
                 { label: "Spots Left", val: maxPlayers - players, icon: "🎯" },
-                { label: "Prize Pool", val: `${pot} suiUSDe`, icon: "💰" },
+                { label: "Prize Pool", val: `${pot} SUI`, icon: "💰" },
+                { label: "Min Players", val: "8", icon: "👥" },
                 { label: "Status", val: "Open", icon: "🟢" },
               ].map((stat, i) => (
                 <div key={i} style={{ background: "#111118", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "16px", textAlign: "center" }}>
@@ -484,7 +487,7 @@ export default function OPTCGHub() {
 
             <div style={{ marginTop: "20px", textAlign: "center" }}>
               <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #c9a84c, #e8c97a)", color: "#0a0a0f", border: "none", borderRadius: "12px", padding: "16px 40px", fontSize: "15px", fontWeight: 700, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
-                💰 Join for 10 suiUSDe
+                💰 Join for 10 SUI
               </button>
             </div>
           </div>
