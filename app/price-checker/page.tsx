@@ -149,27 +149,27 @@ export default function PriceChecker() {
       } else if (suggestion.game === "onepiece") {
         const card = suggestion.cardData;
         if (card) {
-          setPriceResults([{
+          setAllVersions([{
+            id: card.code || card.id || "",
             name: card.name,
             set: card.set || "One Piece TCG",
+            setCode: card.code || "",
             game: "onepiece",
             rarity: card.rarity || "",
-            price: card.price || 0,
-            priceDisplay: card.price ? `$${parseFloat(card.price).toFixed(2)}` : "N/A",
-            image: card.image || `https://en.onepiece-cardgame.com/images/cardlist/card/${card.code}.png`,
-            url: "https://www.tcgplayer.com/search/one-piece-card-game/product?q=" + encodeURIComponent(card.name),
+            imageUrl: card.image || `https://en.onepiece-cardgame.com/images/cardlist/card/${card.code}.png`,
+            prices: { usd: card.price ? parseFloat(card.price).toFixed(2) : "N/A" },
           }]);
         }
       } else if (suggestion.game === "dragonball" || suggestion.game === "digimon" || suggestion.game === "lorcana" || suggestion.game === "fab" || suggestion.game === "weiss" || suggestion.game === "unionarena") {
-        setPriceResults([{
+        setAllVersions([{
+          id: suggestion.name,
           name: suggestion.name,
           set: "Coming Soon",
+          setCode: "",
           game: suggestion.game,
           rarity: "",
-          price: 0,
-          priceDisplay: "Check TCGPlayer",
-          image: "",
-          url: "https://www.tcgplayer.com/search/all/product?q=" + encodeURIComponent(suggestion.name),
+          imageUrl: "",
+          prices: { usd: "Check TCGPlayer" },
         }]);
       } else if (suggestion.game === "yugioh") {
         const res = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?name=${encodeURIComponent(suggestion.name)}`);
@@ -202,12 +202,12 @@ export default function PriceChecker() {
     if (card.game === "onepiece") {
       return (
         <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.2)", borderRadius: "12px", padding: "20px", display: "flex", gap: "20px", alignItems: "flex-start" }}>
-          {card.image && <img src={card.image} alt={card.name} style={{ width: "120px", borderRadius: "8px", flexShrink: 0 }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />}
+          {card.imageUrl && <img src={card.imageUrl} alt={card.name} style={{ width: "120px", borderRadius: "8px", flexShrink: 0 }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />}
           <div style={{ flex: 1 }}>
             <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", color: "#ffffff", marginBottom: "4px" }}>{card.name}</div>
             <div style={{ fontSize: "12px", color: "#c8d8f0", marginBottom: "12px" }}>One Piece TCG · {card.set}</div>
-            <div style={{ fontSize: "28px", fontWeight: 700, color: "#0099ff", marginBottom: "12px" }}>{card.priceDisplay}</div>
-            <a href={card.url} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", padding: "8px 20px", background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", borderRadius: "6px", fontSize: "12px", textDecoration: "none" }}>View on TCGPlayer →</a>
+            <div style={{ fontSize: "28px", fontWeight: 700, color: "#0099ff", marginBottom: "12px" }}>{card.prices?.usd ? `$${card.prices.usd}` : "N/A"}</div>
+            <a href={"https://www.tcgplayer.com/search/one-piece-card-game/product?q=" + encodeURIComponent(card.name)} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", padding: "8px 20px", background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", borderRadius: "6px", fontSize: "12px", textDecoration: "none" }}>View on TCGPlayer →</a>
           </div>
         </div>
       );
