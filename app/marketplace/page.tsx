@@ -26,6 +26,8 @@ export default function Marketplace() {
   const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
   const [game, setGame] = useState("All Games");
   const [sort, setSort] = useState("newest");
 
@@ -48,6 +50,19 @@ export default function Marketplace() {
     }
     setLoading(false);
   }
+
+  useEffect(() => {
+    if (search.length > 1) {
+      const matches = listings
+        .filter(c => c.name.toLowerCase().includes(search.toLowerCase()))
+        .slice(0, 6);
+      setSuggestions(matches);
+      setShowSuggestions(matches.length > 0);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [search, listings]);
 
   const filtered = listings.filter(c => {
     const matchSearch = !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.set_name?.toLowerCase().includes(search.toLowerCase());
@@ -114,18 +129,56 @@ export default function Marketplace() {
       {/* MAIN */}
       <main style={{ flex: 1, padding: "24px 28px" }}>
         <div style={{ marginBottom: "20px", display: "flex", gap: "12px", flexWrap: "wrap" }}>
-          <input
-            placeholder="🔍  Search cards, sets, games..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            style={{
-              flex: 1, minWidth: "200px", background: "#050515",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: "8px", padding: "10px 16px",
-              fontSize: "14px", color: "#ffffff",
-              fontFamily: "DM Sans, sans-serif", outline: "none",
-            }}
-          />
+          <div style={{ flex: 1, minWidth: "200px", position: "relative" }}>
+            <input
+              placeholder="🔍  Search cards, sets, games..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              onFocus={() => search.length > 1 && setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+              style={{
+                width: "100%", background: "#050515",
+                border: "1px solid rgba(255,255,255,0.1)",
+                borderRadius: "8px", padding: "10px 16px",
+                fontSize: "14px", color: "#ffffff",
+                fontFamily: "DM Sans, sans-serif", outline: "none",
+                boxSizing: "border-box",
+              }}
+            />
+            {showSuggestions && suggestions.length > 0 && (
+              <div style={{
+                position: "absolute", top: "100%", left: 0, right: 0,
+                background: "#050515", border: "1px solid rgba(0,153,255,0.2)",
+                borderRadius: "10px", zIndex: 100, marginTop: "4px",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.5)", overflow: "hidden",
+              }}>
+                {suggestions.map((card, i) => (
+                  <div key={i}
+                    onClick={() => { setSearch(card.name); setShowSuggestions(false); }}
+                    style={{
+                      display: "flex", alignItems: "center", gap: "12px",
+                      padding: "10px 16px", cursor: "pointer",
+                      borderBottom: i < suggestions.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                      transition: "background 0.15s",
+                    }}
+                    onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#0a1628"}
+                    onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = "transparent"}
+                  >
+                    {card.image_url && (
+                      <img src={card.image_url} alt={card.name}
+                        style={{ width: "32px", height: "44px", objectFit: "cover", borderRadius: "4px", flexShrink: 0 }}
+                        onError={e => (e.currentTarget as HTMLImageElement).style.display = "none"} />
+                    )}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: "13px", fontWeight: 600, color: "#ffffff" }}>{card.name}</div>
+                      <div style={{ fontSize: "11px", color: "#c8d8f0" }}>{card.game} · {card.condition} · ${card.price_usd}</div>
+                    </div>
+                    <div style={{ fontSize: "13px", fontWeight: 600, color: "#0099ff" }}>${card.price_usd}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
           <select
             value={sort}
             onChange={e => setSort(e.target.value)}
