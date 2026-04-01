@@ -30,11 +30,16 @@ export default function AlertsPage() {
 
   async function fetchAlerts() {
     setLoading(true);
-    const { data } = await supabase
-      .from("price_alerts")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (data) setAlerts(data);
+    try {
+      const { data, error } = await supabase
+        .from("price_alerts")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) console.error("Supabase error:", error);
+      if (data) setAlerts(data);
+    } catch (e) {
+      console.error("Fetch error:", e);
+    }
     setLoading(false);
   }
 
