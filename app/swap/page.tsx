@@ -35,11 +35,9 @@ export default function SwapPage() {
         <p style={{ fontSize: "13px", color: "#c8d8f0", marginTop: "8px" }}>Powered by Cetus · Best rates on Sui</p>
       </div>
 
-      {/* Widget - fixed size, centered */}
-      <div style={{ display: "flex", justifyContent: "center", padding: "0 24px" }}>
-        <div style={{ width: "460px", height: "480px", overflow: "hidden", borderRadius: "16px", position: "relative" }}>
-          <div id="cetus-terminal" style={{ width: "460px", position: "absolute", top: 0, left: 0 }} />
-        </div>
+      {/* Widget - centered */}
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%" }}>
+        <div id="cetus-terminal" style={{ width: "460px", height: "480px", overflow: "hidden", borderRadius: "16px", margin: "0 auto" }} />
       </div>
 
       {/* DEX links */}
