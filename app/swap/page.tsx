@@ -44,12 +44,9 @@ export default function SwapPage() {
         <div
           id="cetus-terminal"
           style={{
-            width: "100%",
-            maxWidth: "500px",
-            minHeight: "500px",
-            borderRadius: "20px",
+            width: "460px",
+            borderRadius: "16px",
             overflow: "hidden",
-            border: "1px solid rgba(0,153,255,0.2)",
           }}
         />
       </div>
