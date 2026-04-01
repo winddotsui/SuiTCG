@@ -18,6 +18,7 @@ export default function NavClient() {
           { href: "/download", label: "Download" },
           { href: "/sell", label: "Sell" },
           { href: "/swap", label: "💱 Swap" },
+          { href: "/alerts", label: "🔔 Alerts" },
           { href: "/dashboard", label: "Dashboard" },
           { href: "/profile/0x91fa18b29e0603c18005f61479dd47e50cb52c85ede36c6dc44d85bc147c77f5", label: "Profile" },
         ].map(link => (
