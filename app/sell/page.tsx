@@ -44,8 +44,9 @@ export default function Sell() {
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
-    const addr = localStorage.getItem("wavetcg_wallet_address") || 
-                 localStorage.getItem("connected_wallet") || "";
+    const addr = typeof window !== "undefined" ? 
+                 (localStorage.getItem("wavetcg_wallet_address") || 
+                 localStorage.getItem("connected_wallet") || "") : "";
     setWalletAddress(addr);
     if (addr) checkProfile(addr);
     else setCheckingProfile(false);
