@@ -102,12 +102,24 @@ export default function DeckBuilder() {
       setLeader(card);
       return;
     }
+
+    // Color restriction - check if card color matches leader
+    if (leader && card.color) {
+      const leaderColors = leader.color.split("/").map((c: string) => c.trim().toLowerCase());
+      const cardColors = card.color.split("/").map((c: string) => c.trim().toLowerCase());
+      const hasMatchingColor = cardColors.some((c: string) => leaderColors.includes(c));
+      if (!hasMatchingColor) {
+        alert(`Color mismatch! Your leader is ${leader.color}. Only ${leader.color} cards can be added.`);
+        return;
+      }
+    }
+
     const existing = deck.find(dc => dc.card.code === card.code);
     if (existing) {
-      if (existing.count >= 4) return;
+      if (existing.count >= 4) { alert("Max 4 copies of the same card allowed!"); return; }
       setDeck(prev => prev.map(dc => dc.card.code === card.code ? { ...dc, count: dc.count + 1 } : dc));
     } else {
-      if (mainDeckCount >= 50) return;
+      if (mainDeckCount >= 50) { alert("Main deck is full! Max 50 cards."); return; }
       setDeck(prev => [...prev, { card, count: 1 }]);
     }
   }
