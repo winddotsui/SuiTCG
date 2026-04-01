@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "../../lib/supabase";
 
 const RANKINGS = [
   { rank: 1, player: "LuffyKing_PH", wins: 47, losses: 8, points: 2350, deck: "OP01 - Luffy Red", badge: "👑", change: "+2" },
@@ -17,47 +18,185 @@ const ENTRY_FEE = 10;
 function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: number; maxPlayers: number }) {
   const progress = (players / maxPlayers) * 100;
   return (
-    <div style={{ background: "linear-gradient(135deg, #1a0e00, #2a1800)", border: "1px solid rgba(255,180,0,0.3)", borderRadius: "20px", padding: "32px", textAlign: "center", position: "relative", overflow: "hidden", boxShadow: "0 0 60px rgba(255,180,0,0.08)" }}>
-      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center top, rgba(255,180,0,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
-      <div style={{ fontSize: "80px", marginBottom: "8px", filter: "drop-shadow(0 0 20px rgba(255,180,0,0.5))" }}>💰</div>
-      <div style={{ fontFamily: "Cinzel, serif", fontSize: "13px", letterSpacing: "0.15em", textTransform: "uppercase", color: "#c9a84c", marginBottom: "8px" }}>Tournament Prize Pool</div>
-      <div style={{ fontFamily: "Cinzel, serif", fontSize: "56px", fontWeight: 900, color: "#e8c97a", textShadow: "0 0 30px rgba(255,180,0,0.4)", lineHeight: 1, marginBottom: "4px" }}>{pot} SUI</div>
-      <div style={{ fontSize: "13px", color: "#888898", marginBottom: "24px" }}>≈ ${(pot * 7.28).toFixed(0)} USD</div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", marginBottom: "24px" }}>
-        {[
-          { place: "🥇 1st", pct: 40, sui: Math.floor(pot * 0.4) },
-          { place: "🥈 2nd", pct: 25, sui: Math.floor(pot * 0.25) },
-          { place: "🥉 3rd", pct: 20, sui: Math.floor(pot * 0.2) },
-        ].map((prize, i) => (
-          <div key={i} style={{ background: "rgba(255,180,0,0.06)", border: "1px solid rgba(255,180,0,0.15)", borderRadius: "10px", padding: "12px 8px" }}>
-            <div style={{ fontSize: "18px", marginBottom: "4px" }}>{prize.place.split(" ")[0]}</div>
-            <div style={{ fontFamily: "Cinzel, serif", fontSize: "11px", color: "#c9a84c", marginBottom: "6px" }}>{prize.place.split(" ")[1]}</div>
-            <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", fontWeight: 600, color: "#e8c97a" }}>{prize.sui} SUI</div>
-            <div style={{ fontSize: "10px", color: "#888898" }}>{prize.pct}% of pot</div>
+    <div style={{ background: "linear-gradient(135deg, #1a0e00, #2a1800)", border: "1px solid rgba(77,162,255,0.3)", borderRadius: "20px", overflow: "hidden", position: "relative" }}>
+      <style>{`
+        @keyframes tcCoinFly1{0%{transform:translate(0,0) rotate(0deg);opacity:1}100%{transform:translate(-80px,-140px) rotate(-40deg);opacity:0}}
+        @keyframes tcCoinFly2{0%{transform:translate(0,0) rotate(0deg);opacity:1}100%{transform:translate(-20px,-160px) rotate(20deg);opacity:0}}
+        @keyframes tcCoinFly3{0%{transform:translate(0,0) rotate(0deg);opacity:1}100%{transform:translate(50px,-150px) rotate(35deg);opacity:0}}
+        @keyframes tcCoinFly4{0%{transform:translate(0,0) rotate(0deg);opacity:1}100%{transform:translate(100px,-130px) rotate(50deg);opacity:0}}
+        @keyframes tcCoinFly5{0%{transform:translate(0,0) rotate(0deg);opacity:1}100%{transform:translate(130px,-100px) rotate(-20deg);opacity:0}}
+        @keyframes tcCoinFly6{0%{transform:translate(0,0) rotate(0deg);opacity:1}100%{transform:translate(-110px,-110px) rotate(-50deg);opacity:0}}
+        @keyframes tcWaveSway{0%,100%{transform:scaleX(1) scaleY(1)}50%{transform:scaleX(1.03) scaleY(1.05)}}
+        @keyframes tcLidOpen{0%,100%{transform:rotate(-35deg)}50%{transform:rotate(-42deg)}}
+        @keyframes tcSparkle{0%,100%{opacity:0;transform:scale(0)}40%,60%{opacity:1;transform:scale(1)}}
+        @keyframes tcFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+        .tc-coin{position:absolute;width:38px;height:38px;border-radius:50%;background:#d4a800;border:2px solid #a07800;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#5a3e00;}
+        .tc-cf1{animation:tcCoinFly1 1.6s ease-in infinite 0s}
+        .tc-cf2{animation:tcCoinFly2 1.6s ease-in infinite 0.2s}
+        .tc-cf3{animation:tcCoinFly3 1.6s ease-in infinite 0.4s}
+        .tc-cf4{animation:tcCoinFly4 1.6s ease-in infinite 0.6s}
+        .tc-cf5{animation:tcCoinFly5 1.6s ease-in infinite 0.8s}
+        .tc-cf6{animation:tcCoinFly6 1.6s ease-in infinite 1.0s}
+        .tc-sp1{animation:tcSparkle 1.6s ease-in-out infinite 0.3s}
+        .tc-sp2{animation:tcSparkle 1.6s ease-in-out infinite 0.9s}
+        .tc-sp3{animation:tcSparkle 1.6s ease-in-out infinite 1.3s}
+        .tc-wave{animation:tcWaveSway 3s ease-in-out infinite}
+        .tc-sc{animation:tcFloat 2s ease-in-out infinite}
+      `}</style>
+
+      {/* Chest visual */}
+      <div style={{ position: "relative", height: "260px", background: "transparent", overflow: "hidden" }}>
+
+        {/* Back wave */}
+        <div className="tc-wave" style={{ position: "absolute", top: "20px", left: "-10px", right: "-10px" }}>
+          <svg width="100%" height="160" viewBox="0 0 400 160" preserveAspectRatio="none">
+            <path d="M0,80 C30,40 80,15 140,50 C180,70 200,20 260,15 C320,8 360,55 400,65 L400,160 L0,160 Z" fill="#1a5fa0"/>
+            <path d="M0,100 C40,65 90,40 150,65 C190,80 220,35 280,28 C340,20 375,70 400,80 L400,160 L0,160 Z" fill="#0d4080" opacity="0.6"/>
+            <path d="M120,55 Q140,42 160,55" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" opacity="0.8"/>
+            <path d="M240,20 Q265,8 290,20" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" opacity="0.8"/>
+            <path d="M55,42 Q78,28 100,42 Q80,46 58,48" fill="white" opacity="0.5"/>
+            <path d="M195,18 Q218,5 240,18 Q220,22 198,24" fill="white" opacity="0.4"/>
+          </svg>
+        </div>
+
+        {/* Left small wave */}
+        <div style={{ position: "absolute", bottom: "50px", left: "0", animation: "tcWaveSway 2.5s ease-in-out infinite 0.5s" }}>
+          <svg width="130" height="90" viewBox="0 0 130 90">
+            <path d="M0,50 C15,25 40,12 65,35 C80,48 90,20 110,15 C120,12 128,30 130,40 L130,90 L0,90 Z" fill="#1a6fb5"/>
+            <path d="M15,35 Q30,22 48,35" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
+            <path d="M40,30 Q55,18 70,30 Q56,34 42,36" fill="white" opacity="0.5"/>
+          </svg>
+        </div>
+
+        {/* Right small wave */}
+        <div style={{ position: "absolute", bottom: "45px", right: "0", animation: "tcWaveSway 2.8s ease-in-out infinite 0.2s" }}>
+          <svg width="120" height="80" viewBox="0 0 120 80">
+            <path d="M0,45 C15,22 38,10 60,32 C75,44 85,18 105,12 C115,9 120,28 120,38 L120,80 L0,80 Z" fill="#1565a0"/>
+            <path d="M12,30 Q28,18 45,30" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
+            <path d="M55,18 Q68,8 82,18 Q68,22 56,24" fill="white" opacity="0.4"/>
+          </svg>
+        </div>
+
+        {/* Water floor */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "60px", background: "#0d3a70" }}>
+          <svg width="100%" height="25" viewBox="0 0 400 25" preserveAspectRatio="none" style={{ position: "absolute", top: 0 }}>
+            <path d="M0,12 Q50,2 100,12 Q150,22 200,12 Q250,2 300,12 Q350,22 400,12 L400,0 L0,0 Z" fill="#1a6fb5" opacity="0.6"/>
+          </svg>
+        </div>
+
+        {/* Ground coins */}
+        <div className="tc-sc" style={{ position: "absolute", bottom: "14px", left: "30px" }}><div className="tc-coin" style={{ width: "26px", height: "26px", fontSize: "10px" }}>$</div></div>
+        <div style={{ position: "absolute", bottom: "10px", left: "65px", transform: "rotate(20deg)" }}><div className="tc-coin" style={{ width: "22px", height: "22px", fontSize: "9px" }}>$</div></div>
+        <div className="tc-sc" style={{ position: "absolute", bottom: "14px", right: "35px", animationDelay: "0.5s" }}><div className="tc-coin" style={{ width: "24px", height: "24px", fontSize: "9px" }}>$</div></div>
+        <div style={{ position: "absolute", bottom: "10px", right: "68px", transform: "rotate(-15deg)" }}><div className="tc-coin" style={{ width: "20px", height: "20px", fontSize: "8px" }}>$</div></div>
+
+        {/* CHEST */}
+        <div style={{ position: "absolute", bottom: "45px", left: "50%", transform: "translateX(-50%)", width: "170px" }}>
+
+          {/* Flying coins */}
+          <div className="tc-coin tc-cf1" style={{ bottom: "90px", left: "55px" }}>$</div>
+          <div className="tc-coin tc-cf2" style={{ bottom: "90px", left: "75px" }}>$</div>
+          <div className="tc-coin tc-cf3" style={{ bottom: "90px", left: "70px" }}>$</div>
+          <div className="tc-coin tc-cf4" style={{ bottom: "90px", left: "82px" }}>$</div>
+          <div className="tc-coin tc-cf5" style={{ bottom: "90px", left: "78px" }}>$</div>
+          <div className="tc-coin tc-cf6" style={{ bottom: "90px", left: "60px" }}>$</div>
+
+          {/* Sparkles */}
+          <div className="tc-sp1" style={{ position: "absolute", bottom: "155px", left: "20px", color: "#ffe566", fontSize: "16px" }}>✦</div>
+          <div className="tc-sp2" style={{ position: "absolute", bottom: "170px", right: "15px", color: "#fff9c4", fontSize: "12px" }}>✦</div>
+          <div className="tc-sp3" style={{ position: "absolute", bottom: "185px", left: "45px", color: "#ffe566", fontSize: "10px" }}>✦</div>
+
+          {/* Lid */}
+          <div style={{ animation: "tcLidOpen 2s ease-in-out infinite", transformOrigin: "bottom center", position: "relative", zIndex: 4 }}>
+            <div style={{ width: "170px", height: "55px", background: "#1565a0", borderRadius: "8px 8px 0 0", border: "3px solid #0a3d6e", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: "10px", left: "8px", right: "8px", height: "3px", background: "#0f4f8a", borderRadius: "2px" }}></div>
+              <div style={{ position: "absolute", top: "22px", left: "8px", right: "8px", height: "3px", background: "#0f4f8a", borderRadius: "2px" }}></div>
+              <div style={{ position: "absolute", top: "4px", left: "4px", width: "14px", height: "14px", background: "#c8961b", borderRadius: "3px" }}></div>
+              <div style={{ position: "absolute", top: "4px", right: "4px", width: "14px", height: "14px", background: "#c8961b", borderRadius: "3px" }}></div>
+              <div style={{ position: "absolute", bottom: "0", left: "0", right: "0", height: "10px", background: "#c8961b", borderTop: "2px solid #e8b830" }}></div>
+            </div>
+            {/* Inner lid glow */}
+            <div style={{ width: "158px", height: "28px", background: "#c8961b", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ color: "#5a3e00", fontSize: "10px", fontWeight: 700, letterSpacing: "1px" }}>suiUSDe</span>
+            </div>
           </div>
-        ))}
+
+          {/* Coin pile on top of body */}
+          <div style={{ position: "absolute", top: "-15px", left: "8px", right: "8px", height: "30px", zIndex: 5, display: "flex", justifyContent: "center", gap: "3px" }}>
+            <div className="tc-coin" style={{ width: "32px", height: "32px", fontSize: "12px" }}>$</div>
+            <div className="tc-coin" style={{ width: "34px", height: "34px", fontSize: "13px", marginTop: "-4px" }}>$</div>
+            <div className="tc-coin" style={{ width: "30px", height: "30px", fontSize: "11px" }}>$</div>
+            <div className="tc-coin" style={{ width: "32px", height: "32px", fontSize: "12px", marginTop: "-5px" }}>$</div>
+          </div>
+
+          {/* Body */}
+          <div style={{ width: "170px", height: "85px", background: "#1a6fb5", borderRadius: "0 0 12px 12px", border: "3px solid #0a3d6e", borderTop: "none", position: "relative", overflow: "hidden", zIndex: 3 }}>
+            <div style={{ position: "absolute", top: "12px", left: 0, right: 0, height: "3px", background: "#1060a0" }}></div>
+            <div style={{ position: "absolute", top: "28px", left: 0, right: 0, height: "3px", background: "#1060a0" }}></div>
+            <div style={{ position: "absolute", top: "44px", left: 0, right: 0, height: "3px", background: "#1060a0" }}></div>
+            <div style={{ position: "absolute", top: "60px", left: 0, right: 0, height: "3px", background: "#1060a0" }}></div>
+            <div style={{ position: "absolute", top: "38px", left: 0, right: 0, height: "14px", background: "#c8961b", borderTop: "2px solid #e8b830", borderBottom: "2px solid #e8b830", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: "22px", height: "18px", background: "#1a5fa0", borderRadius: "4px", border: "2px solid #e8b830", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ width: "7px", height: "7px", background: "#e8b830", borderRadius: "50%" }}></div>
+              </div>
+            </div>
+            <div style={{ position: "absolute", bottom: "6px", left: "6px", width: "18px", height: "18px", background: "#c8961b", borderRadius: "3px" }}></div>
+            <div style={{ position: "absolute", bottom: "6px", right: "6px", width: "18px", height: "18px", background: "#c8961b", borderRadius: "3px" }}></div>
+            <div style={{ position: "absolute", top: "25px", left: "-8px", width: "12px", height: "24px", borderRadius: "3px", background: "#c8961b", border: "2px solid #8b6000" }}></div>
+            <div style={{ position: "absolute", top: "25px", right: "-8px", width: "12px", height: "24px", borderRadius: "3px", background: "#c8961b", border: "2px solid #8b6000" }}></div>
+          </div>
+        </div>
       </div>
-      <div style={{ marginBottom: "8px", display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#888898" }}>
-        <span>👥 {players}/{maxPlayers} players</span>
-        <span style={{ color: "#e8c97a" }}>{maxPlayers - players} spots left</span>
-      </div>
-      <div style={{ height: "6px", background: "rgba(255,255,255,0.08)", borderRadius: "3px", overflow: "hidden" }}>
-        <div style={{ height: "100%", borderRadius: "3px", width: `${progress}%`, background: "linear-gradient(90deg, #c9a84c, #e8c97a)", boxShadow: "0 0 10px rgba(255,180,0,0.4)" }} />
+
+      {/* Prize info below chest */}
+      <div style={{ padding: "24px", textAlign: "center" }}>
+        <div style={{ fontFamily: "Cinzel, serif", fontSize: "13px", letterSpacing: "0.15em", textTransform: "uppercase", color: "#4da2ff", marginBottom: "8px" }}>Tournament Prize Pool</div>
+        <div style={{ fontFamily: "Cinzel, serif", fontSize: "44px", fontWeight: 900, color: "#e8c97a", lineHeight: 1, marginBottom: "4px" }}>{pot} suiUSDe</div>
+        <div style={{ fontSize: "12px", color: "#888898", marginBottom: "6px" }}>≈ ${pot.toFixed(0)} USD</div>
+        <div style={{ fontSize: "11px", color: "#4da2ff", marginBottom: "20px" }}>◈ Powered by suiUSDe × Ethena on Sui</div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", marginBottom: "20px" }}>
+          {[
+            { place: "🥇 1st", pct: 40, amount: Math.floor(pot * 0.4) },
+            { place: "🥈 2nd", pct: 25, amount: Math.floor(pot * 0.25) },
+            { place: "🥉 3rd", pct: 20, amount: Math.floor(pot * 0.2) },
+          ].map((prize, i) => (
+            <div key={i} style={{ background: "rgba(77,162,255,0.08)", border: "1px solid rgba(77,162,255,0.2)", borderRadius: "10px", padding: "12px 8px" }}>
+              <div style={{ fontSize: "18px", marginBottom: "4px" }}>{prize.place.split(" ")[0]}</div>
+              <div style={{ fontFamily: "Cinzel, serif", fontSize: "11px", color: "#4da2ff", marginBottom: "6px" }}>{prize.place.split(" ")[1]}</div>
+              <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", fontWeight: 600, color: "#e8c97a" }}>{prize.amount}</div>
+              <div style={{ fontSize: "9px", color: "#888898" }}>suiUSDe · {prize.pct}%</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginBottom: "8px", display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#888898" }}>
+          <span>👥 {players}/{maxPlayers} players</span>
+          <span style={{ color: "#4da2ff" }}>{maxPlayers - players} spots left</span>
+        </div>
+        <div style={{ height: "6px", background: "rgba(255,255,255,0.08)", borderRadius: "3px", overflow: "hidden" }}>
+          <div style={{ height: "100%", borderRadius: "3px", width: `${progress}%`, background: "linear-gradient(90deg, #1a8fe3, #4da2ff)", transition: "width 0.5s ease" }} />
+        </div>
       </div>
     </div>
   );
 }
 
-function JoinModal({ onClose, onJoin, pot }: { onClose: () => void; onJoin: () => void; pot: number }) {
-  const [step, setStep] = useState<"confirm" | "paying" | "success">("confirm");
+
+function JoinModal({ onClose, onJoin, pot }: { onClose: () => void; onJoin: (name: string, deck: string, deckName: string) => void; pot: number }) {
+  const [step, setStep] = useState<"form" | "confirm" | "paying" | "success">("form");
   const [walletConnected, setWalletConnected] = useState(false);
+  const [playerName, setPlayerName] = useState("");
+  const [deckName, setDeckName] = useState("");
+  const [decklist, setDecklist] = useState("");
+  const [error, setError] = useState("");
 
   async function handleJoin() {
     if (!walletConnected) { alert("Please connect your Sui wallet first!"); return; }
     setStep("paying");
     await new Promise(r => setTimeout(r, 2000));
     setStep("success");
-    setTimeout(() => { onJoin(); onClose(); }, 2000);
+    setTimeout(() => { onJoin(playerName, decklist, deckName); onClose(); }, 2000);
   }
 
   return (
@@ -73,7 +212,7 @@ function JoinModal({ onClose, onJoin, pot }: { onClose: () => void; onJoin: () =
             </div>
             <div style={{ background: "#18181f", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "16px", marginBottom: "20px" }}>
               {[
-                { label: "Entry Fee", val: "10 SUI", color: "#e8c97a" },
+                { label: "Entry Fee", val: "10 suiUSDe", color: "#e8c97a" },
                 { label: "Current Pot", val: `${pot} SUI`, color: "#4da2ff" },
                 { label: "1st Prize", val: `${Math.floor((pot + 10) * 0.5)} SUI`, color: "#4caf7d" },
                 { label: "2nd Prize", val: `${Math.floor((pot + 10) * 0.3)} SUI`, color: "#78bfff" },
@@ -92,7 +231,7 @@ function JoinModal({ onClose, onJoin, pot }: { onClose: () => void; onJoin: () =
               <div style={{ background: "rgba(76,175,61,0.1)", border: "1px solid rgba(76,175,61,0.2)", borderRadius: "8px", padding: "10px", fontSize: "12px", color: "#4caf7d", textAlign: "center", marginBottom: "10px" }}>✅ Wallet connected</div>
             )}
             <button onClick={handleJoin} style={{ width: "100%", background: walletConnected ? "linear-gradient(135deg, #c9a84c, #e8c97a)" : "rgba(255,255,255,0.05)", color: walletConnected ? "#0a0a0f" : "#555562", border: "none", borderRadius: "8px", padding: "14px", fontSize: "14px", fontWeight: 600, cursor: walletConnected ? "pointer" : "not-allowed", fontFamily: "DM Sans, sans-serif" }}>
-              💰 Pay 10 SUI & Join Tournament
+              💰 Pay 10 suiUSDe & Join
             </button>
             <p style={{ fontSize: "11px", color: "#555562", textAlign: "center", marginTop: "12px" }}>Payment held on-chain · Auto-distributed to winners</p>
           </>
@@ -122,7 +261,19 @@ export default function OPTCGHub() {
   const [showSimulator, setShowSimulator] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
   const [players, setPlayers] = useState(14);
-  const maxPlayers = 64;
+  const [registrations, setRegistrations] = useState<any[]>([]);
+  useEffect(() => {
+    fetchRegistrations();
+  }, []);
+
+  async function fetchRegistrations() {
+    const { data } = await supabase
+      .from("tournament_registrations")
+      .select("*")
+      .eq("tournament_id", "weekly-17")
+      .order("registered_at", { ascending: false });
+    if (data) setRegistrations(data);
+  }  const maxPlayers = 64;
   const pot = players * ENTRY_FEE;
 
   return (
@@ -155,12 +306,24 @@ export default function OPTCGHub() {
         </div>
       )}
 
-      {showJoin && <JoinModal onClose={() => setShowJoin(false)} onJoin={() => setPlayers(p => p + 1)} pot={pot} />}
+      {showJoin && <JoinModal onClose={() => setShowJoin(false)} onJoin={async (name: string, decklist: string, deckName: string) => {
+        setPlayers(p => p + 1);
+        await supabase.from("tournament_registrations").insert({
+          tournament_id: "weekly-17",
+          player_name: name,
+          wallet_address: "anonymous",
+          decklist: decklist,
+          deck_name: deckName,
+          status: "registered",
+        });
+        fetchRegistrations();
+      }} pot={pot} />}
 
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 24px" }}>
         <div style={{ display: "flex", gap: "4px", borderBottom: "1px solid rgba(255,255,255,0.07)", marginBottom: "32px" }}>
           {[
             { id: "tournament", label: "💰 Weekly Tournament" },
+            { id: "participants", label: "👥 Participants" },
             { id: "rankings", label: "🏆 Rankings" },
             { id: "howtoplay", label: "📖 How to Play" },
           ].map(tab => (
@@ -176,7 +339,7 @@ export default function OPTCGHub() {
                   <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", color: "#e6e4f0" }}>WaveTCG Weekly #17</h2>
                   <span style={{ padding: "4px 12px", background: "rgba(76,175,61,0.1)", border: "1px solid rgba(76,175,61,0.2)", borderRadius: "20px", fontSize: "11px", color: "#4caf7d" }}>🟢 Open</span>
                 </div>
-                <p style={{ fontSize: "14px", color: "#888898", lineHeight: 1.75 }}>Weekly One Piece TCG tournament. Pay 10 SUI to enter. Winners automatically receive SUI prizes on-chain.</p>
+                <p style={{ fontSize: "14px", color: "#888898", lineHeight: 1.75 }}>Weekly One Piece TCG tournament. Pay 10 suiUSDe to enter. Winners automatically receive SUI prizes on-chain.</p>
               </div>
 
               <div style={{ background: "#111118", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "24px", marginBottom: "24px" }}>
@@ -223,9 +386,9 @@ export default function OPTCGHub() {
             <div style={{ position: "sticky", top: "80px" }}>
               <TreasureChest pot={pot} players={players} maxPlayers={maxPlayers} />
               <button onClick={() => setShowJoin(true)} style={{ width: "100%", marginTop: "16px", background: "linear-gradient(135deg, #c9a84c, #e8c97a)", color: "#0a0a0f", border: "none", borderRadius: "12px", padding: "18px", fontSize: "16px", fontWeight: 700, cursor: "pointer", fontFamily: "DM Sans, sans-serif", letterSpacing: "0.04em", textTransform: "uppercase", boxShadow: "0 8px 32px rgba(201,168,76,0.3)" }}>
-                💰 Join for 10 SUI
+                💰 Join for 10 suiUSDe
               </button>
-              <div style={{ textAlign: "center", marginTop: "12px", fontSize: "11px", color: "#555562" }}>⛓️ Payment secured by Sui blockchain · Auto-distributed to winners</div>
+              <div style={{ textAlign: "center", marginTop: "12px", fontSize: "11px", color: "#555562" }}>⛓️ Powered by suiUSDe · Auto-distributed to winners</div>
 
               <div style={{ marginTop: "20px", background: "#111118", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "16px" }}>
                 <div style={{ fontSize: "12px", color: "#888898", marginBottom: "12px", letterSpacing: "0.06em", textTransform: "uppercase" }}>Recent Registrations</div>
@@ -238,6 +401,91 @@ export default function OPTCGHub() {
                 ))}
                 <div style={{ textAlign: "center", marginTop: "8px", fontSize: "12px", color: "#555562" }}>+{players - 5} more registered</div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "participants" && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+              <div>
+                <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "24px", color: "#e6e4f0", marginBottom: "4px" }}>Registered Players</h2>
+                <p style={{ fontSize: "13px", color: "#888898" }}>WaveTCG Weekly #17 · {players} players registered</p>
+              </div>
+              <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #c9a84c, #e8c97a)", color: "#0a0a0f", border: "none", borderRadius: "8px", padding: "10px 20px", fontSize: "13px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>+ Join Tournament</button>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginBottom: "24px" }}>
+              {[
+                { label: "Players", val: players, icon: "👥" },
+                { label: "Spots Left", val: maxPlayers - players, icon: "🎯" },
+                { label: "Prize Pool", val: `${pot} suiUSDe`, icon: "💰" },
+                { label: "Status", val: "Open", icon: "🟢" },
+              ].map((stat, i) => (
+                <div key={i} style={{ background: "#111118", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "16px", textAlign: "center" }}>
+                  <div style={{ fontSize: "22px", marginBottom: "6px" }}>{stat.icon}</div>
+                  <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", fontWeight: 600, color: "#4da2ff", marginBottom: "4px" }}>{stat.val}</div>
+                  <div style={{ fontSize: "10px", color: "#888898", textTransform: "uppercase", letterSpacing: "0.06em" }}>{stat.label}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ background: "#111118", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", overflow: "hidden" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "60px 1fr 1fr 120px 140px", padding: "16px 24px", borderBottom: "1px solid rgba(255,255,255,0.07)", fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "#555562" }}>
+                <div>#</div>
+                <div>Player</div>
+                <div>Deck</div>
+                <div style={{ textAlign: "center" }}>Status</div>
+                <div style={{ textAlign: "right" }}>Registered</div>
+              </div>
+
+              {registrations.length > 0 ? registrations.map((reg, i) => (
+                <div key={reg.id} style={{ display: "grid", gridTemplateColumns: "60px 1fr 1fr 120px 140px", padding: "18px 24px", alignItems: "center", borderBottom: i < registrations.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none", transition: "background 0.15s" }}
+                  onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#18181f"}
+                  onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = "transparent"}
+                >
+                  <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#888898" }}>#{i + 1}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "rgba(255,50,50,0.15)", border: "1px solid rgba(255,50,50,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ff6b6b", flexShrink: 0 }}>
+                      {reg.player_name[0]?.toUpperCase()}
+                    </div>
+                    <span style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#e6e4f0" }}>{reg.player_name}</span>
+                  </div>
+                  <div style={{ fontSize: "13px", color: "#888898" }}>{reg.deck_name || "—"}</div>
+                  <div style={{ textAlign: "center" }}>
+                    <span style={{ padding: "4px 12px", background: "rgba(76,175,61,0.1)", border: "1px solid rgba(76,175,61,0.2)", borderRadius: "12px", fontSize: "11px", color: "#4caf7d" }}>✓ Paid</span>
+                  </div>
+                  <div style={{ textAlign: "right", fontSize: "12px", color: "#555562" }}>
+                    {new Date(reg.registered_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  </div>
+                </div>
+              )) : (
+                ["LuffyKing_PH", "ZoroSlash", "NamiNavigator", "ShanksLegend", "AceFire_PH", "RobinFlower", "ChopperDoc", "FrankyShip"].map((player, i) => (
+                  <div key={i} style={{ display: "grid", gridTemplateColumns: "60px 1fr 1fr 120px 140px", padding: "18px 24px", alignItems: "center", borderBottom: i < 7 ? "1px solid rgba(255,255,255,0.05)" : "none", transition: "background 0.15s" }}
+                    onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#18181f"}
+                    onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = "transparent"}
+                  >
+                    <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#888898" }}>#{i + 1}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "rgba(255,50,50,0.15)", border: "1px solid rgba(255,50,50,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ff6b6b", flexShrink: 0 }}>
+                        {player[0]}
+                      </div>
+                      <span style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#e6e4f0" }}>{player}</span>
+                    </div>
+                    <div style={{ fontSize: "13px", color: "#888898" }}>OP0{(i % 4) + 1} Deck</div>
+                    <div style={{ textAlign: "center" }}>
+                      <span style={{ padding: "4px 12px", background: "rgba(76,175,61,0.1)", border: "1px solid rgba(76,175,61,0.2)", borderRadius: "12px", fontSize: "11px", color: "#4caf7d" }}>✓ Paid</span>
+                    </div>
+                    <div style={{ textAlign: "right", fontSize: "12px", color: "#555562" }}>Apr 1, 2026</div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div style={{ marginTop: "20px", textAlign: "center" }}>
+              <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #c9a84c, #e8c97a)", color: "#0a0a0f", border: "none", borderRadius: "12px", padding: "16px 40px", fontSize: "15px", fontWeight: 700, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
+                💰 Join for 10 suiUSDe
+              </button>
             </div>
           </div>
         )}
