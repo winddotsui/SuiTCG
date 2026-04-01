@@ -32,7 +32,7 @@ export default function SwapPage() {
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000008" }}>
+    <div style={{ minHeight: "100vh", background: "#000008", display: "flex", flexDirection: "column" }}>
       {/* Header */}
       <div style={{ background: "linear-gradient(180deg, #000008 0%, #000d20 50%, #000008 100%)", padding: "60px 48px 40px", borderBottom: "1px solid rgba(0,153,255,0.15)", textAlign: "center" }}>
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "12px" }}>◈ WaveTCG · Sui DeFi</div>
@@ -41,7 +41,7 @@ export default function SwapPage() {
       </div>
 
       {/* Cetus Terminal */}
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "600px", padding: "40px 24px" }}>
+      <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", padding: "40px 24px" }}>
         <div
           id="cetus-terminal"
           style={{
