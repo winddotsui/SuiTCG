@@ -224,7 +224,7 @@ export default function DeckBuilder() {
                         {inDeck.count}
                       </div>
                     )}
-                    {isLeader && leader?.card_id === card.code && (
+                    {isLeader && leader?.code === card.code && (
                       <div style={{ position: "absolute", top: "4px", left: "4px", background: "#ff3333", color: "#fff", borderRadius: "4px", padding: "2px 6px", fontSize: "9px", fontWeight: 700 }}>LDR</div>
                     )}
                     <div style={{ padding: "6px 8px", background: "#18181f" }}>
