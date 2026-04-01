@@ -36,4 +36,4 @@ export async function GET(req: NextRequest) {
     console.error("OPTCG API error:", e);
     return NextResponse.json({ cards: [], error: e.message });
   }
-}
+}cat app/page.tsx | head -5

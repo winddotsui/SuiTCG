@@ -32,24 +32,14 @@ export default function SwapPage() {
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000008", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-      <div style={{ textAlign: "center", marginBottom: "24px" }}>
+    <div style={{ minHeight: "100vh", background: "#000008", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: "20px", padding: "40px 24px" }}>
+      <div style={{ textAlign: "center" }}>
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "8px" }}>◈ WaveTCG · Sui DeFi</div>
         <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(24px, 4vw, 42px)", fontWeight: 900, background: "linear-gradient(135deg, #0055ff, #0099ff, #00d4ff, #00ffcc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Swap Tokens</h1>
         <p style={{ fontSize: "13px", color: "#c8d8f0", marginTop: "8px" }}>Powered by Cetus · Best rates on Sui</p>
       </div>
 
-      {/* Cetus Terminal */}
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", padding: "0 24px" }}>
-        <div
-          id="cetus-terminal"
-          style={{
-            width: "460px",
-            borderRadius: "16px",
-            overflow: "hidden",
-          }}
-        />
-      </div>
+      <div id="cetus-terminal" style={{ width: "460px", borderRadius: "16px", overflow: "hidden" }} />
 
       {/* DEX links below */}
       <div style={{ maxWidth: "800px", margin: "0 auto", padding: "0 24px 60px" }}>
