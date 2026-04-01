@@ -117,10 +117,16 @@ export default function DeckBuilder() {
     const existing = deck.find(dc => dc.card.code === card.code);
     if (existing) {
       if (existing.count >= 4) { alert("Max 4 copies of the same card allowed!"); return; }
+      if (mainDeckCount >= 50) { alert("Main deck is full! Max 50 cards allowed."); return; }
       setDeck(prev => prev.map(dc => dc.card.code === card.code ? { ...dc, count: dc.count + 1 } : dc));
     } else {
-      if (mainDeckCount >= 50) { alert("Main deck is full! Max 50 cards."); return; }
-      setDeck(prev => [...prev, { card, count: 1 }]);
+      if (mainDeckCount >= 50) { alert("Main deck is full! Max 50 cards allowed."); return; }
+      setDeck(prev => {
+        const newDeck = [...prev, { card, count: 1 }];
+        const newCount = newDeck.reduce((sum, dc) => sum + dc.count, 0);
+        if (newCount > 50) { alert("Main deck is full! Max 50 cards allowed."); return prev; }
+        return newDeck;
+      });
     }
   }
 
