@@ -57,7 +57,7 @@ export default function SwapPage() {
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 24px", display: "grid", gridTemplateColumns: "480px 1fr", gap: "32px", alignItems: "start" }}>
 
         {/* LEFT - Cetus Terminal */}
-        <div>
+        <div style={{ overflow: "hidden", maxWidth: "100%" }}>
           <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff", marginBottom: "16px", display: "flex", alignItems: "center", gap: "10px" }}>
             <span style={{ color: "#0099ff" }}>🐟</span> Swap with Cetus
             <span style={{ fontSize: "10px", background: "rgba(0,255,204,0.1)", color: "#00ffcc", padding: "2px 8px", borderRadius: "8px", border: "1px solid rgba(0,255,204,0.2)" }}>BEST RATES</span>
