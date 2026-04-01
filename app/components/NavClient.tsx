@@ -22,7 +22,7 @@ export default function NavClient() {
         ].map(link => (
           <a key={link.href} href={link.href} style={{
             fontSize: "11px", letterSpacing: "0.08em",
-            textTransform: "uppercase", color: "#888898",
+            textTransform: "uppercase", color: "#666680",
             textDecoration: "none",
           }}>{link.label}</a>
         ))}

@@ -60,25 +60,25 @@ export default function Marketplace() {
   });
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0f", display: "flex" }}>
+    <div style={{ minHeight: "100vh", background: "#000000", display: "flex" }}>
 
       {/* SIDEBAR */}
       <aside style={{
         width: "240px", flexShrink: 0,
-        borderRight: "1px solid rgba(255,255,255,0.07)",
-        padding: "24px 16px", background: "#111118",
+        borderRight: "1px solid rgba(255,255,255,0.06)",
+        padding: "24px 16px", background: "#050510",
         position: "sticky", top: "56px",
         height: "calc(100vh - 56px)", overflowY: "auto",
       }}>
         <div style={{ marginBottom: "28px" }}>
-          <div style={{ fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#555562", marginBottom: "12px" }}>Game</div>
+          <div style={{ fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#444460", marginBottom: "12px" }}>Game</div>
           {["All Games","Pokémon TCG","Magic: The Gathering","Yu-Gi-Oh!","One Piece","Dragon Ball","Others"].map((g) => (
             <button key={g} onClick={() => setGame(g)} style={{
               display: "flex", alignItems: "center", gap: "8px",
               padding: "8px 10px", width: "100%", textAlign: "left",
-              background: game === g ? "rgba(77,162,255,0.08)" : "transparent",
-              border: game === g ? "1px solid rgba(77,162,255,0.2)" : "1px solid transparent",
-              borderRadius: "8px", color: game === g ? "#78bfff" : "#888898",
+              background: game === g ? "rgba(0,120,255,0.08)" : "transparent",
+              border: game === g ? "1px solid rgba(0,120,255,0.2)" : "1px solid transparent",
+              borderRadius: "8px", color: game === g ? "#4da8ff" : "#666680",
               fontSize: "13px", cursor: "pointer", marginBottom: "3px",
               fontFamily: "DM Sans, sans-serif",
             }}>
@@ -89,13 +89,13 @@ export default function Marketplace() {
         </div>
 
         <div style={{ marginBottom: "28px" }}>
-          <div style={{ fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#555562", marginBottom: "12px" }}>Condition</div>
+          <div style={{ fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#444460", marginBottom: "12px" }}>Condition</div>
           {["PSA 10","PSA 9","Mint","NM","LP","MP"].map((c) => (
             <button key={c} style={{
               padding: "5px 10px", margin: "3px",
-              border: "1px solid rgba(255,255,255,0.07)",
+              border: "1px solid rgba(255,255,255,0.06)",
               borderRadius: "6px", background: "transparent",
-              color: "#888898", fontSize: "11px",
+              color: "#666680", fontSize: "11px",
               cursor: "pointer", fontFamily: "DM Sans, sans-serif",
             }}>{c}</button>
           ))}
@@ -103,7 +103,7 @@ export default function Marketplace() {
 
         <a href="/sell" style={{
           display: "block", textAlign: "center",
-          background: "linear-gradient(135deg, #1a8fe3, #4da2ff)",
+          background: "linear-gradient(135deg, #0050ff, #0078ff)",
           color: "#fff", padding: "10px",
           borderRadius: "8px", fontSize: "12px",
           fontWeight: 500, textDecoration: "none",
@@ -119,10 +119,10 @@ export default function Marketplace() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             style={{
-              flex: 1, minWidth: "200px", background: "#111118",
-              border: "1px solid rgba(255,255,255,0.12)",
+              flex: 1, minWidth: "200px", background: "#050510",
+              border: "1px solid rgba(255,255,255,0.1)",
               borderRadius: "8px", padding: "10px 16px",
-              fontSize: "14px", color: "#e6e4f0",
+              fontSize: "14px", color: "#ffffff",
               fontFamily: "DM Sans, sans-serif", outline: "none",
             }}
           />
@@ -130,9 +130,9 @@ export default function Marketplace() {
             value={sort}
             onChange={e => setSort(e.target.value)}
             style={{
-              background: "#111118", border: "1px solid rgba(255,255,255,0.12)",
+              background: "#050510", border: "1px solid rgba(255,255,255,0.1)",
               borderRadius: "8px", padding: "10px 16px",
-              fontSize: "13px", color: "#e6e4f0",
+              fontSize: "13px", color: "#ffffff",
               fontFamily: "DM Sans, sans-serif", outline: "none", cursor: "pointer",
             }}>
             <option value="newest">Newest First</option>
@@ -141,9 +141,9 @@ export default function Marketplace() {
           </select>
         </div>
 
-        <div style={{ fontSize: "13px", color: "#888898", marginBottom: "20px" }}>
-          <strong style={{ color: "#e6e4f0" }}>{filtered.length}</strong> cards available
-          {loading && <span style={{ color: "#4da2ff", marginLeft: "8px" }}>· Loading...</span>}
+        <div style={{ fontSize: "13px", color: "#666680", marginBottom: "20px" }}>
+          <strong style={{ color: "#ffffff" }}>{filtered.length}</strong> cards available
+          {loading && <span style={{ color: "#0078ff", marginLeft: "8px" }}>· Loading...</span>}
         </div>
 
         <div style={{
@@ -154,23 +154,23 @@ export default function Marketplace() {
           {filtered.map(card => (
             <a key={card.id} href={`/card/${card.id}`} style={{ textDecoration: "none" }}>
               <div style={{
-                background: "#111118",
-                border: "1px solid rgba(255,255,255,0.07)",
+                background: "#050510",
+                border: "1px solid rgba(255,255,255,0.06)",
                 borderRadius: "12px", overflow: "hidden", cursor: "pointer",
                 transition: "transform 0.2s ease, border-color 0.2s ease",
               }}
                 onMouseEnter={e => {
                   (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)";
-                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(77,162,255,0.3)";
+                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,120,255,0.3)";
                 }}
                 onMouseLeave={e => {
                   (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
-                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.07)";
+                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.06)";
                 }}
               >
                 <div style={{
                   width: "100%", aspectRatio: "3/2",
-                  background: card.bg || "#18181f",
+                  background: card.bg || "#0a0a18",
                   display: "flex", alignItems: "center",
                   justifyContent: "center", fontSize: "48px",
                   overflow: "hidden",
@@ -184,23 +184,23 @@ export default function Marketplace() {
                 <div style={{ padding: "10px 12px" }}>
                   <div style={{
                     fontFamily: "Cinzel, serif", fontSize: "12px",
-                    fontWeight: 600, color: "#e6e4f0", marginBottom: "2px",
+                    fontWeight: 600, color: "#ffffff", marginBottom: "2px",
                     whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
                   }}>{card.name}</div>
                   <div style={{
-                    fontSize: "10px", color: "#555562",
+                    fontSize: "10px", color: "#444460",
                     textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "8px",
                   }}>{card.game} · {card.condition}</div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
                     <div>
-                      <div style={{ fontSize: "14px", fontWeight: 500, color: "#78bfff" }}>${card.price_usd?.toLocaleString()}</div>
-                      <div style={{ fontSize: "10px", color: "#4da2ff" }}>{card.price_sui} SUI</div>
+                      <div style={{ fontSize: "14px", fontWeight: 500, color: "#4da8ff" }}>${card.price_usd?.toLocaleString()}</div>
+                      <div style={{ fontSize: "10px", color: "#0078ff" }}>{card.price_sui} SUI</div>
                     </div>
                     <button style={{
                       background: "transparent",
-                      border: "1px solid rgba(255,255,255,0.12)",
+                      border: "1px solid rgba(255,255,255,0.1)",
                       borderRadius: "6px", padding: "5px 10px",
-                      fontSize: "10px", color: "#888898",
+                      fontSize: "10px", color: "#666680",
                       cursor: "pointer", fontFamily: "DM Sans, sans-serif",
                     }}>Buy</button>
                   </div>
