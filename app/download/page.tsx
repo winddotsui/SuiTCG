@@ -49,8 +49,8 @@ export default function DownloadPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#000000" }}>
-      <div style={{ background: "linear-gradient(180deg, #000000 0%, #001a0a 50%, #000000 100%)", padding: "60px 48px 40px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, rgba(0,200,100,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ background: "linear-gradient(180deg, #000000 0%, #000510 50%, #000000 100%)", padding: "60px 48px 40px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, rgba(0,120,255,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0078ff", marginBottom: "12px" }}>WaveTCG OPTCG Hub</div>
         <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 900, color: "#ffffff", marginBottom: "16px" }}>Download and Play Guide</h1>
         <p style={{ fontSize: "16px", color: "#666680", maxWidth: "560px", margin: "0 auto 32px", lineHeight: 1.75 }}>Everything you need to download OPTCGSim and join WaveTCG weekly tournaments.</p>
