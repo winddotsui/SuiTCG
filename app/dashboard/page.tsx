@@ -31,7 +31,7 @@ export default function Dashboard() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "40px" }}>
           <div>
             <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0078ff", marginBottom: "8px" }}>My Account</div>
-            <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "36px", fontWeight: 700, color: "#ffffff", marginBottom: "8px" }} style={{ background: "linear-gradient(135deg, #0030cc, #0078ff, #00aaff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Dashboard</h1>
+            <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "36px", fontWeight: 700, background: "linear-gradient(135deg, #0030cc, #0078ff, #00aaff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "8px" }}>Dashboard</h1>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#0078ff" }} />
               <span style={{ fontSize: "13px", color: "#666680", fontFamily: "monospace" }}>0x7f3a...9b2c</span>

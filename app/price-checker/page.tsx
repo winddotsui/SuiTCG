@@ -229,7 +229,7 @@ export default function PriceChecker() {
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "48px" }}>
           <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4da8ff", marginBottom: "12px" }}>Live Prices · All Expansions · All Versions</div>
-          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, color: "#ffffff", marginBottom: "12px" }} style={{ background: "linear-gradient(135deg, #00aaff, #4da8ff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Price Checker</h1>
+          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, background: "linear-gradient(135deg, #00aaff, #4da8ff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "12px" }}>Price Checker</h1>
           <p style={{ fontSize: "15px", color: "#666680" }}>Search any card — see all versions with live market prices</p>
         </div>
 

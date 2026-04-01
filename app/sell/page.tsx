@@ -113,7 +113,7 @@ export default function Sell() {
 
         <div style={{ marginBottom: "40px" }}>
           <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#00ffcc", marginBottom: "12px" }}>Free to List · 1% on Sale · Images on Walrus</div>
-          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "36px", fontWeight: 700, color: "#ffffff" }} style={{ background: "linear-gradient(135deg, #0078ff, #00ffcc, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>List a Card</h1>
+          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "36px", fontWeight: 700, background: "linear-gradient(135deg, #0078ff, #00ffcc, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>List a Card</h1>
         </div>
 
         <div style={{ display: "flex", gap: "8px", marginBottom: "40px" }}>

@@ -154,7 +154,7 @@ export default function DeckBuilder() {
       {/* Header */}
       <div style={{ background: "linear-gradient(180deg, #000000 0%, #000000 50%, #000000 100%)", padding: "40px 24px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center" }}>
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4da8ff", marginBottom: "8px" }}>🏴‍☠️ WaveTCG · One Piece TCG</div>
-        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 900, color: "#ffffff", marginBottom: "8px" }} style={{ background: "linear-gradient(135deg, #7700ff, #0078ff, #00aaff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Deck Builder</h1>
+        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 900, background: "linear-gradient(135deg, #7700ff, #0078ff, #00aaff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "8px" }}>Deck Builder</h1>
         <p style={{ fontSize: "14px", color: "#666680" }}>Build your One Piece TCG deck · 1 Leader + 50 Main + 10 DON!!</p>
       </div>
 

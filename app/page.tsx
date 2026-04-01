@@ -48,7 +48,7 @@ export default function Home() {
       imageUrl: getOfficialImage(card.code),
       price: "", ...positions[i],
     })));
-    // Daily hot cards - rotates based on day of year
+    async function loadHotCards() {
     const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
 
     // One Piece hot cards pool
@@ -118,6 +118,8 @@ export default function Home() {
         { name: optcg.name, images: { large: getOfficialImage(optcg.code) }, game: `One Piece TCG · ${optcg.info}`, priceDisplay: optcg.price },
       ]);
     }
+    }
+    loadHotCards();
   }, []);
 
   return (
