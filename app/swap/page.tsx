@@ -29,7 +29,7 @@ export default function SwapPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#000008" }}>
       {/* Header */}
-      <div style={{ paddingTop: "60px", paddingBottom: "24px", textAlign: "center" }}>
+      <div style={{ paddingTop: "20px", paddingBottom: "16px", textAlign: "center" }}>
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "8px" }}>◈ WaveTCG · Sui DeFi</div>
         <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(24px, 4vw, 42px)", fontWeight: 900, background: "linear-gradient(135deg, #0055ff, #0099ff, #00d4ff, #00ffcc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Swap Tokens</h1>
         <p style={{ fontSize: "13px", color: "#c8d8f0", marginTop: "8px" }}>Powered by Cetus · Best rates on Sui</p>
