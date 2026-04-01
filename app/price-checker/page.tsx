@@ -165,17 +165,17 @@ export default function PriceChecker() {
     if (card.game === "magic") {
       return (
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          {card.prices.usd && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
-            <span style={{ fontSize: "13px", color: "#666680" }}>TCGPlayer (Normal)</span>
-            <span style={{ fontSize: "15px", fontWeight: 600, color: "#4da8ff" }}>${card.prices.usd}</span>
+          {card.prices.usd && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a1628", borderRadius: "8px" }}>
+            <span style={{ fontSize: "13px", color: "#c8d8f0" }}>TCGPlayer (Normal)</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#00d4ff" }}>${card.prices.usd}</span>
           </div>}
-          {card.prices.usd_foil && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
-            <span style={{ fontSize: "13px", color: "#666680" }}>TCGPlayer (Foil)</span>
-            <span style={{ fontSize: "15px", fontWeight: 600, color: "#4da8ff" }}>${card.prices.usd_foil}</span>
+          {card.prices.usd_foil && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a1628", borderRadius: "8px" }}>
+            <span style={{ fontSize: "13px", color: "#c8d8f0" }}>TCGPlayer (Foil)</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#00d4ff" }}>${card.prices.usd_foil}</span>
           </div>}
-          {card.prices.eur && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
-            <span style={{ fontSize: "13px", color: "#666680" }}>CardMarket</span>
-            <span style={{ fontSize: "15px", fontWeight: 600, color: "#4da8ff" }}>€{card.prices.eur}</span>
+          {card.prices.eur && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a1628", borderRadius: "8px" }}>
+            <span style={{ fontSize: "13px", color: "#c8d8f0" }}>CardMarket</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#00d4ff" }}>€{card.prices.eur}</span>
           </div>}
         </div>
       );
@@ -186,11 +186,11 @@ export default function PriceChecker() {
       return (
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {types.map(([type, vals]: any) => vals?.market && (
-            <div key={type} style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
-              <span style={{ fontSize: "13px", color: "#666680", textTransform: "capitalize" }}>{type.replace(/([A-Z])/g, ' $1')}</span>
+            <div key={type} style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a1628", borderRadius: "8px" }}>
+              <span style={{ fontSize: "13px", color: "#c8d8f0", textTransform: "capitalize" }}>{type.replace(/([A-Z])/g, ' $1')}</span>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: "15px", fontWeight: 600, color: "#4da8ff" }}>${vals.market?.toFixed(2)}</div>
-                <div style={{ fontSize: "11px", color: "#444460" }}>Low: ${vals.low?.toFixed(2)} · High: ${vals.high?.toFixed(2)}</div>
+                <div style={{ fontSize: "15px", fontWeight: 600, color: "#00d4ff" }}>${vals.market?.toFixed(2)}</div>
+                <div style={{ fontSize: "11px", color: "#8899bb" }}>Low: ${vals.low?.toFixed(2)} · High: ${vals.high?.toFixed(2)}</div>
               </div>
             </div>
           ))}
@@ -200,21 +200,21 @@ export default function PriceChecker() {
     if (card.game === "yugioh") {
       return (
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          {card.prices.tcgplayer_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
-            <span style={{ fontSize: "13px", color: "#666680" }}>TCGPlayer</span>
-            <span style={{ fontSize: "15px", fontWeight: 600, color: "#4da8ff" }}>${card.prices.tcgplayer_price}</span>
+          {card.prices.tcgplayer_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a1628", borderRadius: "8px" }}>
+            <span style={{ fontSize: "13px", color: "#c8d8f0" }}>TCGPlayer</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#00d4ff" }}>${card.prices.tcgplayer_price}</span>
           </div>}
-          {card.prices.cardmarket_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
-            <span style={{ fontSize: "13px", color: "#666680" }}>CardMarket</span>
-            <span style={{ fontSize: "15px", fontWeight: 600, color: "#4da8ff" }}>€{card.prices.cardmarket_price}</span>
+          {card.prices.cardmarket_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a1628", borderRadius: "8px" }}>
+            <span style={{ fontSize: "13px", color: "#c8d8f0" }}>CardMarket</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#00d4ff" }}>€{card.prices.cardmarket_price}</span>
           </div>}
-          {card.prices.ebay_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
-            <span style={{ fontSize: "13px", color: "#666680" }}>eBay</span>
-            <span style={{ fontSize: "15px", fontWeight: 600, color: "#4da8ff" }}>${card.prices.ebay_price}</span>
+          {card.prices.ebay_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a1628", borderRadius: "8px" }}>
+            <span style={{ fontSize: "13px", color: "#c8d8f0" }}>eBay</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#00d4ff" }}>${card.prices.ebay_price}</span>
           </div>}
-          {card.prices.amazon_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
-            <span style={{ fontSize: "13px", color: "#666680" }}>Amazon</span>
-            <span style={{ fontSize: "15px", fontWeight: 600, color: "#4da8ff" }}>${card.prices.amazon_price}</span>
+          {card.prices.amazon_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a1628", borderRadius: "8px" }}>
+            <span style={{ fontSize: "13px", color: "#c8d8f0" }}>Amazon</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#00d4ff" }}>${card.prices.amazon_price}</span>
           </div>}
         </div>
       );
@@ -223,14 +223,14 @@ export default function PriceChecker() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000000", padding: "40px 24px" }}>
+    <div style={{ minHeight: "100vh", background: "#000008", padding: "40px 24px" }}>
       <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
 
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "48px" }}>
-          <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4da8ff", marginBottom: "12px" }}>Live Prices · All Expansions · All Versions</div>
-          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, background: "linear-gradient(135deg, #00aaff, #4da8ff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "12px" }}>Price Checker</h1>
-          <p style={{ fontSize: "15px", color: "#666680" }}>Search any card — see all versions with live market prices</p>
+          <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#00d4ff", marginBottom: "12px" }}>Live Prices · All Expansions · All Versions</div>
+          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, background: "linear-gradient(135deg, #0099ff, #00d4ff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "12px" }}>Price Checker</h1>
+          <p style={{ fontSize: "15px", color: "#c8d8f0" }}>Search any card — see all versions with live market prices</p>
         </div>
 
         {/* Game filter */}
@@ -244,9 +244,9 @@ export default function PriceChecker() {
             <button key={g.id} onClick={() => setGame(g.id)} style={{
               padding: "8px 18px", borderRadius: "20px", cursor: "pointer",
               fontFamily: "DM Sans, sans-serif", fontSize: "13px",
-              border: game === g.id ? "1px solid #4da8ff" : "1px solid rgba(255,255,255,0.1)",
+              border: game === g.id ? "1px solid #00d4ff" : "1px solid rgba(255,255,255,0.1)",
               background: game === g.id ? "rgba(0,170,255,0.1)" : "transparent",
-              color: game === g.id ? "#4da8ff" : "#666680",
+              color: game === g.id ? "#00d4ff" : "#c8d8f0",
             }}>{g.icon} {g.label}</button>
           ))}
         </div>
@@ -261,7 +261,7 @@ export default function PriceChecker() {
               onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
               placeholder="Search any card... e.g. Lightning Bolt, Charizard, Dark Magician"
               style={{
-                width: "100%", background: "#050510",
+                width: "100%", background: "#050515",
                 border: "1px solid rgba(255,255,255,0.15)",
                 borderRadius: showDropdown ? "12px 12px 0 0" : "12px",
                 padding: "16px 50px 16px 20px",
@@ -278,7 +278,7 @@ export default function PriceChecker() {
             />
             <div style={{
               position: "absolute", right: "16px", top: "50%",
-              transform: "translateY(-50%)", color: "#444460", fontSize: "18px",
+              transform: "translateY(-50%)", color: "#8899bb", fontSize: "18px",
             }}>
               {loading ? "⏳" : "🔍"}
             </div>
@@ -288,7 +288,7 @@ export default function PriceChecker() {
           {showDropdown && suggestions.length > 0 && (
             <div style={{
               position: "absolute", top: "100%", left: 0, right: 0,
-              background: "#050510", border: "1px solid rgba(0,170,255,0.3)",
+              background: "#050515", border: "1px solid rgba(0,170,255,0.3)",
               borderTop: "none", borderRadius: "0 0 12px 12px",
               zIndex: 100, maxHeight: "320px", overflowY: "auto",
               boxShadow: "0 16px 48px rgba(0,0,0,0.8)",
@@ -303,17 +303,17 @@ export default function PriceChecker() {
                     borderBottom: i < suggestions.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
                     transition: "background 0.15s",
                   }}
-                  onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#0a0a18"}
+                  onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#0a1628"}
                   onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = "transparent"}
                 >
                   <span style={{ fontSize: "18px" }}>{s.icon}</span>
                   <div>
                     <div style={{ fontSize: "14px", color: "#ffffff", fontWeight: 500 }}>{s.name}</div>
-                    <div style={{ fontSize: "11px", color: "#444460", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                    <div style={{ fontSize: "11px", color: "#8899bb", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                       {s.game === "magic" ? "Magic: The Gathering" : s.game === "pokemon" ? "Pokémon TCG" : "Yu-Gi-Oh!"}
                     </div>
                   </div>
-                  <div style={{ marginLeft: "auto", fontSize: "11px", color: "#4da8ff" }}>View all versions →</div>
+                  <div style={{ marginLeft: "auto", fontSize: "11px", color: "#00d4ff" }}>View all versions →</div>
                 </div>
               ))}
             </div>
@@ -331,10 +331,10 @@ export default function PriceChecker() {
                 alt={selectedCard.name}
                 style={{ width: "100%", borderRadius: "12px", boxShadow: "0 8px 40px rgba(0,0,0,0.7)", marginBottom: "16px" }}
               />
-              <div style={{ background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px" }}>
+              <div style={{ background: "#050515", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px" }}>
                 <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", fontWeight: 600, color: "#ffffff", marginBottom: "6px" }}>{selectedCard.name}</div>
-                <div style={{ fontSize: "12px", color: "#4da8ff", marginBottom: "4px" }}>{selectedCard.set}</div>
-                {selectedCard.rarity && <div style={{ fontSize: "11px", color: "#666680", textTransform: "capitalize" }}>⭐ {selectedCard.rarity}</div>}
+                <div style={{ fontSize: "12px", color: "#00d4ff", marginBottom: "4px" }}>{selectedCard.set}</div>
+                {selectedCard.rarity && <div style={{ fontSize: "11px", color: "#c8d8f0", textTransform: "capitalize" }}>⭐ {selectedCard.rarity}</div>}
               </div>
             </div>
 
@@ -358,7 +358,7 @@ export default function PriceChecker() {
                         onClick={() => setSelectedCard(v)}
                         style={{
                           cursor: "pointer",
-                          border: selectedCard.id === v.id ? "2px solid #4da8ff" : "1px solid rgba(255,255,255,0.06)",
+                          border: selectedCard.id === v.id ? "2px solid #00d4ff" : "1px solid rgba(255,255,255,0.06)",
                           borderRadius: "8px", overflow: "hidden",
                           width: "72px", transition: "all 0.15s",
                           opacity: selectedCard.id === v.id ? 1 : 0.6,
@@ -369,7 +369,7 @@ export default function PriceChecker() {
                         }}
                       >
                         <img src={v.imageUrl} alt={v.set} style={{ width: "100%", display: "block" }} />
-                        <div style={{ padding: "4px 6px", background: "#0a0a18", fontSize: "8px", color: "#666680", textAlign: "center", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v.set}</div>
+                        <div style={{ padding: "4px 6px", background: "#0a1628", fontSize: "8px", color: "#c8d8f0", textAlign: "center", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v.set}</div>
                       </div>
                     ))}
                   </div>
@@ -383,13 +383,13 @@ export default function PriceChecker() {
         {!selectedCard && !loading && query.length === 0 && (
           <div style={{ textAlign: "center", padding: "60px 20px" }}>
             <div style={{ fontSize: "64px", marginBottom: "20px" }}>🔍</div>
-            <p style={{ fontSize: "15px", color: "#666680", marginBottom: "32px" }}>Start typing to search any TCG card</p>
+            <p style={{ fontSize: "15px", color: "#c8d8f0", marginBottom: "32px" }}>Start typing to search any TCG card</p>
             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
               {["Lightning Bolt", "Charizard EX", "Blue-Eyes White Dragon", "Luffy OP-01"].map((s, i) => (
                 <button key={i} onClick={() => { setQuery(s); inputRef.current?.focus(); }} style={{
                   padding: "8px 16px", border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: "20px", background: "#050510",
-                  color: "#666680", fontSize: "13px", cursor: "pointer",
+                  borderRadius: "20px", background: "#050515",
+                  color: "#c8d8f0", fontSize: "13px", cursor: "pointer",
                   fontFamily: "DM Sans, sans-serif",
                 }}>{s}</button>
               ))}

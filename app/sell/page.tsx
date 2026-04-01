@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 const WalrusUpload = dynamic(() => import("../components/WalrusUpload"), { ssr: false });
 
 const inputStyle = {
-  width: "100%", background: "#0a0a18",
+  width: "100%", background: "#0a1628",
   border: "1px solid rgba(255,255,255,0.1)",
   borderRadius: "8px", padding: "12px 16px",
   fontSize: "14px", color: "#ffffff",
@@ -16,11 +16,11 @@ const inputStyle = {
 const labelStyle = {
   display: "block", fontSize: "12px",
   letterSpacing: "0.08em", textTransform: "uppercase" as const,
-  color: "#666680", marginBottom: "8px",
+  color: "#c8d8f0", marginBottom: "8px",
 };
 
 const btnPrimary = {
-  background: "linear-gradient(135deg, #0078ff, #00ffcc)",
+  background: "linear-gradient(135deg, #0099ff, #00ffcc)",
   color: "#fff", border: "none", borderRadius: "8px", padding: "14px",
   fontSize: "14px", fontWeight: 500, cursor: "pointer",
   fontFamily: "DM Sans, sans-serif",
@@ -29,7 +29,7 @@ const btnPrimary = {
 };
 
 const btnSecondary = {
-  background: "transparent", color: "#666680",
+  background: "transparent", color: "#c8d8f0",
   border: "1px solid rgba(255,255,255,0.1)",
   borderRadius: "8px", padding: "14px",
   fontSize: "14px", cursor: "pointer",
@@ -90,11 +90,11 @@ export default function Sell() {
 
   if (success) {
     return (
-      <div style={{ minHeight: "100vh", background: "#000000", display: "flex", alignItems: "center", justifyContent: "center", padding: "48px" }}>
+      <div style={{ minHeight: "100vh", background: "#000008", display: "flex", alignItems: "center", justifyContent: "center", padding: "48px" }}>
         <div style={{ textAlign: "center", maxWidth: "400px" }}>
           <div style={{ fontSize: "72px", marginBottom: "24px" }}>🎉</div>
           <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", fontWeight: 700, color: "#ffffff", marginBottom: "12px" }}>Card Listed!</h1>
-          <p style={{ fontSize: "14px", color: "#666680", marginBottom: "32px", lineHeight: 1.75 }}>
+          <p style={{ fontSize: "14px", color: "#c8d8f0", marginBottom: "32px", lineHeight: 1.75 }}>
             Your card is now live on WaveTCG Marketplace!
             {form.image_url && <><br /><span style={{ color: "#00ffcc" }}>◈ Image stored on Sui Walrus</span></>}
           </p>
@@ -108,24 +108,24 @@ export default function Sell() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000000", padding: "48px 24px" }}>
+    <div style={{ minHeight: "100vh", background: "#000008", padding: "48px 24px" }}>
       <div style={{ maxWidth: "680px", margin: "0 auto" }}>
 
         <div style={{ marginBottom: "40px" }}>
           <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#00ffcc", marginBottom: "12px" }}>Free to List · 1% on Sale · Images on Walrus</div>
-          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "36px", fontWeight: 700, background: "linear-gradient(135deg, #0078ff, #00ffcc, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>List a Card</h1>
+          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "36px", fontWeight: 700, background: "linear-gradient(135deg, #0099ff, #00ffcc, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>List a Card</h1>
         </div>
 
         <div style={{ display: "flex", gap: "8px", marginBottom: "40px" }}>
           {["Card Details", "Condition & Price", "Review"].map((s, i) => (
             <div key={i} style={{ flex: 1, textAlign: "center" }}>
               <div style={{ height: "3px", borderRadius: "2px", marginBottom: "8px", background: step > i ? "#00ffcc" : "rgba(255,255,255,0.1)" }} />
-              <div style={{ fontSize: "11px", letterSpacing: "0.06em", textTransform: "uppercase", color: step > i ? "#4da8ff" : "#444460" }}>{s}</div>
+              <div style={{ fontSize: "11px", letterSpacing: "0.06em", textTransform: "uppercase", color: step > i ? "#00d4ff" : "#8899bb" }}>{s}</div>
             </div>
           ))}
         </div>
 
-        <div style={{ background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "16px", padding: "32px" }}>
+        <div style={{ background: "#050515", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "16px", padding: "32px" }}>
 
           {step === 1 && (
             <div>
@@ -181,7 +181,7 @@ export default function Sell() {
                       border: form.condition === c ? "1px solid #00ffcc" : "1px solid rgba(255,255,255,0.1)",
                       borderRadius: "6px",
                       background: form.condition === c ? "rgba(0,120,255,0.1)" : "transparent",
-                      color: form.condition === c ? "#4da8ff" : "#666680",
+                      color: form.condition === c ? "#00d4ff" : "#c8d8f0",
                       fontSize: "12px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
                     }}>{c}</button>
                   ))}
@@ -218,7 +218,7 @@ export default function Sell() {
                 </div>
               )}
 
-              <div style={{ background: "#0a0a18", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "20px", marginBottom: "24px" }}>
+              <div style={{ background: "#0a1628", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "20px", marginBottom: "24px" }}>
                 {[
                   { label: "Card", val: form.name },
                   { label: "Game", val: form.game },
@@ -229,7 +229,7 @@ export default function Sell() {
                   { label: "Commission", val: "1% on sale" },
                 ].map((row, i) => (
                   <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: i < 6 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
-                    <span style={{ fontSize: "13px", color: "#666680" }}>{row.label}</span>
+                    <span style={{ fontSize: "13px", color: "#c8d8f0" }}>{row.label}</span>
                     <span style={{ fontSize: "13px", color: "#ffffff", fontWeight: 500 }}>{row.val}</span>
                   </div>
                 ))}

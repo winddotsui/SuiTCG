@@ -22,13 +22,13 @@ const STEPS_WIN = [
 const TOURNAMENT_STEPS = [
   { step: "1", title: "Connect Your Sui Wallet", desc: "Go to wave-tcg.vercel.app and click Connect. You need a Sui wallet with at least 10 SUI.", icon: "◈", color: "#00d4ff" },
   { step: "2", title: "Go to OPTCG Hub", desc: "Click OPTCG in the navbar to see the current tournament and prize pool.", icon: "🏴", color: "#00d4ff" },
-  { step: "3", title: "Pay 10 SUI Entry Fee", desc: "Click Join for 10 SUI. Your wallet will ask you to confirm. The SUI goes into the prize pool smart contract.", icon: "💰", color: "#4da8ff" },
+  { step: "3", title: "Pay 10 SUI Entry Fee", desc: "Click Join for 10 SUI. Your wallet will ask you to confirm. The SUI goes into the prize pool smart contract.", icon: "💰", color: "#00d4ff" },
   { step: "4", title: "Minimum 8 Players Required", desc: "Tournament starts when at least 8 players register. Maximum 64 players. Register early!", icon: "👥", color: "#00d4ff" },
   { step: "5", title: "Download OPTCGSim", desc: "Download OPTCGSim from this page. Build your deck and practice before the tournament starts.", icon: "📥", color: "#00d4ff" },
-  { step: "6", title: "Wait for Round 1 Pairings", desc: "When registration closes and minimum 8 players met, pairings will be announced on the OPTCG Hub page.", icon: "📋", color: "#666680" },
+  { step: "6", title: "Wait for Round 1 Pairings", desc: "When registration closes and minimum 8 players met, pairings will be announced on the OPTCG Hub page.", icon: "📋", color: "#c8d8f0" },
   { step: "7", title: "Contact Your Opponent", desc: "Message your opponent on Discord. Share your OPTCGSim room code and play your match!", icon: "⚔️", color: "#00d4ff" },
   { step: "8", title: "Report Your Score", desc: "After the match, both players report the result. Both must confirm.", icon: "📊", color: "#00d4ff" },
-  { step: "9", title: "Win SUI Prizes!", desc: "1st gets 40%, 2nd gets 25%, 3rd gets 20%. WaveTCG takes 15%. Prizes sent automatically!", icon: "🏆", color: "#4da8ff" },
+  { step: "9", title: "Win SUI Prizes!", desc: "1st gets 40%, 2nd gets 25%, 3rd gets 20%. WaveTCG takes 15%. Prizes sent automatically!", icon: "🏆", color: "#00d4ff" },
 ];
 
 const FAQ = [
@@ -48,27 +48,27 @@ export default function DownloadPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000000" }}>
-      <div style={{ background: "linear-gradient(180deg, #000000 0%, #000510 50%, #000000 100%)", padding: "60px 48px 40px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center", position: "relative", overflow: "hidden" }}>
+    <div style={{ minHeight: "100vh", background: "#000008" }}>
+      <div style={{ background: "linear-gradient(180deg, #000008 0%, #000510 50%, #000008 100%)", padding: "60px 48px 40px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, rgba(0,80,255,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#00d4ff", marginBottom: "12px" }}>WaveTCG OPTCG Hub</div>
-        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 900, background: "linear-gradient(135deg, #0050ff, #00d4ff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "16px" }}>Download and Play Guide</h1>
-        <p style={{ fontSize: "16px", color: "#666680", maxWidth: "560px", margin: "0 auto 32px", lineHeight: 1.75 }}>Everything you need to download OPTCGSim and join WaveTCG weekly tournaments.</p>
-        <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0050ff, #00d4ff)", color: "#fff", padding: "14px 40px", borderRadius: "8px", fontSize: "15px", fontWeight: 600, textDecoration: "none", boxShadow: "0 4px 24px rgba(0,80,255,0.3)" }}>Go to OPTCGSim</a>
+        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 900, background: "linear-gradient(135deg, #0055ff, #00d4ff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "16px" }}>Download and Play Guide</h1>
+        <p style={{ fontSize: "16px", color: "#c8d8f0", maxWidth: "560px", margin: "0 auto 32px", lineHeight: 1.75 }}>Everything you need to download OPTCGSim and join WaveTCG weekly tournaments.</p>
+        <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0055ff, #00d4ff)", color: "#fff", padding: "14px 40px", borderRadius: "8px", fontSize: "15px", fontWeight: 600, textDecoration: "none", boxShadow: "0 4px 24px rgba(0,80,255,0.3)" }}>Go to OPTCGSim</a>
       </div>
 
       <div style={{ maxWidth: "900px", margin: "0 auto", padding: "60px 24px" }}>
-        <div style={{ background: "linear-gradient(135deg, #000000, #050510)", border: "1px solid rgba(0,80,255,0.3)", borderRadius: "16px", padding: "24px 28px", marginBottom: "60px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "20px" }}>
+        <div style={{ background: "linear-gradient(135deg, #000008, #050515)", border: "1px solid rgba(0,80,255,0.3)", borderRadius: "16px", padding: "24px 28px", marginBottom: "60px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "20px" }}>
           {[
-            { label: "Entry Fee", val: "10 SUI", icon: "💰", color: "#4da8ff" },
+            { label: "Entry Fee", val: "10 SUI", icon: "💰", color: "#00d4ff" },
             { label: "Min Players", val: "8 players", icon: "👥", color: "#00d4ff" },
             { label: "Max Players", val: "64 players", icon: "🏆", color: "#00d4ff" },
-            { label: "Platform Fee", val: "15% of pot", icon: "⛓️", color: "#666680" },
+            { label: "Platform Fee", val: "15% of pot", icon: "⛓️", color: "#c8d8f0" },
           ].map((info, i) => (
             <div key={i} style={{ textAlign: "center" }}>
               <div style={{ fontSize: "24px", marginBottom: "6px" }}>{info.icon}</div>
               <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", fontWeight: 600, color: info.color, marginBottom: "4px" }}>{info.val}</div>
-              <div style={{ fontSize: "11px", color: "#666680", textTransform: "uppercase", letterSpacing: "0.08em" }}>{info.label}</div>
+              <div style={{ fontSize: "11px", color: "#c8d8f0", textTransform: "uppercase", letterSpacing: "0.08em" }}>{info.label}</div>
             </div>
           ))}
         </div>
@@ -76,24 +76,24 @@ export default function DownloadPage() {
         <div style={{ marginBottom: "80px" }}>
           <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#00d4ff", marginBottom: "12px" }}>Step 1</div>
           <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "32px", color: "#ffffff", marginBottom: "8px" }}>Download OPTCGSim</h2>
-          <p style={{ fontSize: "15px", color: "#666680", marginBottom: "32px" }}>Choose your operating system for step by step instructions.</p>
+          <p style={{ fontSize: "15px", color: "#c8d8f0", marginBottom: "32px" }}>Choose your operating system for step by step instructions.</p>
           <div style={{ display: "flex", gap: "8px", marginBottom: "32px" }}>
             {[{ id: "mac", label: "Mac" }, { id: "windows", label: "Windows" }].map(o => (
-              <button key={o.id} onClick={() => setOs(o.id)} style={{ padding: "10px 24px", borderRadius: "8px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontSize: "14px", fontWeight: 500, border: os === o.id ? "1px solid #00d4ff" : "1px solid rgba(255,255,255,0.1)", background: os === o.id ? "rgba(0,80,255,0.1)" : "transparent", color: os === o.id ? "#00d4ff" : "#666680" }}>{o.label}</button>
+              <button key={o.id} onClick={() => setOs(o.id)} style={{ padding: "10px 24px", borderRadius: "8px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontSize: "14px", fontWeight: 500, border: os === o.id ? "1px solid #00d4ff" : "1px solid rgba(255,255,255,0.1)", background: os === o.id ? "rgba(0,80,255,0.1)" : "transparent", color: os === o.id ? "#00d4ff" : "#c8d8f0" }}>{o.label}</button>
             ))}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {(os === "mac" ? STEPS_MAC : STEPS_WIN).map((s, i) => (
-              <div key={i} style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "20px" }}>
+              <div key={i} style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "#050515", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "20px" }}>
                 <div style={{ width: "44px", height: "44px", borderRadius: "50%", flexShrink: 0, background: "rgba(0,80,255,0.1)", border: "1px solid rgba(0,80,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "16px", fontWeight: 600, color: "#00d4ff" }}>{s.step}</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
                     <span style={{ fontSize: "20px" }}>{s.icon}</span>
                     <div style={{ fontFamily: "Cinzel, serif", fontSize: "15px", color: "#ffffff" }}>{s.title}</div>
                   </div>
-                  <p style={{ fontSize: "14px", color: "#666680", lineHeight: 1.75, margin: 0 }}>{s.desc}</p>
+                  <p style={{ fontSize: "14px", color: "#c8d8f0", lineHeight: 1.75, margin: 0 }}>{s.desc}</p>
                   {s.step === "5" && os === "mac" && (
-                    <div style={{ marginTop: "12px", background: "#000000", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "12px 16px", fontFamily: "monospace", fontSize: "12px", color: "#00d4ff" }}>
+                    <div style={{ marginTop: "12px", background: "#000008", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "12px 16px", fontFamily: "monospace", fontSize: "12px", color: "#00d4ff" }}>
                       sudo xattr -rd com.apple.quarantine /Applications/OPTCGSim.app
                     </div>
                   )}
@@ -102,46 +102,46 @@ export default function DownloadPage() {
             ))}
           </div>
           <div style={{ marginTop: "24px", textAlign: "center" }}>
-            <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0050ff, #00d4ff)", color: "#fff", padding: "14px 32px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, textDecoration: "none" }}>Download OPTCGSim Now</a>
+            <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0055ff, #00d4ff)", color: "#fff", padding: "14px 32px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, textDecoration: "none" }}>Download OPTCGSim Now</a>
           </div>
         </div>
 
         <div style={{ marginBottom: "80px" }}>
-          <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4da8ff", marginBottom: "12px" }}>Step 2</div>
+          <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#00d4ff", marginBottom: "12px" }}>Step 2</div>
           <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "32px", color: "#ffffff", marginBottom: "8px" }}>Join WaveTCG Weekly Tournament</h2>
-          <p style={{ fontSize: "15px", color: "#666680", marginBottom: "32px" }}>Every week WaveTCG hosts a One Piece TCG tournament. Entry is 10 SUI.</p>
+          <p style={{ fontSize: "15px", color: "#c8d8f0", marginBottom: "32px" }}>Every week WaveTCG hosts a One Piece TCG tournament. Entry is 10 SUI.</p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginBottom: "32px" }}>
             {[
-              { place: "1st Place", pct: "40%", icon: "🥇", color: "#4da8ff", bg: "rgba(232,201,122,0.08)", border: "rgba(232,201,122,0.2)" },
-              { place: "2nd Place", pct: "25%", icon: "🥈", color: "#4da8ff", bg: "rgba(120,191,255,0.08)", border: "rgba(120,191,255,0.2)" },
+              { place: "1st Place", pct: "40%", icon: "🥇", color: "#00d4ff", bg: "rgba(232,201,122,0.08)", border: "rgba(232,201,122,0.2)" },
+              { place: "2nd Place", pct: "25%", icon: "🥈", color: "#00d4ff", bg: "rgba(120,191,255,0.08)", border: "rgba(120,191,255,0.2)" },
               { place: "3rd Place", pct: "20%", icon: "🥉", color: "#00d4ff", bg: "rgba(0,80,255,0.08)", border: "rgba(0,80,255,0.2)" },
               { place: "WaveTCG", pct: "15%", icon: "🌊", color: "#00d4ff", bg: "rgba(0,80,255,0.08)", border: "rgba(0,80,255,0.2)" },
             ].map((p, i) => (
               <div key={i} style={{ background: p.bg, border: "1px solid " + p.border, borderRadius: "12px", padding: "16px", textAlign: "center" }}>
                 <div style={{ fontSize: "24px", marginBottom: "6px" }}>{p.icon}</div>
-                <div style={{ fontFamily: "Cinzel, serif", fontSize: "11px", color: "#666680", marginBottom: "6px" }}>{p.place}</div>
+                <div style={{ fontFamily: "Cinzel, serif", fontSize: "11px", color: "#c8d8f0", marginBottom: "6px" }}>{p.place}</div>
                 <div style={{ fontFamily: "Cinzel, serif", fontSize: "28px", fontWeight: 700, color: p.color }}>{p.pct}</div>
-                <div style={{ fontSize: "10px", color: "#666680", marginTop: "4px" }}>of prize pool</div>
+                <div style={{ fontSize: "10px", color: "#c8d8f0", marginTop: "4px" }}>of prize pool</div>
               </div>
             ))}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {TOURNAMENT_STEPS.map((s, i) => (
-              <div key={i} style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "20px" }}>
+              <div key={i} style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "#050515", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "20px" }}>
                 <div style={{ width: "44px", height: "44px", borderRadius: "50%", flexShrink: 0, background: "rgba(0,80,255,0.1)", border: "1px solid rgba(0,80,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "16px", fontWeight: 600, color: s.color }}>{s.step}</div>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
                     <span style={{ fontSize: "20px" }}>{s.icon}</span>
                     <div style={{ fontFamily: "Cinzel, serif", fontSize: "15px", color: "#ffffff" }}>{s.title}</div>
                   </div>
-                  <p style={{ fontSize: "14px", color: "#666680", lineHeight: 1.75, margin: 0 }}>{s.desc}</p>
+                  <p style={{ fontSize: "14px", color: "#c8d8f0", lineHeight: 1.75, margin: 0 }}>{s.desc}</p>
                 </div>
               </div>
             ))}
           </div>
           <div style={{ marginTop: "24px", display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="/optcg" style={{ display: "inline-block", background: "linear-gradient(135deg, #00d4ff, #4da8ff)", color: "#000000", padding: "14px 32px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, textDecoration: "none" }}>Join Current Tournament</a>
-            <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "transparent", color: "#666680", padding: "14px 28px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", fontSize: "14px", textDecoration: "none" }}>Download OPTCGSim</a>
+            <a href="/optcg" style={{ display: "inline-block", background: "linear-gradient(135deg, #00d4ff, #00d4ff)", color: "#000008", padding: "14px 32px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, textDecoration: "none" }}>Join Current Tournament</a>
+            <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "transparent", color: "#c8d8f0", padding: "14px 28px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", fontSize: "14px", textDecoration: "none" }}>Download OPTCGSim</a>
           </div>
         </div>
 
@@ -150,13 +150,13 @@ export default function DownloadPage() {
           <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "32px", color: "#ffffff", marginBottom: "32px" }}>Frequently Asked Questions</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {FAQ.map((faq, i) => (
-              <div key={i} style={{ background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", overflow: "hidden" }}>
+              <div key={i} style={{ background: "#050515", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", overflow: "hidden" }}>
                 <button onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{ width: "100%", padding: "18px 20px", background: "transparent", border: "none", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", textAlign: "left" }}>
                   <span style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#ffffff" }}>{faq.q}</span>
                   <span style={{ color: "#00d4ff", fontSize: "18px", flexShrink: 0, marginLeft: "16px" }}>+</span>
                 </button>
                 {openFaq === i && (
-                  <div style={{ padding: "0 20px 18px", fontSize: "14px", color: "#666680", lineHeight: 1.75 }}>{faq.a}</div>
+                  <div style={{ padding: "0 20px 18px", fontSize: "14px", color: "#c8d8f0", lineHeight: 1.75 }}>{faq.a}</div>
                 )}
               </div>
             ))}
@@ -166,10 +166,10 @@ export default function DownloadPage() {
         <div style={{ textAlign: "center", padding: "60px 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
           <div style={{ fontSize: "48px", marginBottom: "20px" }}>🏴</div>
           <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", color: "#ffffff", marginBottom: "12px" }}>Ready to become Pirate King?</h2>
-          <p style={{ fontSize: "15px", color: "#666680", marginBottom: "32px" }}>Download OPTCGSim, join the WaveTCG tournament, and win SUI prizes every week!</p>
+          <p style={{ fontSize: "15px", color: "#c8d8f0", marginBottom: "32px" }}>Download OPTCGSim, join the WaveTCG tournament, and win SUI prizes every week!</p>
           <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0050ff, #00d4ff)", color: "#fff", padding: "14px 32px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, textDecoration: "none" }}>Download OPTCGSim</a>
-            <a href="/optcg" style={{ display: "inline-block", background: "linear-gradient(135deg, #00d4ff, #4da8ff)", color: "#000000", padding: "14px 32px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, textDecoration: "none" }}>Join Tournament</a>
+            <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0055ff, #00d4ff)", color: "#fff", padding: "14px 32px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, textDecoration: "none" }}>Download OPTCGSim</a>
+            <a href="/optcg" style={{ display: "inline-block", background: "linear-gradient(135deg, #00d4ff, #00d4ff)", color: "#000008", padding: "14px 32px", borderRadius: "8px", fontSize: "14px", fontWeight: 600, textDecoration: "none" }}>Join Tournament</a>
           </div>
         </div>
       </div>

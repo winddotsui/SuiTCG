@@ -123,7 +123,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000000", overflow: "hidden" }}>
+    <div style={{ minHeight: "100vh", background: "#000008", overflow: "hidden" }}>
       <FloatingCharacters />
       <style>{`
         @keyframes floatCard { 0%,100%{transform:translateY(0px) rotate(var(--rotate))} 50%{transform:translateY(-18px) rotate(calc(var(--rotate)*-0.5))} }
@@ -147,26 +147,26 @@ export default function Home() {
         ))}
 
         <div style={{ position:"relative", zIndex:10, animation:"slideUp 0.8s ease both" }}>
-          <div style={{ fontSize:"11px", fontWeight:500, letterSpacing:"0.22em", textTransform:"uppercase", color:"#0078ff", marginBottom:"24px", display:"flex", alignItems:"center", gap:"10px", justifyContent:"center" }}>
-            <span style={{ display:"block", width:"32px", height:"1px", background:"#0078ff", opacity:0.6 }} />
+          <div style={{ fontSize:"11px", fontWeight:500, letterSpacing:"0.22em", textTransform:"uppercase", color:"#0099ff", marginBottom:"24px", display:"flex", alignItems:"center", gap:"10px", justifyContent:"center" }}>
+            <span style={{ display:"block", width:"32px", height:"1px", background:"#0099ff", opacity:0.6 }} />
             Web3 TCG Marketplace · Powered by Sui
-            <span style={{ display:"block", width:"32px", height:"1px", background:"#0078ff", opacity:0.6 }} />
+            <span style={{ display:"block", width:"32px", height:"1px", background:"#0099ff", opacity:0.6 }} />
           </div>
           <h1 style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(44px, 7vw, 88px)", fontWeight:900, lineHeight:1.05, marginBottom:"28px" }}>
             <span style={{ color:"#ffffff", display:"block" }}>Ride the Wave.</span>
-            <span style={{ display:"block", background:"linear-gradient(135deg, #0050ff 0%, #0078ff 40%, #00b4ff 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>Trade Any Card.</span>
+            <span style={{ display:"block", background:"linear-gradient(135deg, #0055ff 0%, #0099ff 40%, #00b4ff 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>Trade Any Card.</span>
           </h1>
-          <p style={{ maxWidth:"520px", fontSize:"17px", fontWeight:300, color:"#666680", lineHeight:1.75, marginBottom:"48px", margin:"0 auto 48px" }}>
+          <p style={{ maxWidth:"520px", fontSize:"17px", fontWeight:300, color:"#c8d8f0", lineHeight:1.75, marginBottom:"48px", margin:"0 auto 48px" }}>
             Buy, sell, and list <strong style={{ color:"#ffffff", fontWeight:500 }}>One Piece TCG, Pokémon, Magic, Yu-Gi-Oh!</strong> and more — on Sui blockchain.
           </p>
           <div style={{ display:"flex", gap:"16px", justifyContent:"center", flexWrap:"wrap" }}>
-            <a href="/marketplace" style={{ background:"linear-gradient(135deg, #0050ff, #0078ff)", color:"#fff", fontSize:"14px", fontWeight:500, letterSpacing:"0.05em", textTransform:"uppercase", padding:"14px 32px", borderRadius:"4px", textDecoration:"none", display:"inline-block", boxShadow:"0 4px 24px rgba(0,120,255,0.4)" }}>Browse Marketplace</a>
+            <a href="/marketplace" style={{ background:"linear-gradient(135deg, #0055ff, #0099ff)", color:"#fff", fontSize:"14px", fontWeight:500, letterSpacing:"0.05em", textTransform:"uppercase", padding:"14px 32px", borderRadius:"4px", textDecoration:"none", display:"inline-block", boxShadow:"0 4px 24px rgba(0,120,255,0.4)" }}>Browse Marketplace</a>
             <a href="/optcg" style={{ background:"transparent", color:"#888898", fontSize:"14px", padding:"14px 28px", borderRadius:"4px", border:"1px solid rgba(255,255,255,0.1)", textDecoration:"none", display:"inline-block" }}>🏴‍☠️ OPTCG Tournament</a>
           </div>
         </div>
       </section>
 
-      <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", borderBottom:"1px solid rgba(255,255,255,0.06)", padding:"36px 48px", display:"grid", gridTemplateColumns:"repeat(4,1fr)", background:"#050510" }}>
+      <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", borderBottom:"1px solid rgba(255,255,255,0.06)", padding:"36px 48px", display:"grid", gridTemplateColumns:"repeat(4,1fr)", background:"#050515" }}>
         {[
           { num:"120K+", label:"Cards Listed" },
           { num:"8", label:"TCG Games" },
@@ -174,23 +174,23 @@ export default function Home() {
           { num:"1%", label:"Platform Fee" },
         ].map((stat, i) => (
           <div key={i} style={{ textAlign:"center", padding:"0 24px", borderRight:i<3?"1px solid rgba(255,255,255,0.06)":"none" }}>
-            <div style={{ fontFamily:"Cinzel, serif", fontSize:"32px", fontWeight:600, color:"#0078ff", letterSpacing:"-0.02em", marginBottom:"6px" }}>{stat.num}</div>
+            <div style={{ fontFamily:"Cinzel, serif", fontSize:"32px", fontWeight:600, color:"#0099ff", letterSpacing:"-0.02em", marginBottom:"6px" }}>{stat.num}</div>
             <div style={{ fontSize:"12px", letterSpacing:"0.1em", textTransform:"uppercase", color:"#555570" }}>{stat.label}</div>
           </div>
         ))}
       </div>
 
       <section style={{ padding:"80px 48px", maxWidth:"1200px", margin:"0 auto" }}>
-        <div style={{ fontSize:"11px", letterSpacing:"0.2em", textTransform:"uppercase", color:"#0078ff", marginBottom:"16px" }}>Today's Hot Cards</div>
+        <div style={{ fontSize:"11px", letterSpacing:"0.2em", textTransform:"uppercase", color:"#0099ff", marginBottom:"16px" }}>Today's Hot Cards</div>
         <div style={{ display:"flex", alignItems:"center", gap:"12px", marginBottom:"16px" }}>
           <h2 style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(28px, 4vw, 48px)", fontWeight:600, color:"#ffffff" }}>Hot Cards Today</h2>
           <span style={{ padding:"4px 12px", background:"rgba(255,50,50,0.1)", border:"1px solid rgba(255,50,50,0.3)", borderRadius:"20px", fontSize:"12px", color:"#ff6b6b", fontWeight:600 }}>🔥 Daily</span>
         </div>
-        <p style={{ fontSize:"13px", color:"#444460", marginBottom:"48px" }}>Updates every day · Best card from each TCG</p>
+        <p style={{ fontSize:"13px", color:"#8899bb", marginBottom:"48px" }}>Updates every day · Best card from each TCG</p>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(200px, 1fr))", gap:"20px" }}>
           {heroCards.map((card, i) => (
             <a key={i} href="/marketplace" style={{ textDecoration:"none" }}>
-              <div style={{ background:"#050510", border:"1px solid rgba(255,255,255,0.06)", borderRadius:"14px", overflow:"hidden", cursor:"pointer", transition:"transform 0.2s, border-color 0.2s" }}
+              <div style={{ background:"#050515", border:"1px solid rgba(255,255,255,0.06)", borderRadius:"14px", overflow:"hidden", cursor:"pointer", transition:"transform 0.2s, border-color 0.2s" }}
                 onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform="translateY(-6px)"; (e.currentTarget as HTMLDivElement).style.borderColor="rgba(0,120,255,0.4)"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform="translateY(0)"; (e.currentTarget as HTMLDivElement).style.borderColor="rgba(255,255,255,0.06)"; }}
               >
@@ -208,8 +208,8 @@ export default function Home() {
                   <div style={{ fontFamily:"Cinzel, serif", fontSize:"13px", fontWeight:600, color:"#ffffff", marginBottom:"4px", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{card.name}</div>
                   <div style={{ fontSize:"11px", color:"#555570", marginBottom:"10px" }}>{card.game}</div>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                    <div style={{ fontSize:"16px", fontWeight:500, color:"#0078ff" }}>{card.priceDisplay}</div>
-                    <div style={{ fontSize:"10px", color:"#0078ff", padding:"3px 8px", background:"rgba(0,120,255,0.1)", borderRadius:"4px", border:"1px solid rgba(0,120,255,0.2)" }}>Buy</div>
+                    <div style={{ fontSize:"16px", fontWeight:500, color:"#0099ff" }}>{card.priceDisplay}</div>
+                    <div style={{ fontSize:"10px", color:"#0099ff", padding:"3px 8px", background:"rgba(0,120,255,0.1)", borderRadius:"4px", border:"1px solid rgba(0,120,255,0.2)" }}>Buy</div>
                   </div>
                 </div>
               </div>
@@ -217,13 +217,13 @@ export default function Home() {
           ))}
         </div>
         <div style={{ textAlign:"center", marginTop:"40px" }}>
-          <a href="/marketplace" style={{ display:"inline-block", padding:"12px 32px", border:"1px solid rgba(0,120,255,0.3)", borderRadius:"6px", color:"#0078ff", fontSize:"13px", textDecoration:"none", letterSpacing:"0.06em", textTransform:"uppercase" }}>View All Cards →</a>
+          <a href="/marketplace" style={{ display:"inline-block", padding:"12px 32px", border:"1px solid rgba(0,120,255,0.3)", borderRadius:"6px", color:"#0099ff", fontSize:"13px", textDecoration:"none", letterSpacing:"0.06em", textTransform:"uppercase" }}>View All Cards →</a>
         </div>
       </section>
 
-      <section style={{ padding:"80px 48px", background:"#050510", borderTop:"1px solid rgba(255,255,255,0.06)", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
+      <section style={{ padding:"80px 48px", background:"#050515", borderTop:"1px solid rgba(255,255,255,0.06)", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
         <div style={{ maxWidth:"1200px", margin:"0 auto" }}>
-          <div style={{ fontSize:"11px", letterSpacing:"0.2em", textTransform:"uppercase", color:"#0078ff", marginBottom:"16px" }}>Supported Games</div>
+          <div style={{ fontSize:"11px", letterSpacing:"0.2em", textTransform:"uppercase", color:"#0099ff", marginBottom:"16px" }}>Supported Games</div>
           <h2 style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(28px, 4vw, 48px)", fontWeight:600, color:"#ffffff", marginBottom:"48px" }}>All your favorite TCGs</h2>
           <div style={{ display:"flex", gap:"16px", flexWrap:"wrap" }}>
             {[
@@ -249,7 +249,7 @@ export default function Home() {
       </section>
 
       <section style={{ padding:"80px 48px", maxWidth:"1200px", margin:"0 auto" }}>
-        <div style={{ fontSize:"11px", letterSpacing:"0.2em", textTransform:"uppercase", color:"#0078ff", marginBottom:"16px" }}>Why WaveTCG</div>
+        <div style={{ fontSize:"11px", letterSpacing:"0.2em", textTransform:"uppercase", color:"#0099ff", marginBottom:"16px" }}>Why WaveTCG</div>
         <h2 style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(28px, 4vw, 48px)", fontWeight:600, color:"#ffffff", marginBottom:"48px" }}>Built for collectors</h2>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:"2px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:"12px", overflow:"hidden" }}>
           {[
@@ -260,9 +260,9 @@ export default function Home() {
             { icon:"📈", title:"Price Checker", desc:"Compare prices across TCGPlayer, CardKingdom, and WaveTCG in one place." },
             { icon:"🃏", title:"Deck Builder", desc:"Build and save your OPTCG decks. Register directly for tournaments." },
           ].map((f, i) => (
-            <div key={i} style={{ background:"#050510", padding:"40px 36px", transition:"background 0.2s" }}
-              onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background="#0a0a18"}
-              onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background="#050510"}
+            <div key={i} style={{ background:"#050515", padding:"40px 36px", transition:"background 0.2s" }}
+              onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background="#0a1628"}
+              onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background="#050515"}
             >
               <div style={{ fontSize:"32px", marginBottom:"20px" }}>{f.icon}</div>
               <div style={{ fontFamily:"Cinzel, serif", fontSize:"16px", fontWeight:600, color:"#ffffff", marginBottom:"12px" }}>{f.title}</div>
@@ -277,7 +277,7 @@ export default function Home() {
         <h2 style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(28px, 4vw, 48px)", fontWeight:900, color:"#ffffff", marginBottom:"16px" }}>Ready to ride the wave?</h2>
         <p style={{ fontSize:"16px", color:"#555570", marginBottom:"40px", fontWeight:300 }}>Join thousands of collectors on WaveTCG.</p>
         <div style={{ display:"flex", gap:"16px", justifyContent:"center", flexWrap:"wrap" }}>
-          <a href="/marketplace" style={{ background:"linear-gradient(135deg, #0050ff, #0078ff)", color:"#fff", padding:"14px 32px", borderRadius:"4px", fontSize:"14px", fontWeight:500, textDecoration:"none", display:"inline-block", letterSpacing:"0.05em", textTransform:"uppercase", boxShadow:"0 4px 24px rgba(0,120,255,0.4)" }}>Browse Cards</a>
+          <a href="/marketplace" style={{ background:"linear-gradient(135deg, #0055ff, #0099ff)", color:"#fff", padding:"14px 32px", borderRadius:"4px", fontSize:"14px", fontWeight:500, textDecoration:"none", display:"inline-block", letterSpacing:"0.05em", textTransform:"uppercase", boxShadow:"0 4px 24px rgba(0,120,255,0.4)" }}>Browse Cards</a>
           <a href="/optcg" style={{ background:"transparent", color:"#888898", padding:"14px 28px", borderRadius:"4px", border:"1px solid rgba(255,255,255,0.1)", fontSize:"14px", textDecoration:"none", display:"inline-block" }}>🏴‍☠️ Join Tournament</a>
         </div>
       </section>

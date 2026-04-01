@@ -149,13 +149,13 @@ export default function DeckBuilder() {
   const isComplete = leader && mainDeckCount === 50 && donCards === 10;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000000" }}>
+    <div style={{ minHeight: "100vh", background: "#000008" }}>
 
       {/* Header */}
-      <div style={{ background: "linear-gradient(180deg, #000000 0%, #000000 50%, #000000 100%)", padding: "40px 24px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center" }}>
-        <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4da8ff", marginBottom: "8px" }}>🏴‍☠️ WaveTCG · One Piece TCG</div>
-        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 900, background: "linear-gradient(135deg, #7700ff, #0078ff, #00aaff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "8px" }}>Deck Builder</h1>
-        <p style={{ fontSize: "14px", color: "#666680" }}>Build your One Piece TCG deck · 1 Leader + 50 Main + 10 DON!!</p>
+      <div style={{ background: "linear-gradient(180deg, #000008 0%, #000008 50%, #000008 100%)", padding: "40px 24px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center" }}>
+        <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#00d4ff", marginBottom: "8px" }}>🏴‍☠️ WaveTCG · One Piece TCG</div>
+        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 900, background: "linear-gradient(135deg, #7700ff, #0099ff, #0099ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "8px" }}>Deck Builder</h1>
+        <p style={{ fontSize: "14px", color: "#c8d8f0" }}>Build your One Piece TCG deck · 1 Leader + 50 Main + 10 DON!!</p>
       </div>
 
       <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "24px", display: "grid", gridTemplateColumns: "1fr 320px", gap: "24px" }}>
@@ -163,22 +163,22 @@ export default function DeckBuilder() {
         {/* LEFT — Card Browser */}
         <div>
           {/* Filters */}
-          <div style={{ background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px", marginBottom: "16px" }}>
+          <div style={{ background: "#050515", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px", marginBottom: "16px" }}>
             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
               <input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Search cards..."
-                style={{ flex: 1, minWidth: "160px", background: "#0a0a18", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "8px 14px", fontSize: "13px", color: "#ffffff", fontFamily: "DM Sans, sans-serif", outline: "none" }}
+                style={{ flex: 1, minWidth: "160px", background: "#0a1628", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "8px 14px", fontSize: "13px", color: "#ffffff", fontFamily: "DM Sans, sans-serif", outline: "none" }}
               />
-              <select value={selectedSet} onChange={e => setSelectedSet(e.target.value)} style={{ background: "#0a0a18", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "8px 12px", fontSize: "13px", color: "#ffffff", fontFamily: "DM Sans, sans-serif", outline: "none", cursor: "pointer" }}>
+              <select value={selectedSet} onChange={e => setSelectedSet(e.target.value)} style={{ background: "#0a1628", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "8px 12px", fontSize: "13px", color: "#ffffff", fontFamily: "DM Sans, sans-serif", outline: "none", cursor: "pointer" }}>
                 {SETS.map(s => <option key={s.id} value={s.id}>{s.id} - {s.name}</option>)}
               </select>
-              <select value={selectedColor} onChange={e => setSelectedColor(e.target.value)} style={{ background: "#0a0a18", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "8px 12px", fontSize: "13px", color: "#ffffff", fontFamily: "DM Sans, sans-serif", outline: "none", cursor: "pointer" }}>
+              <select value={selectedColor} onChange={e => setSelectedColor(e.target.value)} style={{ background: "#0a1628", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "8px 12px", fontSize: "13px", color: "#ffffff", fontFamily: "DM Sans, sans-serif", outline: "none", cursor: "pointer" }}>
                 <option value="">All Colors</option>
                 {COLORS.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
-              <select value={selectedType} onChange={e => setSelectedType(e.target.value)} style={{ background: "#0a0a18", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "8px 12px", fontSize: "13px", color: "#ffffff", fontFamily: "DM Sans, sans-serif", outline: "none", cursor: "pointer" }}>
+              <select value={selectedType} onChange={e => setSelectedType(e.target.value)} style={{ background: "#0a1628", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "8px 12px", fontSize: "13px", color: "#ffffff", fontFamily: "DM Sans, sans-serif", outline: "none", cursor: "pointer" }}>
                 <option value="">All Types</option>
                 <option value="LEADER">Leader</option>
                 <option value="CHARACTER">Character</option>
@@ -191,7 +191,7 @@ export default function DeckBuilder() {
 
           {/* Card Grid */}
           {loading ? (
-            <div style={{ textAlign: "center", padding: "60px", color: "#0078ff" }}>Loading cards...</div>
+            <div style={{ textAlign: "center", padding: "60px", color: "#0099ff" }}>Loading cards...</div>
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: "10px" }}>
               {filteredCards.map(card => {
@@ -203,10 +203,10 @@ export default function DeckBuilder() {
                     onClick={() => addCard(card)}
                     style={{
                       cursor: "pointer",
-                      border: inDeck ? "2px solid #0078ff" : "1px solid rgba(255,255,255,0.06)",
+                      border: inDeck ? "2px solid #0099ff" : "1px solid rgba(255,255,255,0.06)",
                       borderRadius: "8px",
                       overflow: "hidden",
-                      background: "#050510",
+                      background: "#050515",
                       transition: "transform 0.15s, border-color 0.15s",
                       position: "relative",
                     }}
@@ -220,16 +220,16 @@ export default function DeckBuilder() {
                       onError={e => { (e.currentTarget as HTMLImageElement).src = "https://via.placeholder.com/120x168/111118/888898?text=No+Image"; }}
                     />
                     {inDeck && (
-                      <div style={{ position: "absolute", top: "4px", right: "4px", background: "#0078ff", color: "#fff", borderRadius: "50%", width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 700 }}>
+                      <div style={{ position: "absolute", top: "4px", right: "4px", background: "#0099ff", color: "#fff", borderRadius: "50%", width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 700 }}>
                         {inDeck.count}
                       </div>
                     )}
                     {isLeader && leader?.code === card.code && (
-                      <div style={{ position: "absolute", top: "4px", left: "4px", background: "#0078ff", color: "#fff", borderRadius: "4px", padding: "2px 6px", fontSize: "9px", fontWeight: 700 }}>LDR</div>
+                      <div style={{ position: "absolute", top: "4px", left: "4px", background: "#0099ff", color: "#fff", borderRadius: "4px", padding: "2px 6px", fontSize: "9px", fontWeight: 700 }}>LDR</div>
                     )}
-                    <div style={{ padding: "6px 8px", background: "#0a0a18" }}>
+                    <div style={{ padding: "6px 8px", background: "#0a1628" }}>
                       <div style={{ fontSize: "10px", color: "#ffffff", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.name}</div>
-                      <div style={{ fontSize: "9px", color: "#444460" }}>{card.code} · {card.type}</div>
+                      <div style={{ fontSize: "9px", color: "#8899bb" }}>{card.code} · {card.type}</div>
                     </div>
                   </div>
                 );
@@ -242,26 +242,26 @@ export default function DeckBuilder() {
         <div style={{ position: "sticky", top: "80px" }}>
 
           {/* Deck name */}
-          <div style={{ background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px", marginBottom: "12px" }}>
+          <div style={{ background: "#050515", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px", marginBottom: "12px" }}>
             <input
               value={deckName}
               onChange={e => setDeckName(e.target.value)}
               placeholder="Deck Name..."
-              style={{ width: "100%", background: "#0a0a18", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "10px 14px", fontSize: "14px", color: "#ffffff", fontFamily: "Cinzel, serif", outline: "none", boxSizing: "border-box" }}
+              style={{ width: "100%", background: "#0a1628", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "10px 14px", fontSize: "14px", color: "#ffffff", fontFamily: "Cinzel, serif", outline: "none", boxSizing: "border-box" }}
             />
           </div>
 
           {/* Deck stats */}
-          <div style={{ background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px", marginBottom: "12px" }}>
+          <div style={{ background: "#050515", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px", marginBottom: "12px" }}>
             <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#ffffff", marginBottom: "12px" }}>Deck Status</div>
             {[
-              { label: "Leader", current: leader ? 1 : 0, max: 1, color: leader ? "#0078ff" : "#0078ff" },
-              { label: "Main Deck", current: mainDeckCount, max: 50, color: mainDeckCount === 50 ? "#0078ff" : mainDeckCount > 50 ? "#0078ff" : "#0078ff" },
-              { label: "DON!! Deck", current: donCards, max: 10, color: donCards === 10 ? "#0078ff" : "#0078ff" },
+              { label: "Leader", current: leader ? 1 : 0, max: 1, color: leader ? "#0099ff" : "#0099ff" },
+              { label: "Main Deck", current: mainDeckCount, max: 50, color: mainDeckCount === 50 ? "#0099ff" : mainDeckCount > 50 ? "#0099ff" : "#0099ff" },
+              { label: "DON!! Deck", current: donCards, max: 10, color: donCards === 10 ? "#0099ff" : "#0099ff" },
             ].map((stat, i) => (
               <div key={i} style={{ marginBottom: "10px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-                  <span style={{ fontSize: "12px", color: "#666680" }}>{stat.label}</span>
+                  <span style={{ fontSize: "12px", color: "#c8d8f0" }}>{stat.label}</span>
                   <span style={{ fontSize: "12px", fontWeight: 600, color: stat.color }}>{stat.current}/{stat.max}</span>
                 </div>
                 <div style={{ height: "4px", background: "rgba(255,255,255,0.08)", borderRadius: "2px" }}>
@@ -272,38 +272,38 @@ export default function DeckBuilder() {
 
             {/* DON!! counter */}
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "8px" }}>
-              <span style={{ fontSize: "12px", color: "#666680" }}>DON!!</span>
-              <button onClick={() => setDonCards(d => Math.max(0, d - 1))} style={{ background: "#0a0a18", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "4px", color: "#ffffff", width: "24px", height: "24px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}>−</button>
+              <span style={{ fontSize: "12px", color: "#c8d8f0" }}>DON!!</span>
+              <button onClick={() => setDonCards(d => Math.max(0, d - 1))} style={{ background: "#0a1628", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "4px", color: "#ffffff", width: "24px", height: "24px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}>−</button>
               <span style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff", minWidth: "20px", textAlign: "center" }}>{donCards}</span>
-              <button onClick={() => setDonCards(d => Math.min(10, d + 1))} style={{ background: "#0a0a18", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "4px", color: "#ffffff", width: "24px", height: "24px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}>+</button>
+              <button onClick={() => setDonCards(d => Math.min(10, d + 1))} style={{ background: "#0a1628", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "4px", color: "#ffffff", width: "24px", height: "24px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}>+</button>
             </div>
           </div>
 
           {/* Leader */}
           {leader && (
-            <div style={{ background: "#050510", border: "1px solid rgba(102,0,255,0.3)", borderRadius: "12px", padding: "12px", marginBottom: "12px", display: "flex", gap: "10px", alignItems: "center" }}>
+            <div style={{ background: "#050515", border: "1px solid rgba(102,0,255,0.3)", borderRadius: "12px", padding: "12px", marginBottom: "12px", display: "flex", gap: "10px", alignItems: "center" }}>
               <img src={getCardImage(leader)} alt={leader.name} style={{ width: "50px", borderRadius: "4px" }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "11px", color: "#4da8ff", marginBottom: "2px" }}>LEADER</div>
+                <div style={{ fontSize: "11px", color: "#00d4ff", marginBottom: "2px" }}>LEADER</div>
                 <div style={{ fontFamily: "Cinzel, serif", fontSize: "13px", color: "#ffffff" }}>{leader.name}</div>
-                <div style={{ fontSize: "10px", color: "#666680" }}>{leader.code}</div>
+                <div style={{ fontSize: "10px", color: "#c8d8f0" }}>{leader.code}</div>
               </div>
-              <button onClick={() => setLeader(null)} style={{ background: "transparent", border: "none", color: "#444460", cursor: "pointer", fontSize: "16px" }}>✕</button>
+              <button onClick={() => setLeader(null)} style={{ background: "transparent", border: "none", color: "#8899bb", cursor: "pointer", fontSize: "16px" }}>✕</button>
             </div>
           )}
 
           {/* Deck list */}
-          <div style={{ background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px", marginBottom: "12px", maxHeight: "300px", overflowY: "auto" }}>
+          <div style={{ background: "#050515", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px", marginBottom: "12px", maxHeight: "300px", overflowY: "auto" }}>
             <div style={{ fontFamily: "Cinzel, serif", fontSize: "13px", color: "#ffffff", marginBottom: "12px" }}>Main Deck ({mainDeckCount}/50)</div>
             {deck.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "20px", fontSize: "12px", color: "#444460" }}>Click cards to add them</div>
+              <div style={{ textAlign: "center", padding: "20px", fontSize: "12px", color: "#8899bb" }}>Click cards to add them</div>
             ) : (
               deck.map(dc => (
                 <div key={dc.card.code} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "5px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                  <span style={{ fontFamily: "Cinzel, serif", fontSize: "13px", color: "#0078ff", minWidth: "18px" }}>{dc.count}x</span>
+                  <span style={{ fontFamily: "Cinzel, serif", fontSize: "13px", color: "#0099ff", minWidth: "18px" }}>{dc.count}x</span>
                   <span style={{ fontSize: "12px", color: "#ffffff", flex: 1 }}>{dc.card.name}</span>
-                  <span style={{ fontSize: "10px", color: "#444460" }}>{dc.card.code}</span>
-                  <button onClick={() => removeCard(dc.card.code)} style={{ background: "transparent", border: "none", color: "#444460", cursor: "pointer", fontSize: "14px", padding: "0 4px" }}>−</button>
+                  <span style={{ fontSize: "10px", color: "#8899bb" }}>{dc.card.code}</span>
+                  <button onClick={() => removeCard(dc.card.code)} style={{ background: "transparent", border: "none", color: "#8899bb", cursor: "pointer", fontSize: "14px", padding: "0 4px" }}>−</button>
                 </div>
               ))
             )}
@@ -315,8 +315,8 @@ export default function DeckBuilder() {
             disabled={saving || !leader || mainDeckCount !== 50}
             style={{
               width: "100%", marginBottom: "8px",
-              background: isComplete ? "linear-gradient(135deg, #7700ff, #0078ff)" : "rgba(255,255,255,0.05)",
-              color: isComplete ? "#fff" : "#444460",
+              background: isComplete ? "linear-gradient(135deg, #7700ff, #0099ff)" : "rgba(255,255,255,0.05)",
+              color: isComplete ? "#fff" : "#8899bb",
               border: "none", borderRadius: "8px", padding: "14px",
               fontSize: "14px", fontWeight: 600, cursor: isComplete ? "pointer" : "not-allowed",
               fontFamily: "DM Sans, sans-serif",
@@ -327,8 +327,8 @@ export default function DeckBuilder() {
 
           <a href="/optcg" style={{
             display: "block", textAlign: "center",
-            background: isComplete ? "linear-gradient(135deg, #0078ff, #4da8ff)" : "rgba(255,255,255,0.05)",
-            color: isComplete ? "#000000" : "#444460",
+            background: isComplete ? "linear-gradient(135deg, #0099ff, #00d4ff)" : "rgba(255,255,255,0.05)",
+            color: isComplete ? "#000008" : "#8899bb",
             border: "none", borderRadius: "8px", padding: "14px",
             fontSize: "14px", fontWeight: 600, cursor: isComplete ? "pointer" : "not-allowed",
             fontFamily: "DM Sans, sans-serif", textDecoration: "none",
@@ -337,7 +337,7 @@ export default function DeckBuilder() {
           </a>
 
           {!isComplete && (
-            <div style={{ fontSize: "11px", color: "#444460", textAlign: "center", marginTop: "8px" }}>
+            <div style={{ fontSize: "11px", color: "#8899bb", textAlign: "center", marginTop: "8px" }}>
               {!leader && "Add a Leader card · "}
               {mainDeckCount !== 50 && `Main deck: ${mainDeckCount}/50 · `}
               {donCards !== 10 && `DON!!: ${donCards}/10`}
