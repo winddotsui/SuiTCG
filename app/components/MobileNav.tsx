@@ -30,14 +30,15 @@ export default function MobileNav() {
       {open && (
         <div onClick={() => setOpen(false)} style={{
           position: "fixed", inset: 0, zIndex: 999,
-          background: "rgba(0,0,8,0.85)", backdropFilter: "blur(8px)",
+          background: "rgba(0,0,0,0.95)", backdropFilter: "blur(12px)",
         }}>
           <div onClick={e => e.stopPropagation()} style={{
             position: "absolute", top: 0, right: 0, bottom: 0,
-            width: "300px", background: "#050515",
-            borderLeft: "1px solid rgba(0,153,255,0.15)",
+            width: "300px", background: "#000010",
+            borderLeft: "1px solid rgba(0,153,255,0.3)",
             padding: "0", display: "flex", flexDirection: "column",
             overflowY: "auto",
+            boxShadow: "-8px 0 32px rgba(0,0,0,0.9)",
           }}>
             {/* Header */}
             <div style={{ padding: "24px 20px 16px", borderBottom: "1px solid rgba(0,153,255,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
