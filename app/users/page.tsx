@@ -38,14 +38,20 @@ export default function UsersPage() {
 
   async function fetchAllUsers() {
     setLoading(true);
-    const { data } = await supabase
-      .from("profiles")
-      .select("*, listings:listings(count), tournament_registrations:tournament_registrations(count)")
-      .order("created_at", { ascending: false })
-      .limit(50);
-    if (data) {
-      setAllUsers(data);
-      setUsers(data);
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (error) console.error("Supabase error:", error);
+      if (data) {
+        console.log("Loaded users:", data.length, data.map((u:any) => u.username));
+        setAllUsers(data);
+        setUsers(data);
+      }
+    } catch (e) {
+      console.error("Fetch error:", e);
     }
     setLoading(false);
   }
