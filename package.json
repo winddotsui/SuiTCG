@@ -11,6 +11,7 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.64",
     "@ai-sdk/react": "^3.0.143",
+    "@cetusprotocol/cetus-sui-clmm-sdk": "^5.4.0",
     "@mysten/dapp-kit": "^1.0.4",
     "@mysten/sui": "^2.13.2",
     "@mysten/walrus": "^1.1.0",
