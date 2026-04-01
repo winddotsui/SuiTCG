@@ -13,6 +13,7 @@
     "@ai-sdk/react": "^3.0.143",
     "@cetusprotocol/aggregator-sdk": "^1.4.6",
     "@cetusprotocol/cetus-sui-clmm-sdk": "^5.4.0",
+    "@cetusprotocol/terminal": "^2.0.1",
     "@mysten/dapp-kit": "^1.0.4",
     "@mysten/sui": "^2.13.2",
     "@mysten/walrus": "^1.1.0",
