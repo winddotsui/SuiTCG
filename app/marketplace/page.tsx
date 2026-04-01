@@ -201,19 +201,19 @@ export default function Marketplace() {
 
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
-          gap: "14px",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: "6px",
         }}>
           {filtered.map(card => (
             <a key={card.id} href={`/card/${card.id}`} style={{ textDecoration: "none" }}>
               <div style={{
                 background: "#050515",
                 border: "1px solid rgba(255,255,255,0.06)",
-                borderRadius: "12px", overflow: "hidden", cursor: "pointer",
+                borderRadius: "8px", overflow: "hidden", cursor: "pointer",
                 transition: "transform 0.2s ease, border-color 0.2s ease",
               }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)";
+                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)";
                   (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,180,255,0.3)";
                 }}
                 onMouseLeave={e => {
@@ -222,10 +222,10 @@ export default function Marketplace() {
                 }}
               >
                 <div style={{
-                  width: "100%", aspectRatio: "3/2",
+                  width: "100%", aspectRatio: "3/4",
                   background: card.bg || "#0a1628",
-                  display: "flex", flexWrap: "wrap", alignItems: "center",
-                  justifyContent: "center", fontSize: "48px",
+                  display: "flex", alignItems: "center",
+                  justifyContent: "center", fontSize: "32px",
                   overflow: "hidden",
                 }}>
                   {card.image_url ? (
@@ -234,20 +234,20 @@ export default function Marketplace() {
                     card.art || GAME_ICONS[card.game] || "🃏"
                   )}
                 </div>
-                <div style={{ padding: "10px 12px" }}>
+                <div style={{ padding: "6px 8px" }}>
                   <div style={{
-                    fontFamily: "Cinzel, serif", fontSize: "12px",
-                    fontWeight: 600, color: "#ffffff", marginBottom: "2px",
+                    fontFamily: "Cinzel, serif", fontSize: "9px",
+                    fontWeight: 600, color: "#ffffff", marginBottom: "1px",
                     whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
                   }}>{card.name}</div>
                   <div style={{
-                    fontSize: "10px", color: "#8899bb",
-                    textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "8px",
-                  }}>{card.game} · {card.condition}</div>
-                  <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-end" }}>
+                    fontSize: "8px", color: "#8899bb",
+                    textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "4px",
+                  }}>{card.game}</div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
-                      <div style={{ fontSize: "14px", fontWeight: 500, color: "#00d4ff" }}>${card.price_usd?.toLocaleString()}</div>
-                      <div style={{ fontSize: "10px", color: "#0099ff" }}>{card.price_sui} SUI</div>
+                      <div style={{ fontSize: "11px", fontWeight: 700, color: "#00d4ff" }}>${card.price_usd?.toLocaleString()}</div>
+                      <div style={{ fontSize: "8px", color: "#0099ff" }}>{card.price_sui} SUI</div>
                     </div>
                     <button style={{
                       background: "transparent",
