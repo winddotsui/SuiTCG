@@ -12,6 +12,14 @@ export default function UsersPage() {
     fetchAllUsers();
   }, []);
 
+  const [showDropdown, setShowDropdown] = useState(false);
+  const suggestions = search.length > 0 ? allUsers.filter(u =>
+    u.username?.toLowerCase().includes(search.toLowerCase()) ||
+    u.wallet_address?.toLowerCase().includes(search.toLowerCase()) ||
+    u.twitter?.toLowerCase().includes(search.toLowerCase()) ||
+    u.discord?.toLowerCase().includes(search.toLowerCase())
+  ).slice(0, 6) : [];
+
   useEffect(() => {
     if (search.trim().length > 0) {
       const q = search.toLowerCase();
@@ -21,8 +29,10 @@ export default function UsersPage() {
         u.twitter?.toLowerCase().includes(q) ||
         u.discord?.toLowerCase().includes(q)
       ));
+      setShowDropdown(true);
     } else {
       setUsers(allUsers);
+      setShowDropdown(false);
     }
   }, [search, allUsers]);
 
@@ -63,11 +73,39 @@ export default function UsersPage() {
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
+            onFocus={() => search.length > 0 && setShowDropdown(true)}
+            onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
             placeholder="🔍 Search by username, wallet address, Twitter, Discord..."
             style={{ width: "100%", background: "#050515", border: "1px solid rgba(0,153,255,0.2)", borderRadius: "12px", padding: "16px 20px", fontSize: "15px", color: "#ffffff", fontFamily: "DM Sans, sans-serif", outline: "none", boxSizing: "border-box" as const }}
           />
           {search && (
-            <button onClick={() => setSearch("")} style={{ position: "absolute", right: "16px", top: "50%", transform: "translateY(-50%)", background: "transparent", border: "none", color: "#c8d8f0", cursor: "pointer", fontSize: "18px" }}>×</button>
+            <button onClick={() => { setSearch(""); setShowDropdown(false); }} style={{ position: "absolute", right: "16px", top: "50%", transform: "translateY(-50%)", background: "transparent", border: "none", color: "#c8d8f0", cursor: "pointer", fontSize: "18px" }}>×</button>
+          )}
+          {showDropdown && suggestions.length > 0 && (
+            <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#050515", border: "1px solid rgba(0,153,255,0.2)", borderRadius: "12px", zIndex: 100, marginTop: "4px", boxShadow: "0 8px 32px rgba(0,0,0,0.6)", overflow: "hidden" }}>
+              {suggestions.map((user, i) => {
+                const displayName = user.username || shortAddress(user.wallet_address);
+                return (
+                  <a key={i} href={`/profile/${user.wallet_address}`} style={{ textDecoration: "none" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", borderBottom: i < suggestions.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none", cursor: "pointer" }}
+                      onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#0a1628"}
+                      onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = "transparent"}>
+                      <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "linear-gradient(135deg, #0055ff, #0099ff)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                        {user.avatar_url
+                          ? <img src={user.avatar_url} alt={displayName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          : <span style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#fff", fontWeight: 700 }}>{displayName[0]?.toUpperCase()}</span>
+                        }
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: "13px", fontWeight: 600, color: "#ffffff" }}>{displayName}</div>
+                        <div style={{ fontSize: "11px", color: "#c8d8f0" }}>{shortAddress(user.wallet_address)}</div>
+                      </div>
+                      {verifiedCount(user) >= 2 && <span style={{ fontSize: "10px", color: "#00ff88" }}>✅ Verified</span>}
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
           )}
         </div>
 
