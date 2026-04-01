@@ -32,16 +32,15 @@ export default function SwapPage() {
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000008", display: "flex", flexDirection: "column" }}>
-      {/* Header */}
-      <div style={{ background: "linear-gradient(180deg, #000008 0%, #000d20 50%, #000008 100%)", padding: "60px 48px 40px", borderBottom: "1px solid rgba(0,153,255,0.15)", textAlign: "center" }}>
-        <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "12px" }}>◈ WaveTCG · Sui DeFi</div>
-        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 900, background: "linear-gradient(135deg, #0055ff, #0099ff, #00d4ff, #00ffcc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "12px" }}>Swap Tokens</h1>
-        <p style={{ fontSize: "14px", color: "#c8d8f0", maxWidth: "500px", margin: "0 auto" }}>Swap SUI, USDC, suiUSDe and more — Powered by Cetus on Sui</p>
+    <div style={{ minHeight: "100vh", background: "#000008", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+      <div style={{ textAlign: "center", marginBottom: "24px" }}>
+        <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "8px" }}>◈ WaveTCG · Sui DeFi</div>
+        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(24px, 4vw, 42px)", fontWeight: 900, background: "linear-gradient(135deg, #0055ff, #0099ff, #00d4ff, #00ffcc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Swap Tokens</h1>
+        <p style={{ fontSize: "13px", color: "#c8d8f0", marginTop: "8px" }}>Powered by Cetus · Best rates on Sui</p>
       </div>
 
       {/* Cetus Terminal */}
-      <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", padding: "40px 24px" }}>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", padding: "0 24px" }}>
         <div
           id="cetus-terminal"
           style={{
