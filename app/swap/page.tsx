@@ -39,7 +39,7 @@ export default function SwapPage() {
         <p style={{ fontSize: "13px", color: "#c8d8f0", marginTop: "8px" }}>Powered by Cetus · Best rates on Sui</p>
       </div>
 
-      <div id="cetus-terminal" style={{ width: "460px", borderRadius: "16px", overflow: "hidden" }} />
+      <div id="cetus-terminal" style={{ width: "460px", height: "480px", overflow: "hidden", borderRadius: "16px" }} />
 
       {/* DEX links below */}
       <div style={{ maxWidth: "800px", margin: "0 auto", padding: "0 24px 60px" }}>
