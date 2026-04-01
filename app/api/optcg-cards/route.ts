@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
     const cards = data.data || [];
 
     return NextResponse.json({ cards });
-  } catch (e: any) {
+  }
     console.error("OPTCG API error:", e);
     return NextResponse.json({ cards: [], error: e.message });
   }
