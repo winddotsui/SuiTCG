@@ -195,7 +195,14 @@ export default function Home() {
                 onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform="translateY(0)"; (e.currentTarget as HTMLDivElement).style.borderColor="rgba(255,255,255,0.06)"; }}
               >
                 <div style={{ width:"100%", aspectRatio:"3/4", overflow:"hidden", background:"#0a0a15" }}>
-                  <img src={card.images?.large} alt={card.name} style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} />
+                  <img src={card.images?.large} alt={card.name} style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }}
+                    onError={e => {
+                      const img = e.currentTarget as HTMLImageElement;
+                      if (!img.src.includes("ryanmichaelhirst")) {
+                        img.src = img.src.replace("en.onepiece-cardgame.com/images/cardlist/card/", "images.ryanmichaelhirst.us/").replace(".png", ".png");
+                      }
+                    }}
+                  />
                 </div>
                 <div style={{ padding:"14px" }}>
                   <div style={{ fontFamily:"Cinzel, serif", fontSize:"13px", fontWeight:600, color:"#ffffff", marginBottom:"4px", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{card.name}</div>
