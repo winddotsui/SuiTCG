@@ -24,10 +24,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           @media (max-width: 768px) {
             .desktop-nav { display: none !important; }
             .mobile-menu-btn { display: flex !important; }
+            body { padding-top: 56px; }
           }
           @media (min-width: 769px) {
             .mobile-menu-btn { display: none !important; }
             .desktop-nav { display: flex !important; }
+            body { padding-top: 56px; }
           }
         `}</style>
       </head>

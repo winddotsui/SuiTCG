@@ -32,12 +32,10 @@ export default function NavClient() {
         <ZkLogin />
         <WalletButton />
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        <div className="mobile-menu-btn" style={{ display: "none" }}>
-          <ZkLogin />
-          <WalletButton />
-          <MobileNav />
-        </div>
+      <div className="mobile-menu-btn" style={{ display: "none", alignItems: "center", gap: "8px" }}>
+        <ZkLogin />
+        <WalletButton />
+        <MobileNav />
       </div>
     </>
   );
