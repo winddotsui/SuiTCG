@@ -22,6 +22,9 @@ export default function AlertsPage() {
   const [email, setEmail] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [cardSuggestions, setCardSuggestions] = useState<any[]>([]);
+  const [showCardDropdown, setShowCardDropdown] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const walletAddress = typeof window !== "undefined" ? localStorage.getItem("wavetcg_wallet_address") || "anonymous" : "anonymous";
 
   useEffect(() => {
@@ -41,6 +44,34 @@ export default function AlertsPage() {
       console.error("Fetch error:", e);
     }
     setLoading(false);
+  }
+
+  async function searchCards(q: string) {
+    if (q.length < 2) { setCardSuggestions([]); setShowCardDropdown(false); return; }
+    setSearchLoading(true);
+    const results: any[] = [];
+    try {
+      if (game === "magic") {
+        const res = await fetch(`https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        if (data.data) data.data.slice(0, 6).forEach((name: string) => results.push({ name, icon: "✨" }));
+      } else if (game === "pokemon") {
+        const res = await fetch(`https://api.pokemontcg.io/v2/cards?q=name:${encodeURIComponent(q)}*&pageSize=6`);
+        const data = await res.json();
+        if (data.data) data.data.forEach((c: any) => results.push({ name: c.name, icon: "⚡", set: c.set?.name }));
+      } else if (game === "yugioh") {
+        const res = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?fname=${encodeURIComponent(q)}&num=6&offset=0`);
+        const data = await res.json();
+        if (data.data) data.data.forEach((c: any) => results.push({ name: c.name, icon: "👁️" }));
+      } else if (game === "onepiece") {
+        const res = await fetch(`/api/optcg-cards?search=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        if (data.cards) data.cards.slice(0, 6).forEach((c: any) => results.push({ name: c.name, icon: "🏴‍☠️", set: c.code }));
+      }
+    } catch {}
+    setCardSuggestions(results);
+    setShowCardDropdown(results.length > 0);
+    setSearchLoading(false);
   }
 
   async function createAlert() {
@@ -105,8 +136,31 @@ export default function AlertsPage() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
               <div>
                 <label style={{ display: "block", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#c8d8f0", marginBottom: "6px" }}>Card Name *</label>
-                <input value={cardName} onChange={e => setCardName(e.target.value)} placeholder="e.g. Monkey D. Luffy OP05-119"
-                  style={{ width: "100%", background: "#0a1628", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "8px", padding: "10px 14px", fontSize: "14px", color: "#ffffff", fontFamily: "DM Sans, sans-serif", outline: "none", boxSizing: "border-box" }} />
+                <div style={{ position: "relative" }}>
+                  <input value={cardName}
+                    onChange={e => { setCardName(e.target.value); searchCards(e.target.value); }}
+                    onBlur={() => setTimeout(() => setShowCardDropdown(false), 200)}
+                    onFocus={() => cardName.length > 1 && setShowCardDropdown(true)}
+                    placeholder="e.g. Monkey D. Luffy..."
+                    style={{ width: "100%", background: "#0a1628", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "8px", padding: "10px 14px", fontSize: "14px", color: "#ffffff", fontFamily: "DM Sans, sans-serif", outline: "none", boxSizing: "border-box" }} />
+                  {searchLoading && <div style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", fontSize: "11px", color: "#0099ff" }}>...</div>}
+                  {showCardDropdown && cardSuggestions.length > 0 && (
+                    <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#050515", border: "1px solid rgba(0,153,255,0.2)", borderRadius: "10px", zIndex: 200, marginTop: "4px", boxShadow: "0 8px 32px rgba(0,0,0,0.5)", overflow: "hidden" }}>
+                      {cardSuggestions.map((card, i) => (
+                        <div key={i} onClick={() => { setCardName(card.name); setShowCardDropdown(false); }}
+                          style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px", cursor: "pointer", borderBottom: i < cardSuggestions.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}
+                          onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#0a1628"}
+                          onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = "transparent"}>
+                          <span style={{ fontSize: "16px" }}>{card.icon}</span>
+                          <div>
+                            <div style={{ fontSize: "13px", fontWeight: 600, color: "#ffffff" }}>{card.name}</div>
+                            {card.set && <div style={{ fontSize: "11px", color: "#c8d8f0" }}>{card.set}</div>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               <div>
                 <label style={{ display: "block", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#c8d8f0", marginBottom: "6px" }}>Game *</label>
