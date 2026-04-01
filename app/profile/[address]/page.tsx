@@ -88,6 +88,7 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
 
   const shortAddress = address ? `${address.slice(0, 8)}...${address.slice(-6)}` : "";
   const displayName = profile?.username || shortAddress;
+  const needsUsername = !profile?.username;
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#000008", display: "flex", alignItems: "center", justifyContent: "center" }}>
