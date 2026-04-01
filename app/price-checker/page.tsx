@@ -44,6 +44,18 @@ export default function PriceChecker() {
     try {
       const results: any[] = [];
 
+      if (game === "all" || game === "onepiece") {
+        try {
+          const res = await fetch(`/api/optcg-cards?search=${encodeURIComponent(q)}`);
+          const data = await res.json();
+          if (data.cards) {
+            data.cards.slice(0, 5).forEach((card: any) => {
+              results.push({ name: card.name + " (" + card.code + ")", game: "onepiece", icon: "🏴‍☠️", cardData: card });
+            });
+          }
+        } catch {}
+      }
+
       if (game === "all" || game === "magic") {
         const res = await fetch(`https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(q)}`);
         const data = await res.json();
@@ -134,6 +146,31 @@ export default function PriceChecker() {
           setAllVersions(versions);
           setSelectedCard(versions[0]);
         }
+      } else if (suggestion.game === "onepiece") {
+        const card = suggestion.cardData;
+        if (card) {
+          setPriceResults([{
+            name: card.name,
+            set: card.set || "One Piece TCG",
+            game: "onepiece",
+            rarity: card.rarity || "",
+            price: card.price || 0,
+            priceDisplay: card.price ? `$${parseFloat(card.price).toFixed(2)}` : "N/A",
+            image: card.image || `https://en.onepiece-cardgame.com/images/cardlist/card/${card.code}.png`,
+            url: "https://www.tcgplayer.com/search/one-piece-card-game/product?q=" + encodeURIComponent(card.name),
+          }]);
+        }
+      } else if (suggestion.game === "dragonball" || suggestion.game === "digimon" || suggestion.game === "lorcana" || suggestion.game === "fab" || suggestion.game === "weiss" || suggestion.game === "unionarena") {
+        setPriceResults([{
+          name: suggestion.name,
+          set: "Coming Soon",
+          game: suggestion.game,
+          rarity: "",
+          price: 0,
+          priceDisplay: "Check TCGPlayer",
+          image: "",
+          url: "https://www.tcgplayer.com/search/all/product?q=" + encodeURIComponent(suggestion.name),
+        }]);
       } else if (suggestion.game === "yugioh") {
         const res = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?name=${encodeURIComponent(suggestion.name)}`);
         const data = await res.json();
@@ -162,6 +199,19 @@ export default function PriceChecker() {
 
   function getPriceDisplay(card: CardResult) {
     if (!card.prices) return null;
+    if (card.game === "onepiece") {
+      return (
+        <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.2)", borderRadius: "12px", padding: "20px", display: "flex", gap: "20px", alignItems: "flex-start" }}>
+          {card.image && <img src={card.image} alt={card.name} style={{ width: "120px", borderRadius: "8px", flexShrink: 0 }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", color: "#ffffff", marginBottom: "4px" }}>{card.name}</div>
+            <div style={{ fontSize: "12px", color: "#c8d8f0", marginBottom: "12px" }}>One Piece TCG · {card.set}</div>
+            <div style={{ fontSize: "28px", fontWeight: 700, color: "#0099ff", marginBottom: "12px" }}>{card.priceDisplay}</div>
+            <a href={card.url} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", padding: "8px 20px", background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", borderRadius: "6px", fontSize: "12px", textDecoration: "none" }}>View on TCGPlayer →</a>
+          </div>
+        </div>
+      );
+    }
     if (card.game === "magic") {
       return (
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -237,9 +287,16 @@ export default function PriceChecker() {
         <div style={{ display: "flex", gap: "8px", justifyContent: "center", marginBottom: "24px", flexWrap: "wrap" }}>
           {[
             { id: "all", label: "All Games", icon: "🃏" },
+            { id: "onepiece", label: "One Piece", icon: "🏴‍☠️" },
             { id: "pokemon", label: "Pokémon", icon: "⚡" },
-            { id: "magic", label: "Magic", icon: "✨" },
+            { id: "magic", label: "Magic: TG", icon: "✨" },
             { id: "yugioh", label: "Yu-Gi-Oh!", icon: "👁️" },
+            { id: "dragonball", label: "Dragon Ball", icon: "🐉" },
+            { id: "digimon", label: "Digimon", icon: "🎭" },
+            { id: "lorcana", label: "Lorcana", icon: "🌟" },
+            { id: "fab", label: "Flesh & Blood", icon: "⚔️" },
+            { id: "weiss", label: "Weiss Schwarz", icon: "🎌" },
+            { id: "unionarena", label: "Union Arena", icon: "🎮" },
           ].map(g => (
             <button key={g.id} onClick={() => setGame(g.id)} style={{
               padding: "8px 18px", borderRadius: "20px", cursor: "pointer",
@@ -310,7 +367,7 @@ export default function PriceChecker() {
                   <div>
                     <div style={{ fontSize: "14px", color: "#ffffff", fontWeight: 500 }}>{s.name}</div>
                     <div style={{ fontSize: "11px", color: "#8899bb", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                      {s.game === "magic" ? "Magic: The Gathering" : s.game === "pokemon" ? "Pokémon TCG" : "Yu-Gi-Oh!"}
+                      {s.game === "magic" ? "Magic: The Gathering" : s.game === "pokemon" ? "Pokémon TCG" : s.game === "yugioh" ? "Yu-Gi-Oh!" : s.game === "onepiece" ? "One Piece TCG" : s.game === "dragonball" ? "Dragon Ball" : s.game === "digimon" ? "Digimon" : s.game === "lorcana" ? "Lorcana" : s.game === "fab" ? "Flesh & Blood" : "TCG"}
                     </div>
                   </div>
                   <div style={{ marginLeft: "auto", fontSize: "11px", color: "#00d4ff" }}>View all versions →</div>
