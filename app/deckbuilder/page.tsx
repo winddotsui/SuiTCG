@@ -5,14 +5,16 @@ import { supabase } from "../../lib/supabase";
 interface Card {
   id: string;
   name: string;
-  card_id: string;
-  card_type: string;
+  code: string;
+  type: string;
   color: string;
-  cost: string;
-  power: string;
-  set_id: string;
-  card_image: string;
+  cost: number;
+  power: number | null;
+  set: string;
+  image: string;
   rarity: string;
+  effect: string | null;
+  attribute: string;
 }
 
 interface DeckCard {
@@ -30,6 +32,16 @@ const SETS = [
   { id: "OP07", name: "500 Years in the Future" },
   { id: "OP08", name: "Two Legends" },
   { id: "OP09", name: "The Four Emperors" },
+  { id: "OP10", name: "Royal Blood" },
+  { id: "OP11", name: "Egghead" },
+  { id: "OP12", name: "Side Character Special" },
+  { id: "OP13", name: "Ultra Deck" },
+  { id: "OP14", name: "The Bonds of Brothers" },
+  { id: "ST01", name: "Starter Deck Straw Hat Crew" },
+  { id: "ST02", name: "Starter Deck Worst Generation" },
+  { id: "ST03", name: "Starter Deck The Seven Warlords" },
+  { id: "ST04", name: "Starter Deck Animal Kingdom Pirates" },
+  { id: "ST10", name: "Starter Deck Royal Pirates" },
 ];
 
 const COLORS = ["Red", "Blue", "Green", "Purple", "Black", "Yellow"];
@@ -54,14 +66,24 @@ export default function DeckBuilder() {
 
   async function fetchCards() {
     setLoading(true);
+    setCards([]);
     try {
-      const res = await fetch(`https://optcgapi.com/api/cards/?set_id=${selectedSet}&limit=100`);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      const res = await fetch(
+        `/api/optcg-cards?set=${selectedSet}`,
+        { signal: controller.signal }
+      );
+      clearTimeout(timeout);
       const data = await res.json();
-      if (data.results) {
-        setCards(data.results);
+      if (data.cards && data.cards.length > 0) {
+        setCards(data.cards);
+      } else {
+        setCards([]);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error("Failed to fetch cards:", e);
+      setCards([]);
     }
     setLoading(false);
   }
@@ -71,19 +93,19 @@ export default function DeckBuilder() {
   const filteredCards = cards.filter(card => {
     const matchSearch = !search || card.name?.toLowerCase().includes(search.toLowerCase());
     const matchColor = !selectedColor || card.color?.toLowerCase().includes(selectedColor.toLowerCase());
-    const matchType = !selectedType || card.card_type?.toLowerCase().includes(selectedType.toLowerCase());
+    const matchType = !selectedType || card.type?.toLowerCase().includes(selectedType.toLowerCase());
     return matchSearch && matchColor && matchType;
   });
 
   function addCard(card: Card) {
-    if (card.card_type === "LEADER") {
+    if (card.type === "LEADER") {
       setLeader(card);
       return;
     }
-    const existing = deck.find(dc => dc.card.card_id === card.card_id);
+    const existing = deck.find(dc => dc.card.code === card.code);
     if (existing) {
       if (existing.count >= 4) return;
-      setDeck(prev => prev.map(dc => dc.card.card_id === card.card_id ? { ...dc, count: dc.count + 1 } : dc));
+      setDeck(prev => prev.map(dc => dc.card.code === card.code ? { ...dc, count: dc.count + 1 } : dc));
     } else {
       if (mainDeckCount >= 50) return;
       setDeck(prev => [...prev, { card, count: 1 }]);
@@ -92,10 +114,10 @@ export default function DeckBuilder() {
 
   function removeCard(cardId: string) {
     setDeck(prev => {
-      const existing = prev.find(dc => dc.card.card_id === cardId);
+      const existing = prev.find(dc => dc.card.code === cardId);
       if (!existing) return prev;
-      if (existing.count === 1) return prev.filter(dc => dc.card.card_id !== cardId);
-      return prev.map(dc => dc.card.card_id === cardId ? { ...dc, count: dc.count - 1 } : dc);
+      if (existing.count === 1) return prev.filter(dc => dc.card.code !== cardId);
+      return prev.map(dc => dc.card.code === cardId ? { ...dc, count: dc.count - 1 } : dc);
     });
   }
 
@@ -105,7 +127,7 @@ export default function DeckBuilder() {
     if (mainDeckCount !== 50) { alert(`Main deck needs exactly 50 cards (currently ${mainDeckCount})`); return; }
 
     setSaving(true);
-    const decklist = deck.map(dc => `${dc.count}x ${dc.card.name} (${dc.card.card_id})`).join("\n");
+    const decklist = deck.map(dc => `${dc.count}x ${dc.card.name} (${dc.card.code})`).join("\n");
 
     await supabase.from("saved_decks").insert({
       deck_name: deckName,
@@ -120,8 +142,8 @@ export default function DeckBuilder() {
   }
 
   const getCardImage = (card: Card) => {
-    if (card.card_image) return card.card_image;
-    return `https://en.onepiece-cardgame.com/images/cardlist/card/${card.card_id}.png`;
+    if (card.image) return card.image;
+    return `https://en.onepiece-cardgame.com/images/cardlist/card/${card.code}.png`;
   };
 
   const isComplete = leader && mainDeckCount === 50 && donCards === 10;
@@ -173,11 +195,11 @@ export default function DeckBuilder() {
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: "10px" }}>
               {filteredCards.map(card => {
-                const inDeck = deck.find(dc => dc.card.card_id === card.card_id);
-                const isLeader = card.card_type === "LEADER";
+                const inDeck = deck.find(dc => dc.card.code === card.code);
+                const isLeader = card.type === "LEADER";
                 return (
                   <div
-                    key={card.card_id}
+                    key={card.code}
                     onClick={() => addCard(card)}
                     style={{
                       cursor: "pointer",
@@ -202,12 +224,12 @@ export default function DeckBuilder() {
                         {inDeck.count}
                       </div>
                     )}
-                    {isLeader && leader?.card_id === card.card_id && (
+                    {isLeader && leader?.card_id === card.code && (
                       <div style={{ position: "absolute", top: "4px", left: "4px", background: "#ff3333", color: "#fff", borderRadius: "4px", padding: "2px 6px", fontSize: "9px", fontWeight: 700 }}>LDR</div>
                     )}
                     <div style={{ padding: "6px 8px", background: "#18181f" }}>
                       <div style={{ fontSize: "10px", color: "#e6e4f0", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.name}</div>
-                      <div style={{ fontSize: "9px", color: "#555562" }}>{card.card_id} · {card.card_type}</div>
+                      <div style={{ fontSize: "9px", color: "#555562" }}>{card.code} · {card.type}</div>
                     </div>
                   </div>
                 );
@@ -264,7 +286,7 @@ export default function DeckBuilder() {
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: "11px", color: "#ff6b6b", marginBottom: "2px" }}>LEADER</div>
                 <div style={{ fontFamily: "Cinzel, serif", fontSize: "13px", color: "#e6e4f0" }}>{leader.name}</div>
-                <div style={{ fontSize: "10px", color: "#888898" }}>{leader.card_id}</div>
+                <div style={{ fontSize: "10px", color: "#888898" }}>{leader.code}</div>
               </div>
               <button onClick={() => setLeader(null)} style={{ background: "transparent", border: "none", color: "#555562", cursor: "pointer", fontSize: "16px" }}>✕</button>
             </div>
@@ -277,11 +299,11 @@ export default function DeckBuilder() {
               <div style={{ textAlign: "center", padding: "20px", fontSize: "12px", color: "#555562" }}>Click cards to add them</div>
             ) : (
               deck.map(dc => (
-                <div key={dc.card.card_id} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "5px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                <div key={dc.card.code} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "5px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                   <span style={{ fontFamily: "Cinzel, serif", fontSize: "13px", color: "#4da2ff", minWidth: "18px" }}>{dc.count}x</span>
                   <span style={{ fontSize: "12px", color: "#e6e4f0", flex: 1 }}>{dc.card.name}</span>
-                  <span style={{ fontSize: "10px", color: "#555562" }}>{dc.card.card_id}</span>
-                  <button onClick={() => removeCard(dc.card.card_id)} style={{ background: "transparent", border: "none", color: "#555562", cursor: "pointer", fontSize: "14px", padding: "0 4px" }}>−</button>
+                  <span style={{ fontSize: "10px", color: "#555562" }}>{dc.card.code}</span>
+                  <button onClick={() => removeCard(dc.card.code)} style={{ background: "transparent", border: "none", color: "#555562", cursor: "pointer", fontSize: "14px", padding: "0 4px" }}>−</button>
                 </div>
               ))
             )}
