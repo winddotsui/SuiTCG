@@ -32,7 +32,7 @@ export default function SwapPage() {
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000008", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: "20px", padding: "40px 24px" }}>
+    <div style={{ minHeight: "100vh", background: "#000008", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
       <div style={{ textAlign: "center" }}>
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "8px" }}>◈ WaveTCG · Sui DeFi</div>
         <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(24px, 4vw, 42px)", fontWeight: 900, background: "linear-gradient(135deg, #0055ff, #0099ff, #00d4ff, #00ffcc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Swap Tokens</h1>
