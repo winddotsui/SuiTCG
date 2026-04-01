@@ -1,39 +1,24 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
-import dynamic from "next/dynamic";
 
-const WalrusUpload = dynamic(() => import("../components/WalrusUpload"), { ssr: false });
+const GAMES = ["One Piece TCG", "Pokémon TCG", "Magic: The Gathering", "Yu-Gi-Oh!", "Flesh & Blood", "Digimon", "Lorcana", "Dragon Ball", "Weiss Schwarz", "Union Arena"];
+const CONDITIONS = ["NM", "LP", "MP", "HP", "DMG"];
+const CONDITION_LABELS: Record<string, string> = { NM: "Near Mint", LP: "Lightly Played", MP: "Moderately Played", HP: "Heavily Played", DMG: "Damaged" };
 
 const inputStyle = {
   width: "100%", background: "#0a1628",
-  border: "1px solid rgba(255,255,255,0.1)",
+  border: "1px solid rgba(0,153,255,0.15)",
   borderRadius: "8px", padding: "12px 16px",
   fontSize: "14px", color: "#ffffff",
   fontFamily: "DM Sans, sans-serif", outline: "none",
+  boxSizing: "border-box" as const,
 };
 
 const labelStyle = {
-  display: "block", fontSize: "12px",
+  display: "block", fontSize: "11px",
   letterSpacing: "0.08em", textTransform: "uppercase" as const,
   color: "#c8d8f0", marginBottom: "8px",
-};
-
-const btnPrimary = {
-  background: "linear-gradient(135deg, #0099ff, #00ffcc)",
-  color: "#fff", border: "none", borderRadius: "8px", padding: "14px",
-  fontSize: "14px", fontWeight: 500, cursor: "pointer",
-  fontFamily: "DM Sans, sans-serif",
-  letterSpacing: "0.05em", textTransform: "uppercase" as const,
-  width: "100%",
-};
-
-const btnSecondary = {
-  background: "transparent", color: "#c8d8f0",
-  border: "1px solid rgba(255,255,255,0.1)",
-  borderRadius: "8px", padding: "14px",
-  fontSize: "14px", cursor: "pointer",
-  fontFamily: "DM Sans, sans-serif", width: "100%",
 };
 
 export default function Sell() {
@@ -41,211 +26,296 @@ export default function Sell() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-
+  const [profile, setProfile] = useState<any>(null);
+  const [checkingProfile, setCheckingProfile] = useState(true);
+  const [walletAddress, setWalletAddress] = useState("");
   const [form, setForm] = useState({
-    game: "Pokémon TCG",
+    game: "One Piece TCG",
     name: "",
     set_name: "",
     card_number: "",
     condition: "NM",
     price_usd: "",
-    price_sui: "",
+    quantity: "1",
     description: "",
     image_url: "",
   });
+  const [cardSuggestions, setCardSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
-  function updateForm(key: string, val: string) {
-    if (key === "price_usd" && val) {
-      const sui = (parseFloat(val) / 7.28).toFixed(2);
-      setForm(prev => ({ ...prev, price_usd: val, price_sui: sui }));
-    } else {
-      setForm(prev => ({ ...prev, [key]: val }));
-    }
+  useEffect(() => {
+    const addr = localStorage.getItem("wavetcg_wallet_address") || 
+                 localStorage.getItem("connected_wallet") || "";
+    setWalletAddress(addr);
+    if (addr) checkProfile(addr);
+    else setCheckingProfile(false);
+  }, []);
+
+  async function checkProfile(addr: string) {
+    setCheckingProfile(true);
+    const { data } = await supabase.from("profiles").select("*").eq("wallet_address", addr).single();
+    setProfile(data);
+    setCheckingProfile(false);
   }
 
-  async function publishListing() {
+  const hasTwitter = profile?.twitter;
+  const hasDiscord = profile?.discord;
+  const hasTelegram = profile?.telegram;
+  const hasLinkedin = profile?.linkedin;
+  const verifiedCount = [hasTwitter, hasDiscord, hasTelegram].filter(Boolean).length;
+  const isVerified = verifiedCount >= 2;
+
+  async function searchCards(q: string) {
+    if (q.length < 2) { setCardSuggestions([]); setShowSuggestions(false); return; }
+    const results: any[] = [];
+    try {
+      if (form.game === "Magic: The Gathering") {
+        const res = await fetch(`https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        if (data.data) data.data.slice(0, 6).forEach((name: string) => results.push({ name }));
+      } else if (form.game === "Pokémon TCG") {
+        const res = await fetch(`https://api.pokemontcg.io/v2/cards?q=name:${encodeURIComponent(q)}*&pageSize=6`);
+        const data = await res.json();
+        if (data.data) data.data.forEach((c: any) => results.push({ name: c.name, set: c.set?.name, number: c.number }));
+      } else if (form.game === "Yu-Gi-Oh!") {
+        const res = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?fname=${encodeURIComponent(q)}&num=6&offset=0`);
+        const data = await res.json();
+        if (data.data) data.data.forEach((c: any) => results.push({ name: c.name }));
+      } else if (form.game === "One Piece TCG") {
+        const res = await fetch(`/api/optcg-cards?search=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        if (data.cards) data.cards.slice(0, 6).forEach((c: any) => results.push({ name: c.name, set: c.code }));
+      }
+    } catch {}
+    setCardSuggestions(results);
+    setShowSuggestions(results.length > 0);
+  }
+
+  async function handleSubmit() {
+    if (!form.name.trim()) { setError("Please enter a card name"); return; }
+    if (!form.price_usd || parseFloat(form.price_usd) <= 0) { setError("Please enter a valid price"); return; }
     setLoading(true);
     setError("");
     try {
-      const { error } = await supabase.from("listings").insert({
-        name: form.name,
-        game: form.game,
-        set_name: form.set_name,
-        card_number: form.card_number,
-        condition: form.condition,
+      await supabase.from("listings").insert({
+        ...form,
         price_usd: parseFloat(form.price_usd),
-        price_sui: parseFloat(form.price_sui),
-        description: form.description,
-        image_url: form.image_url,
-        seller_address: "anonymous",
+        quantity: parseInt(form.quantity),
+        seller_address: walletAddress,
         status: "active",
       });
-      if (error) throw error;
       setSuccess(true);
-    } catch (err: any) {
-      setError(err.message || "Failed to publish listing");
+    } catch (e: any) {
+      setError(e.message || "Failed to list card");
     }
     setLoading(false);
   }
 
-  if (success) {
-    return (
-      <div style={{ minHeight: "100vh", background: "#000008", display: "flex", alignItems: "center", justifyContent: "center", padding: "48px" }}>
-        <div style={{ textAlign: "center", maxWidth: "400px" }}>
-          <div style={{ fontSize: "72px", marginBottom: "24px" }}>🎉</div>
-          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", fontWeight: 700, color: "#ffffff", marginBottom: "12px" }}>Card Listed!</h1>
-          <p style={{ fontSize: "14px", color: "#c8d8f0", marginBottom: "32px", lineHeight: 1.75 }}>
-            Your card is now live on WaveTCG Marketplace!
-            {form.image_url && <><br /><span style={{ color: "#00ffcc" }}>◈ Image stored on Sui Walrus</span></>}
-          </p>
-          <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
-            <a href="/marketplace" style={{ ...btnPrimary, display: "inline-block", textDecoration: "none", width: "auto", padding: "12px 24px" }}>View Marketplace</a>
-            <button style={{ ...btnSecondary, width: "auto", padding: "12px 24px" }} onClick={() => { setSuccess(false); setStep(1); setForm({ game: "Pokémon TCG", name: "", set_name: "", card_number: "", condition: "NM", price_usd: "", price_sui: "", description: "", image_url: "" }); }}>List Another</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (checkingProfile) return (
+    <div style={{ minHeight: "100vh", background: "#000008", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ color: "#0099ff", fontFamily: "Cinzel, serif" }}>Checking verification...</div>
+    </div>
+  );
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000008", padding: "48px 24px" }}>
-      <div style={{ maxWidth: "680px", margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", background: "#000008" }}>
+      {/* Header */}
+      <div style={{ background: "linear-gradient(180deg, #000008 0%, #000d20 50%, #000008 100%)", padding: "60px 48px 40px", borderBottom: "1px solid rgba(0,153,255,0.15)", textAlign: "center" }}>
+        <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "12px" }}>◈ WaveTCG · Marketplace</div>
+        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 900, background: "linear-gradient(135deg, #0099ff, #00d4ff, #00ffcc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "12px" }}>List a Card</h1>
+        <p style={{ fontSize: "14px", color: "#c8d8f0" }}>Sell your cards to the WaveTCG community</p>
+      </div>
 
-        <div style={{ marginBottom: "40px" }}>
-          <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#00ffcc", marginBottom: "12px" }}>Free to List · 1% on Sale · Images on Walrus</div>
-          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "36px", fontWeight: 700, background: "linear-gradient(135deg, #0099ff, #00ffcc, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>List a Card</h1>
-        </div>
+      <div style={{ maxWidth: "700px", margin: "0 auto", padding: "40px 24px" }}>
 
-        <div style={{ display: "flex", gap: "8px", marginBottom: "40px" }}>
-          {["Card Details", "Condition & Price", "Review"].map((s, i) => (
-            <div key={i} style={{ flex: 1, textAlign: "center" }}>
-              <div style={{ height: "3px", borderRadius: "2px", marginBottom: "8px", background: step > i ? "#00ffcc" : "rgba(255,255,255,0.1)" }} />
-              <div style={{ fontSize: "11px", letterSpacing: "0.06em", textTransform: "uppercase", color: step > i ? "#00d4ff" : "#8899bb" }}>{s}</div>
-            </div>
-          ))}
-        </div>
+        {/* Verification Gate */}
+        {!isVerified ? (
+          <div style={{ background: "#050515", border: "1px solid rgba(255,153,0,0.3)", borderRadius: "20px", padding: "40px", textAlign: "center" }}>
+            <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔐</div>
+            <div style={{ fontFamily: "Cinzel, serif", fontSize: "22px", color: "#ffffff", marginBottom: "12px" }}>Verification Required</div>
+            <p style={{ fontSize: "14px", color: "#c8d8f0", marginBottom: "24px", lineHeight: 1.7 }}>
+              To list cards on WaveTCG, you need to connect at least <strong style={{ color: "#0099ff" }}>2 out of 3</strong> social accounts.
+              This helps ensure legitimacy and trust in our marketplace.
+            </p>
 
-        <div style={{ background: "#050515", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "16px", padding: "32px" }}>
-
-          {step === 1 && (
-            <div>
-              <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "20px", color: "#ffffff", marginBottom: "28px" }}>Card Details</h2>
-
-              <div style={{ marginBottom: "20px" }}>
-                <label style={labelStyle}>Game</label>
-                <select style={inputStyle} value={form.game} onChange={e => updateForm("game", e.target.value)}>
-                  {["Pokémon TCG","Magic: The Gathering","Yu-Gi-Oh!","One Piece","Dragon Ball","Lorcana","Flesh & Blood","Digimon"].map((o,j) => <option key={j}>{o}</option>)}
-                </select>
-              </div>
-
-              <div style={{ marginBottom: "20px" }}>
-                <label style={labelStyle}>Card Name</label>
-                <input style={inputStyle} type="text" placeholder="e.g. Charizard EX" value={form.name} onChange={e => updateForm("name", e.target.value)} />
-              </div>
-
-              <div style={{ marginBottom: "20px" }}>
-                <label style={labelStyle}>Set / Edition</label>
-                <input style={inputStyle} type="text" placeholder="e.g. Obsidian Flames" value={form.set_name} onChange={e => updateForm("set_name", e.target.value)} />
-              </div>
-
-              <div style={{ marginBottom: "20px" }}>
-                <label style={labelStyle}>Card Number</label>
-                <input style={inputStyle} type="text" placeholder="e.g. 125/197" value={form.card_number} onChange={e => updateForm("card_number", e.target.value)} />
-              </div>
-
-              <div style={{ marginBottom: "28px" }}>
-                <label style={labelStyle}>Card Photo · Stored on Sui Walrus ◈</label>
-                <WalrusUpload onUpload={(url) => updateForm("image_url", url)} />
-                {form.image_url && (
-                  <div style={{ marginTop: "8px", fontSize: "11px", color: "#00ffcc" }}>
-                    ✅ Image on Walrus: {form.image_url.slice(0, 50)}...
+            {/* Social status */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "28px", textAlign: "left" }}>
+              {[
+                { label: "Twitter / X", icon: "𝕏", connected: hasTwitter, required: true },
+                { label: "Discord", icon: "💬", connected: hasDiscord, required: true },
+                { label: "Telegram", icon: "✈️", connected: hasTelegram, required: true },
+                { label: "LinkedIn", icon: "💼", connected: hasLinkedin, required: false },
+              ].map((s, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: s.connected ? "rgba(0,255,100,0.05)" : "#0a1628", border: `1px solid ${s.connected ? "rgba(0,255,100,0.2)" : "rgba(255,255,255,0.08)"}`, borderRadius: "10px" }}>
+                  <span style={{ fontSize: "20px" }}>{s.icon}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: "13px", fontWeight: 600, color: "#ffffff" }}>{s.label}</div>
+                    <div style={{ fontSize: "11px", color: s.required ? "#ff9955" : "#c8d8f0" }}>{s.required ? "Required (need 2 of 3)" : "Optional"}</div>
                   </div>
-                )}
-              </div>
-
-              <button style={btnPrimary} onClick={() => { if (!form.name) { setError("Please enter a card name"); return; } setError(""); setStep(2); }}>Next Step →</button>
-              {error && <div style={{ color: "#e05555", fontSize: "13px", marginTop: "12px" }}>{error}</div>}
-            </div>
-          )}
-
-          {step === 2 && (
-            <div>
-              <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "20px", color: "#ffffff", marginBottom: "28px" }}>Condition & Price</h2>
-
-              <div style={{ marginBottom: "20px" }}>
-                <label style={labelStyle}>Condition</label>
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                  {["PSA 10","PSA 9","PSA 8","Mint","NM","LP","MP","HP"].map((c) => (
-                    <button key={c} onClick={() => updateForm("condition", c)} style={{
-                      padding: "8px 16px",
-                      border: form.condition === c ? "1px solid #00ffcc" : "1px solid rgba(255,255,255,0.1)",
-                      borderRadius: "6px",
-                      background: form.condition === c ? "rgba(0,120,255,0.1)" : "transparent",
-                      color: form.condition === c ? "#00d4ff" : "#c8d8f0",
-                      fontSize: "12px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
-                    }}>{c}</button>
-                  ))}
+                  {s.connected
+                    ? <span style={{ fontSize: "12px", color: "#00ff88", fontWeight: 600 }}>✅ Connected</span>
+                    : <span style={{ fontSize: "12px", color: "#ff6b6b" }}>Not connected</span>
+                  }
                 </div>
-              </div>
-
-              <div style={{ marginBottom: "20px" }}>
-                <label style={labelStyle}>Price (USD)</label>
-                <input style={inputStyle} type="number" placeholder="0.00" value={form.price_usd} onChange={e => updateForm("price_usd", e.target.value)} />
-                {form.price_sui && <div style={{ fontSize: "12px", color: "#00ffcc", marginTop: "6px" }}>≈ {form.price_sui} SUI · Platform fee: 1% on sale</div>}
-              </div>
-
-              <div style={{ marginBottom: "28px" }}>
-                <label style={labelStyle}>Description (optional)</label>
-                <textarea placeholder="Describe the card condition, shipping info..." rows={4} style={{ ...inputStyle, resize: "vertical" }} value={form.description} onChange={e => updateForm("description", e.target.value)} />
-              </div>
-
-              <div style={{ display: "flex", gap: "12px" }}>
-                <button style={btnSecondary} onClick={() => setStep(1)}>← Back</button>
-                <button style={btnPrimary} onClick={() => { if (!form.price_usd) { setError("Please enter a price"); return; } setError(""); setStep(3); }}>Review Listing →</button>
-              </div>
-              {error && <div style={{ color: "#e05555", fontSize: "13px", marginTop: "12px" }}>{error}</div>}
+              ))}
             </div>
-          )}
 
-          {step === 3 && (
-            <div>
-              <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "20px", color: "#ffffff", marginBottom: "28px" }}>Review & Publish</h2>
+            <div style={{ fontSize: "13px", color: "#c8d8f0", marginBottom: "20px" }}>
+              You have <strong style={{ color: verifiedCount >= 2 ? "#00ff88" : "#ff9955" }}>{verifiedCount}/2</strong> required accounts connected
+            </div>
 
-              {form.image_url && (
-                <div style={{ marginBottom: "20px", textAlign: "center" }}>
-                  <img src={form.image_url} alt={form.name} style={{ width: "120px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.1)" }} />
-                  <div style={{ fontSize: "11px", color: "#00ffcc", marginTop: "6px" }}>◈ Stored on Walrus</div>
+            <a href="/profile/0x91fa18b29e0603c18005f61479dd47e50cb52c85ede36c6dc44d85bc147c77f5"
+              style={{ display: "inline-block", background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", padding: "14px 32px", borderRadius: "10px", fontSize: "14px", fontWeight: 600, textDecoration: "none", fontFamily: "DM Sans, sans-serif" }}>
+              Connect Socials on Profile →
+            </a>
+          </div>
+        ) : success ? (
+          <div style={{ background: "#050515", border: "1px solid rgba(0,255,100,0.2)", borderRadius: "20px", padding: "60px", textAlign: "center" }}>
+            <div style={{ fontSize: "64px", marginBottom: "16px" }}>🎉</div>
+            <div style={{ fontFamily: "Cinzel, serif", fontSize: "24px", color: "#ffffff", marginBottom: "12px" }}>Card Listed!</div>
+            <p style={{ fontSize: "14px", color: "#c8d8f0", marginBottom: "24px" }}>Your card is now live on the WaveTCG marketplace.</p>
+            <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+              <a href="/marketplace" style={{ display: "inline-block", background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", padding: "12px 24px", borderRadius: "8px", fontSize: "13px", fontWeight: 600, textDecoration: "none" }}>View Marketplace →</a>
+              <button onClick={() => { setSuccess(false); setForm({ game: "One Piece TCG", name: "", set_name: "", card_number: "", condition: "NM", price_usd: "", quantity: "1", description: "", image_url: "" }); setStep(1); }}
+                style={{ background: "transparent", color: "#c8d8f0", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "12px 24px", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
+                List Another Card
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.2)", borderRadius: "20px", padding: "32px" }}>
+            {/* Verified badge */}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "24px", padding: "10px 16px", background: "rgba(0,255,100,0.05)", border: "1px solid rgba(0,255,100,0.15)", borderRadius: "10px" }}>
+              <span>✅</span>
+              <span style={{ fontSize: "12px", color: "#00ff88" }}>Verified seller · {verifiedCount} social accounts connected</span>
+            </div>
+
+            {/* Step indicator */}
+            <div style={{ display: "flex", gap: "8px", marginBottom: "28px" }}>
+              {[1, 2, 3].map(s => (
+                <div key={s} style={{ flex: 1, height: "3px", borderRadius: "2px", background: step >= s ? "linear-gradient(90deg, #0055ff, #0099ff)" : "rgba(255,255,255,0.1)" }} />
+              ))}
+            </div>
+
+            {step === 1 && (
+              <div>
+                <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff", marginBottom: "20px" }}>Step 1 · Card Details</div>
+                <div style={{ marginBottom: "16px" }}>
+                  <label style={labelStyle}>Game *</label>
+                  <select value={form.game} onChange={e => setForm(p => ({ ...p, game: e.target.value }))}
+                    style={{ ...inputStyle, cursor: "pointer" }}>
+                    {GAMES.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                 </div>
-              )}
-
-              <div style={{ background: "#0a1628", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "20px", marginBottom: "24px" }}>
-                {[
-                  { label: "Card", val: form.name },
-                  { label: "Game", val: form.game },
-                  { label: "Set", val: form.set_name || "—" },
-                  { label: "Condition", val: form.condition },
-                  { label: "Price", val: `$${form.price_usd} USD · ${form.price_sui} SUI` },
-                  { label: "Listing Fee", val: "Free" },
-                  { label: "Commission", val: "1% on sale" },
-                ].map((row, i) => (
-                  <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: i < 6 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
-                    <span style={{ fontSize: "13px", color: "#c8d8f0" }}>{row.label}</span>
-                    <span style={{ fontSize: "13px", color: "#ffffff", fontWeight: 500 }}>{row.val}</span>
+                <div style={{ marginBottom: "16px", position: "relative" }}>
+                  <label style={labelStyle}>Card Name *</label>
+                  <input value={form.name}
+                    onChange={e => { setForm(p => ({ ...p, name: e.target.value })); searchCards(e.target.value); }}
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                    placeholder="Search for a card..."
+                    style={inputStyle} />
+                  {showSuggestions && cardSuggestions.length > 0 && (
+                    <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#050515", border: "1px solid rgba(0,153,255,0.2)", borderRadius: "10px", zIndex: 100, marginTop: "4px", boxShadow: "0 8px 32px rgba(0,0,0,0.5)", overflow: "hidden" }}>
+                      {cardSuggestions.map((card, i) => (
+                        <div key={i} onClick={() => { setForm(p => ({ ...p, name: card.name, set_name: card.set || p.set_name, card_number: card.number || p.card_number })); setShowSuggestions(false); }}
+                          style={{ padding: "10px 14px", cursor: "pointer", borderBottom: i < cardSuggestions.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none", fontSize: "13px", color: "#ffffff" }}
+                          onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#0a1628"}
+                          onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = "transparent"}>
+                          <div style={{ fontWeight: 600 }}>{card.name}</div>
+                          {card.set && <div style={{ fontSize: "11px", color: "#c8d8f0" }}>{card.set}</div>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
+                  <div>
+                    <label style={labelStyle}>Set Name</label>
+                    <input value={form.set_name} onChange={e => setForm(p => ({ ...p, set_name: e.target.value }))} placeholder="e.g. Romance Dawn" style={inputStyle} />
                   </div>
-                ))}
-              </div>
-
-              {error && <div style={{ color: "#e05555", fontSize: "13px", marginBottom: "12px" }}>{error}</div>}
-
-              <div style={{ display: "flex", gap: "12px" }}>
-                <button style={btnSecondary} onClick={() => setStep(2)}>← Back</button>
-                <button style={{ ...btnPrimary, opacity: loading ? 0.6 : 1 }} onClick={publishListing} disabled={loading}>
-                  {loading ? "Publishing..." : "🚀 Publish Listing"}
+                  <div>
+                    <label style={labelStyle}>Card Number</label>
+                    <input value={form.card_number} onChange={e => setForm(p => ({ ...p, card_number: e.target.value }))} placeholder="e.g. OP01-003" style={inputStyle} />
+                  </div>
+                </div>
+                <button onClick={() => { if (!form.name.trim()) { setError("Please enter a card name"); return; } setError(""); setStep(2); }}
+                  style={{ width: "100%", background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "14px", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
+                  Next →
                 </button>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+
+            {step === 2 && (
+              <div>
+                <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff", marginBottom: "20px" }}>Step 2 · Condition & Price</div>
+                <div style={{ marginBottom: "16px" }}>
+                  <label style={labelStyle}>Condition *</label>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    {CONDITIONS.map(c => (
+                      <button key={c} onClick={() => setForm(p => ({ ...p, condition: c }))}
+                        style={{ flex: 1, padding: "10px 6px", borderRadius: "8px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontSize: "12px", fontWeight: 600, border: form.condition === c ? "1px solid #0099ff" : "1px solid rgba(255,255,255,0.1)", background: form.condition === c ? "rgba(0,153,255,0.15)" : "transparent", color: form.condition === c ? "#0099ff" : "#c8d8f0" }}>
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{ fontSize: "11px", color: "#c8d8f0", marginTop: "6px" }}>{CONDITION_LABELS[form.condition]}</div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
+                  <div>
+                    <label style={labelStyle}>Price (USD) *</label>
+                    <input value={form.price_usd} onChange={e => setForm(p => ({ ...p, price_usd: e.target.value }))} placeholder="e.g. 29.99" type="number" min="0" style={inputStyle} />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Quantity</label>
+                    <input value={form.quantity} onChange={e => setForm(p => ({ ...p, quantity: e.target.value }))} placeholder="1" type="number" min="1" style={inputStyle} />
+                  </div>
+                </div>
+                <div style={{ marginBottom: "20px" }}>
+                  <label style={labelStyle}>Description (optional)</label>
+                  <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Any additional details about the card..."
+                    style={{ ...inputStyle, height: "80px", resize: "vertical" as const }} />
+                </div>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <button onClick={() => setStep(1)} style={{ flex: 1, background: "transparent", color: "#c8d8f0", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "14px", fontSize: "14px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>← Back</button>
+                  <button onClick={() => { if (!form.price_usd) { setError("Please enter a price"); return; } setError(""); setStep(3); }} style={{ flex: 2, background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "14px", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Next →</button>
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div>
+                <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff", marginBottom: "20px" }}>Step 3 · Review & List</div>
+                <div style={{ background: "#0a1628", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "12px", padding: "20px", marginBottom: "20px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                    {[
+                      { label: "Card", value: form.name },
+                      { label: "Game", value: form.game },
+                      { label: "Set", value: form.set_name || "—" },
+                      { label: "Number", value: form.card_number || "—" },
+                      { label: "Condition", value: `${form.condition} · ${CONDITION_LABELS[form.condition]}` },
+                      { label: "Price", value: `$${parseFloat(form.price_usd || "0").toFixed(2)} USD` },
+                      { label: "Quantity", value: form.quantity },
+                    ].map((item, i) => (
+                      <div key={i}>
+                        <div style={{ fontSize: "10px", color: "#c8d8f0", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "2px" }}>{item.label}</div>
+                        <div style={{ fontSize: "14px", color: "#ffffff", fontWeight: 500 }}>{item.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {error && <div style={{ background: "rgba(255,50,50,0.08)", border: "1px solid rgba(255,50,50,0.2)", borderRadius: "8px", padding: "10px 14px", marginBottom: "16px", fontSize: "12px", color: "#ff6b6b" }}>{error}</div>}
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <button onClick={() => setStep(2)} style={{ flex: 1, background: "transparent", color: "#c8d8f0", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "14px", fontSize: "14px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>← Back</button>
+                  <button onClick={handleSubmit} disabled={loading} style={{ flex: 2, background: "linear-gradient(135deg, #0055ff, #0099ff, #00ffcc)", color: "#fff", border: "none", borderRadius: "8px", padding: "14px", fontSize: "14px", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer", fontFamily: "DM Sans, sans-serif" }}>
+                    {loading ? "Listing..." : "🚀 List Card Now"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {error && step !== 3 && <div style={{ marginTop: "12px", fontSize: "12px", color: "#ff6b6b" }}>{error}</div>}
+          </div>
+        )}
       </div>
     </div>
   );
