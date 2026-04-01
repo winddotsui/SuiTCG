@@ -103,18 +103,7 @@ export default function MobileNav() {
             ))}
           </div>
 
-          {/* Footer */}
-          <div style={{
-            padding: "14px",
-            backgroundColor: "#000010",
-            borderTop: "1px solid rgba(0,153,255,0.15)",
-            fontSize: "11px",
-            color: "#444460",
-            textAlign: "center",
-            flexShrink: 0,
-          }}>
-            🌊 WaveTCG · Web3 TCG Marketplace · Powered by Sui
-          </div>
+
         </div>
       )}
     </>
