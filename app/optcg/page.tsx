@@ -271,6 +271,7 @@ export default function OPTCGHub() {
   const [showJoin, setShowJoin] = useState(false);
   const [players, setPlayers] = useState(8);
   const [registrations, setRegistrations] = useState<any[]>([]);
+  const [prefillDeck, setPrefillDeck] = useState<{name: string, decklist: string, leader: string} | null>(null);
   useEffect(() => {
     fetchRegistrations();
   }, []);
