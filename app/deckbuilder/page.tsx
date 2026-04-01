@@ -205,7 +205,7 @@ export default function DeckBuilder() {
         <p style={{ fontSize: "14px", color: "#c8d8f0" }}>Build your One Piece TCG deck · 1 Leader + 50 Main + 10 DON!!</p>
       </div>
 
-      <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "24px", display: "grid", gridTemplateColumns: "1fr 320px", gap: "24px" }}>
+      <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "16px 12px", display: "grid", gridTemplateColumns: "1fr 320px", gap: "24px" }} className="deckbuilder-grid">
 
         {/* LEFT — Card Browser */}
         <div>
@@ -240,7 +240,7 @@ export default function DeckBuilder() {
           {loading ? (
             <div style={{ textAlign: "center", padding: "60px", color: "#0099ff" }}>Loading cards...</div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: "10px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "6px" }} className="card-grid">
               {filteredCards.map(card => {
                 const inDeck = deck.find(dc => dc.card.code === card.code);
                 const isLeader = card.type === "LEADER";
@@ -263,7 +263,7 @@ export default function DeckBuilder() {
                     <img
                       src={getCardImage(card)}
                       alt={card.name}
-                      style={{ width: "100%", display: "block" }}
+                      style={{ width: "100%", display: "block", aspectRatio: "0.7" }}
                       onError={e => { (e.currentTarget as HTMLImageElement).src = "https://via.placeholder.com/120x168/111118/888898?text=No+Image"; }}
                     />
                     {inDeck && (
