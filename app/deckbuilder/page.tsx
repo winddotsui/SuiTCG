@@ -129,6 +129,29 @@ export default function DeckBuilder() {
     setSaving(true);
     const decklist = deck.map(dc => `${dc.count}x ${dc.card.name} (${dc.card.code})`).join("\n");
 
+    const { data } = await supabase.from("saved_decks").insert({
+      deck_name: deckName,
+      leader_card: leader.name,
+      decklist: decklist,
+      card_count: mainDeckCount,
+    }).select().single();
+
+    setSaved(true);
+    setSaving(false);
+    setTimeout(() => setSaved(false), 3000);
+    return data;
+  }
+
+  async function registerForTournament() {
+    if (!deckName.trim()) { alert("Please enter a deck name"); return; }
+    if (!leader) { alert("Please add a Leader card"); return; }
+    if (mainDeckCount !== 50) { alert(`Main deck needs exactly 50 cards (currently ${mainDeckCount})`); return; }
+    if (donCards !== 10) { alert("Please set DON!! deck to exactly 10 cards"); return; }
+
+    setSaving(true);
+    const decklist = deck.map(dc => `${dc.count}x ${dc.card.name} (${dc.card.code})`).join("\n");
+
+    // Save deck first
     await supabase.from("saved_decks").insert({
       deck_name: deckName,
       leader_card: leader.name,
@@ -136,9 +159,15 @@ export default function DeckBuilder() {
       card_count: mainDeckCount,
     });
 
-    setSaved(true);
+    // Store deck info in localStorage for tournament registration
+    localStorage.setItem("tournament_deck_name", deckName);
+    localStorage.setItem("tournament_decklist", decklist);
+    localStorage.setItem("tournament_leader", leader.name);
+
     setSaving(false);
-    setTimeout(() => setSaved(false), 3000);
+
+    // Redirect to OPTCG tournament page
+    window.location.href = "/optcg?register=true&deck=" + encodeURIComponent(deckName);
   }
 
   const getCardImage = (card: Card) => {

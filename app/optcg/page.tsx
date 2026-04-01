@@ -183,13 +183,20 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
 }
 
 
-function JoinModal({ onClose, onJoin, pot }: { onClose: () => void; onJoin: (name: string, deck: string, deckName: string) => void; pot: number }) {
+function JoinModal({ onClose, onJoin, pot, prefillDeck }: { onClose: () => void; onJoin: (name: string, deck: string, deckName: string) => void; pot: number; prefillDeck?: {name: string, decklist: string, leader: string} | null }) {
   const [step, setStep] = useState<"form" | "confirm" | "paying" | "success">("form");
   const [walletConnected, setWalletConnected] = useState(false);
   const [playerName, setPlayerName] = useState("");
-  const [deckName, setDeckName] = useState("");
-  const [decklist, setDecklist] = useState("");
+  const [deckName, setDeckName] = useState(prefillDeck?.name || "");
+  const [decklist, setDecklist] = useState(prefillDeck?.decklist || "");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (prefillDeck) {
+      setDeckName(prefillDeck.name);
+      setDecklist(prefillDeck.decklist);
+    }
+  }, [prefillDeck]);
 
   async function handleJoin() {
     if (!walletConnected) { alert("Please connect your Sui wallet first!"); return; }
@@ -308,7 +315,10 @@ export default function OPTCGHub() {
         </div>
       )}
 
-      {showJoin && <JoinModal onClose={() => setShowJoin(false)} onJoin={async (name: string, decklist: string, deckName: string) => {
+      {showJoin && <JoinModal 
+        prefillDeck={prefillDeck}
+        onClose={() => { setShowJoin(false); setPrefillDeck(null); }} 
+        onJoin={async (name: string, decklist: string, deckName: string) => {
         setPlayers(p => p + 1);
         await supabase.from("tournament_registrations").insert({
           tournament_id: "weekly-17",
