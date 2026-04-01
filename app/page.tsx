@@ -135,7 +135,7 @@ export default function Home() {
         .card-float:hover{opacity:1!important;transform:scale(1.05)!important;z-index:50!important}
       `}</style>
 
-      <section style={{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", textAlign:"center", padding:"120px 48px 80px", position:"relative" }}>
+      <section style={{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", textAlign:"center", padding:"clamp(80px, 15vw, 120px) clamp(16px, 5vw, 48px) clamp(40px, 8vw, 80px)", position:"relative" }}>
         <div style={{ position:"absolute", width:"800px", height:"800px", top:"10%", left:"50%", transform:"translateX(-50%)", background:"radial-gradient(circle, rgba(0,120,255,0.06) 0%, transparent 70%)", pointerEvents:"none" }} />
         <div style={{ position:"absolute", width:"400px", height:"400px", top:"5%", left:"10%", background:"radial-gradient(circle, rgba(0,80,255,0.04) 0%, transparent 70%)", pointerEvents:"none", animation:"pulse 4s ease-in-out infinite" }} />
         <div style={{ position:"absolute", width:"400px", height:"400px", top:"5%", right:"10%", background:"radial-gradient(circle, rgba(0,80,255,0.04) 0%, transparent 70%)", pointerEvents:"none", animation:"pulse 4s ease-in-out infinite 2s" }} />
@@ -152,11 +152,11 @@ export default function Home() {
             Web3 TCG Marketplace · Powered by Sui
             <span style={{ display:"block", width:"32px", height:"1px", background:"#0099ff", opacity:0.6 }} />
           </div>
-          <h1 style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(44px, 7vw, 88px)", fontWeight:900, lineHeight:1.05, marginBottom:"28px" }}>
+          <h1 style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(32px, 7vw, 88px)", fontWeight:900, lineHeight:1.05, marginBottom:"20px" }}>
             <span style={{ color:"#ffffff", display:"block" }}>Ride the Wave.</span>
             <span style={{ display:"block", background:"linear-gradient(135deg, #0055ff 0%, #0099ff 40%, #00b4ff 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>Trade Any Card.</span>
           </h1>
-          <p style={{ maxWidth:"520px", fontSize:"17px", fontWeight:300, color:"#c8d8f0", lineHeight:1.75, marginBottom:"48px", margin:"0 auto 48px" }}>
+          <p style={{ maxWidth:"520px", fontSize:"clamp(14px, 3vw, 17px)", fontWeight:300, color:"#c8d8f0", lineHeight:1.75, marginBottom:"32px", margin:"0 auto 32px" }}>
             Buy, sell, and list <strong style={{ color:"#ffffff", fontWeight:500 }}>One Piece TCG, Pokémon, Magic, Yu-Gi-Oh!</strong> and more — on Sui blockchain.
           </p>
           <div style={{ display:"flex", gap:"16px", justifyContent:"center", flexWrap:"wrap" }}>
@@ -166,28 +166,28 @@ export default function Home() {
         </div>
       </section>
 
-      <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", borderBottom:"1px solid rgba(255,255,255,0.06)", padding:"36px 48px", display:"grid", gridTemplateColumns:"repeat(4,1fr)", background:"#050515" }}>
+      <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", borderBottom:"1px solid rgba(255,255,255,0.06)", padding:"24px 16px", display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:"1px", background:"rgba(255,255,255,0.06)" }}>
         {[
           { num:"120K+", label:"Cards Listed" },
           { num:"8", label:"TCG Games" },
           { num:"Sui", label:"Blockchain" },
           { num:"1%", label:"Platform Fee" },
         ].map((stat, i) => (
-          <div key={i} style={{ textAlign:"center", padding:"0 24px", borderRight:i<3?"1px solid rgba(255,255,255,0.06)":"none" }}>
-            <div style={{ fontFamily:"Cinzel, serif", fontSize:"32px", fontWeight:600, color:"#0099ff", letterSpacing:"-0.02em", marginBottom:"6px" }}>{stat.num}</div>
+          <div key={i} style={{ textAlign:"center", padding:"16px 12px", background:"#050515" }}>
+            <div style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(22px, 5vw, 32px)", fontWeight:600, color:"#0099ff", letterSpacing:"-0.02em", marginBottom:"4px" }}>{stat.num}</div>
             <div style={{ fontSize:"12px", letterSpacing:"0.1em", textTransform:"uppercase", color:"#555570" }}>{stat.label}</div>
           </div>
         ))}
       </div>
 
-      <section style={{ padding:"80px 48px", maxWidth:"1200px", margin:"0 auto" }}>
+      <section style={{ padding:"clamp(32px, 6vw, 80px) clamp(12px, 4vw, 48px)", maxWidth:"1200px", margin:"0 auto" }}>
         <div style={{ fontSize:"11px", letterSpacing:"0.2em", textTransform:"uppercase", color:"#0099ff", marginBottom:"16px" }}>Today's Hot Cards</div>
         <div style={{ display:"flex", alignItems:"center", gap:"12px", marginBottom:"16px" }}>
-          <h2 style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(28px, 4vw, 48px)", fontWeight:600, color:"#ffffff" }}>Hot Cards Today</h2>
+          <h2 style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(20px, 4vw, 40px)", fontWeight:600, color:"#ffffff" }}>Hot Cards Today</h2>
           <span style={{ padding:"4px 12px", background:"rgba(255,50,50,0.1)", border:"1px solid rgba(255,50,50,0.3)", borderRadius:"20px", fontSize:"12px", color:"#ff6b6b", fontWeight:600 }}>🔥 Daily</span>
         </div>
         <p style={{ fontSize:"13px", color:"#8899bb", marginBottom:"48px" }}>Updates every day · Best card from each TCG</p>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(200px, 1fr))", gap:"20px" }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(140px, 1fr))", gap:"12px" }}>
           {heroCards.map((card, i) => (
             <a key={i} href="/marketplace" style={{ textDecoration:"none" }}>
               <div style={{ background:"#050515", border:"1px solid rgba(255,255,255,0.06)", borderRadius:"14px", overflow:"hidden", cursor:"pointer", transition:"transform 0.2s, border-color 0.2s" }}
@@ -221,10 +221,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section style={{ padding:"80px 48px", background:"#050515", borderTop:"1px solid rgba(255,255,255,0.06)", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
+      <section style={{ padding:"clamp(32px, 6vw, 80px) clamp(12px, 4vw, 48px)", background:"#050515", borderTop:"1px solid rgba(255,255,255,0.06)", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
         <div style={{ maxWidth:"1200px", margin:"0 auto" }}>
           <div style={{ fontSize:"11px", letterSpacing:"0.2em", textTransform:"uppercase", color:"#0099ff", marginBottom:"16px" }}>Supported Games</div>
-          <h2 style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(28px, 4vw, 48px)", fontWeight:600, color:"#ffffff", marginBottom:"48px" }}>All your favorite TCGs</h2>
+          <h2 style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(20px, 4vw, 40px)", fontWeight:600, color:"#ffffff", marginBottom:"24px" }}>All your favorite TCGs</h2>
           <div style={{ display:"flex", gap:"16px", flexWrap:"wrap" }}>
             {[
               { icon:"🏴‍☠️", name:"One Piece TCG" },
@@ -236,22 +236,22 @@ export default function Home() {
               { icon:"⚔️", name:"Flesh & Blood" },
               { icon:"🎭", name:"Digimon" },
             ].map((game, i) => (
-              <div key={i} style={{ display:"flex", alignItems:"center", gap:"12px", padding:"16px 24px", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"60px", background:"#0a0a15", cursor:"pointer", transition:"border-color 0.2s" }}
+              <div key={i} style={{ display:"flex", alignItems:"center", gap:"8px", padding:"10px 16px", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"60px", background:"#0a0a15", cursor:"pointer", transition:"border-color 0.2s" }}
                 onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.borderColor="rgba(0,120,255,0.4)"}
                 onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.borderColor="rgba(255,255,255,0.08)"}
               >
-                <span style={{ fontSize:"22px" }}>{game.icon}</span>
-                <span style={{ fontFamily:"Cinzel, serif", fontSize:"13px", fontWeight:600, color:"#ffffff" }}>{game.name}</span>
+                <span style={{ fontSize:"18px" }}>{game.icon}</span>
+                <span style={{ fontFamily:"Cinzel, serif", fontSize:"12px", fontWeight:600, color:"#ffffff" }}>{game.name}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section style={{ padding:"80px 48px", maxWidth:"1200px", margin:"0 auto" }}>
+      <section style={{ padding:"clamp(32px, 6vw, 80px) clamp(12px, 4vw, 48px)", maxWidth:"1200px", margin:"0 auto" }}>
         <div style={{ fontSize:"11px", letterSpacing:"0.2em", textTransform:"uppercase", color:"#0099ff", marginBottom:"16px" }}>Why WaveTCG</div>
         <h2 style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(28px, 4vw, 48px)", fontWeight:600, color:"#ffffff", marginBottom:"48px" }}>Built for collectors</h2>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:"2px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:"12px", overflow:"hidden" }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(280px, 1fr))", gap:"2px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:"12px", overflow:"hidden" }}>
           {[
             { icon:"🃏", title:"Free Listings", desc:"List any card for free. We only take 1% when it sells — paid automatically on-chain." },
             { icon:"⛓️", title:"Sui Blockchain", desc:"Trade on Sui blockchain. Fast, cheap, and secure. Use any Sui wallet." },
@@ -272,7 +272,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section style={{ padding:"100px 48px", textAlign:"center", borderTop:"1px solid rgba(255,255,255,0.06)", position:"relative", overflow:"hidden" }}>
+      <section style={{ padding:"clamp(40px, 8vw, 100px) clamp(16px, 4vw, 48px)", textAlign:"center", borderTop:"1px solid rgba(255,255,255,0.06)", position:"relative", overflow:"hidden" }}>
         <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse at center, rgba(0,120,255,0.05) 0%, transparent 70%)", pointerEvents:"none" }} />
         <h2 style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(28px, 4vw, 48px)", fontWeight:900, color:"#ffffff", marginBottom:"16px" }}>Ready to ride the wave?</h2>
         <p style={{ fontSize:"16px", color:"#555570", marginBottom:"40px", fontWeight:300 }}>Join thousands of collectors on WaveTCG.</p>
