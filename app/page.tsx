@@ -48,12 +48,76 @@ export default function Home() {
       imageUrl: getOfficialImage(card.code),
       price: "", ...positions[i],
     })));
-    setHeroCards([
-      { name: "Roronoa Zoro", images: { large: getOfficialImage("OP01-001") }, game: "OP01 Leader · Red", priceDisplay: "$45" },
-      { name: "Monkey D. Luffy", images: { large: getOfficialImage("OP01-003") }, game: "OP01 Leader · Red/Green", priceDisplay: "$65" },
-      { name: "Edward Newgate", images: { large: getOfficialImage("OP02-001") }, game: "OP02 Leader · Black", priceDisplay: "$38" },
-      { name: "Kouzuki Oden", images: { large: getOfficialImage("OP01-031") }, game: "OP01 Leader · Green", priceDisplay: "$28" },
-    ]);
+    // Daily hot cards - rotates based on day of year
+    const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
+
+    // One Piece hot cards pool
+    const optcgPool = [
+      { code: "OP05-119", name: "Monkey D. Luffy", info: "Gear 5 SEC", price: "$380" },
+      { code: "OP02-013", name: "Monkey D. Luffy", info: "Purple SEC", price: "$290" },
+      { code: "OP01-025", name: "Roronoa Zoro", info: "SR Red", price: "$120" },
+      { code: "OP01-070", name: "Dracule Mihawk", info: "SR Blue", price: "$85" },
+      { code: "OP06-001", name: "Shanks", info: "Leader OP06", price: "$75" },
+      { code: "OP08-001", name: "Gol D. Roger", info: "Leader OP08", price: "$95" },
+      { code: "OP03-040", name: "Boa Hancock", info: "SR Black", price: "$65" },
+      { code: "OP04-003", name: "Monkey D. Luffy", info: "Leader Yellow", price: "$55" },
+    ];
+
+    // Pokemon hot cards pool
+    const pokemonPool = [
+      { id: "xy7-74", name: "Charizard EX", info: "Pokémon TCG · XY", price: "$180" },
+      { id: "swsh45sv-SV122", name: "Charizard V", info: "Pokémon TCG · SWSH", price: "$95" },
+      { id: "base1-4", name: "Charizard", info: "Pokémon TCG · Base Set", price: "$450" },
+      { id: "swsh12pt5-160", name: "Pikachu VMAX", info: "Pokémon TCG · Crown Zenith", price: "$75" },
+      { id: "swsh9-196", name: "Umbreon VMAX Alt", info: "Pokémon TCG · Brilliant Stars", price: "$220" },
+      { id: "sv1-198", name: "Miraidon ex", info: "Pokémon TCG · Scarlet & Violet", price: "$85" },
+    ];
+
+    // MTG hot cards pool  
+    const mtgPool = [
+      { name: "Black Lotus", set: "lea", info: "Magic · Alpha", price: "$4,200" },
+      { name: "Ragavan, Nimble Pilferer", set: "mh2", info: "Magic · MH2", price: "$65" },
+      { name: "Wrenn and Six", set: "mh1", info: "Magic · MH1", price: "$85" },
+      { name: "Oko, Thief of Crowns", set: "eld", info: "Magic · Eldraine", price: "$18" },
+      { name: "Orcish Bowmasters", set: "ltr", info: "Magic · LOTR", price: "$45" },
+      { name: "The One Ring", set: "ltr", info: "Magic · LOTR", price: "$38" },
+    ];
+
+    // F&B hot cards pool
+    const fabPool = [
+      { name: "Phantasmal Footsteps", info: "Flesh & Blood · Uprising", price: "$320", img: "https://storage.googleapis.com/fabdb-image/cards/regular/UPR000.webp" },
+      { name: "Zen, Tamer of Purpose", info: "Flesh & Blood · Uprising", price: "$180", img: "https://storage.googleapis.com/fabdb-image/cards/regular/UPR001.webp" },
+      { name: "Arakni, Solitary Confinement", info: "Flesh & Blood · Heavy Hitters", price: "$145", img: "https://storage.googleapis.com/fabdb-image/cards/regular/HVY000.webp" },
+      { name: "Dash", info: "Flesh & Blood · Welcome to Rathe", price: "$95", img: "https://storage.googleapis.com/fabdb-image/cards/regular/WTR000.webp" },
+    ];
+
+    const optcg = optcgPool[dayOfYear % optcgPool.length];
+    const pokemon = pokemonPool[dayOfYear % pokemonPool.length];
+    const mtg = mtgPool[dayOfYear % mtgPool.length];
+    const fab = fabPool[dayOfYear % fabPool.length];
+
+    // Fetch real Pokemon image
+    try {
+      const pkRes = await fetch(`https://api.pokemontcg.io/v2/cards/${pokemon.id}`);
+      const pkData = await pkRes.json();
+      const pkImg = pkData.data?.images?.large || "";
+
+      // Fetch real MTG image
+      const mtgRes = await fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(mtg.name)}`);
+      const mtgData = await mtgRes.json();
+      const mtgImg = mtgData.image_uris?.normal || mtgData.card_faces?.[0]?.image_uris?.normal || "";
+
+      setHeroCards([
+        { name: optcg.name, images: { large: getOfficialImage(optcg.code) }, game: `One Piece TCG · ${optcg.info}`, priceDisplay: optcg.price, hot: true },
+        { name: pokemon.name, images: { large: pkImg }, game: pokemon.info, priceDisplay: pokemon.price, hot: true },
+        { name: mtg.name, images: { large: mtgImg }, game: mtg.info, priceDisplay: mtg.price, hot: true },
+        { name: fab.name, images: { large: fab.img }, game: fab.info, priceDisplay: fab.price, hot: true },
+      ]);
+    } catch {
+      setHeroCards([
+        { name: optcg.name, images: { large: getOfficialImage(optcg.code) }, game: `One Piece TCG · ${optcg.info}`, priceDisplay: optcg.price },
+      ]);
+    }
   }, []);
 
   return (
@@ -115,8 +179,12 @@ export default function Home() {
       </div>
 
       <section style={{ padding:"80px 48px", maxWidth:"1200px", margin:"0 auto" }}>
-        <div style={{ fontSize:"11px", letterSpacing:"0.2em", textTransform:"uppercase", color:"#0078ff", marginBottom:"16px" }}>Featured Cards</div>
-        <h2 style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(28px, 4vw, 48px)", fontWeight:600, color:"#ffffff", marginBottom:"48px" }}>One Piece TCG Highlights</h2>
+        <div style={{ fontSize:"11px", letterSpacing:"0.2em", textTransform:"uppercase", color:"#0078ff", marginBottom:"16px" }}>Today's Hot Cards</div>
+        <div style={{ display:"flex", alignItems:"center", gap:"12px", marginBottom:"16px" }}>
+          <h2 style={{ fontFamily:"Cinzel, serif", fontSize:"clamp(28px, 4vw, 48px)", fontWeight:600, color:"#ffffff" }}>Hot Cards Today</h2>
+          <span style={{ padding:"4px 12px", background:"rgba(255,50,50,0.1)", border:"1px solid rgba(255,50,50,0.3)", borderRadius:"20px", fontSize:"12px", color:"#ff6b6b", fontWeight:600 }}>🔥 Daily</span>
+        </div>
+        <p style={{ fontSize:"13px", color:"#444460", marginBottom:"48px" }}>Updates every day · Best card from each TCG</p>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(200px, 1fr))", gap:"20px" }}>
           {heroCards.map((card, i) => (
             <a key={i} href="/marketplace" style={{ textDecoration:"none" }}>
