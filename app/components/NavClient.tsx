@@ -13,7 +13,7 @@ export default function NavClient() {
           { href: "/marketplace", label: "Marketplace" },
           { href: "/price-checker", label: "Prices" },
           { href: "/oracle", label: "AI Oracle" },
-          { href: "/optcg", label: "🏴u200d☠️ OPTCG" },
+          { href: "/optcg", label: "🏴‍☠️ OPTCG" },
           { href: "/deckbuilder", label: "🃏 Deck Builder" },
           { href: "/download", label: "Download" },
           { href: "/sell", label: "Sell" },
