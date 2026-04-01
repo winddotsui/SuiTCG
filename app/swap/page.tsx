@@ -29,6 +29,7 @@ export default function SwapPage() {
   const [amount, setAmount] = useState("");
   const [showFromDropdown, setShowFromDropdown] = useState(false);
   const [showToDropdown, setShowToDropdown] = useState(false);
+  const [activeDex, setActiveDex] = useState("Cetus");
 
   function swapTokens() {
     const temp = fromToken;
@@ -50,7 +51,24 @@ export default function SwapPage() {
         <p style={{ fontSize: "14px", color: "#c8d8f0", maxWidth: "500px", margin: "0 auto" }}>Swap SUI, suiUSDe, USDC and more — powered by the best DEXs on Sui</p>
       </div>
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 24px", display: "grid", gridTemplateColumns: "400px 1fr", gap: "32px" }}>
+      {/* Embedded DEX */}
+    <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "24px" }}>
+      <div style={{ display: "flex", gap: "12px", marginBottom: "16px", flexWrap: "wrap" }}>
+        {["Cetus", "Aftermath", "Turbos", "Bluefin", "Kriya"].map((dex, i) => (
+          <button key={i} onClick={() => setActiveDex(dex)} style={{ padding: "8px 20px", borderRadius: "20px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontSize: "13px", fontWeight: 600, border: activeDex === dex ? "1px solid #0099ff" : "1px solid rgba(0,153,255,0.2)", background: activeDex === dex ? "rgba(0,153,255,0.15)" : "transparent", color: activeDex === dex ? "#0099ff" : "#c8d8f0" }}>{dex}</button>
+        ))}
+      </div>
+
+      <div style={{ borderRadius: "16px", overflow: "hidden", border: "1px solid rgba(0,153,255,0.2)", height: "700px" }}>
+        {activeDex === "Cetus" && <iframe src="https://app.cetus.zone/swap" width="100%" height="700" style={{ border: "none", display: "block" }} allow="clipboard-write; clipboard-read" />}
+        {activeDex === "Aftermath" && <iframe src="https://aftermath.finance/trade" width="100%" height="700" style={{ border: "none", display: "block" }} allow="clipboard-write; clipboard-read" />}
+        {activeDex === "Turbos" && <iframe src="https://app.turbos.finance/#/trade" width="100%" height="700" style={{ border: "none", display: "block" }} allow="clipboard-write; clipboard-read" />}
+        {activeDex === "Bluefin" && <iframe src="https://trade.bluefin.io" width="100%" height="700" style={{ border: "none", display: "block" }} allow="clipboard-write; clipboard-read" />}
+        {activeDex === "Kriya" && <iframe src="https://www.kriya.finance/trade" width="100%" height="700" style={{ border: "none", display: "block" }} allow="clipboard-write; clipboard-read" />}
+      </div>
+    </div>
+
+    <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 24px 40px 24px", display: "grid", gridTemplateColumns: "400px 1fr", gap: "32px" }}>
 
         <div>
           <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.2)", borderRadius: "20px", padding: "24px" }}>
