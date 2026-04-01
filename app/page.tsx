@@ -24,6 +24,10 @@ const OPTCG_FLAGSHIP = [
   { code: "OP03-001", name: "Monkey D. Luffy", label: "OP03 Leader" },
 ];
 
+function getOfficialImage(code: string) {
+  return `https://en.onepiece-cardgame.com/images/cardlist/card/${code}.png`;
+}
+
 export default function Home() {
   const [cards, setCards] = useState<CardImage[]>([]);
   const [heroCards, setHeroCards] = useState<any[]>([]);
@@ -41,14 +45,14 @@ export default function Home() {
     ];
     setCards(OPTCG_FLAGSHIP.map((card, i) => ({
       name: card.name, game: card.label,
-      imageUrl: `https://images.ryanmichaelhirst.us/${card.code}.png`,
+      imageUrl: getOfficialImage(card.code),
       price: "", ...positions[i],
     })));
     setHeroCards([
-      { name: "Roronoa Zoro", images: { large: "https://images.ryanmichaelhirst.us/OP01-001.png" }, game: "OP01 Leader · Red", priceDisplay: "$45" },
-      { name: "Monkey D. Luffy", images: { large: "https://images.ryanmichaelhirst.us/OP01-003.png" }, game: "OP01 Leader · Red/Green", priceDisplay: "$65" },
-      { name: "Edward Newgate", images: { large: "https://images.ryanmichaelhirst.us/OP02-001.png" }, game: "OP02 Leader · Black", priceDisplay: "$38" },
-      { name: "Kouzuki Oden", images: { large: "https://images.ryanmichaelhirst.us/OP01-031.png" }, game: "OP01 Leader · Green", priceDisplay: "$28" },
+      { name: "Roronoa Zoro", images: { large: getOfficialImage("OP01-001") }, game: "OP01 Leader · Red", priceDisplay: "$45" },
+      { name: "Monkey D. Luffy", images: { large: getOfficialImage("OP01-003") }, game: "OP01 Leader · Red/Green", priceDisplay: "$65" },
+      { name: "Edward Newgate", images: { large: getOfficialImage("OP02-001") }, game: "OP02 Leader · Black", priceDisplay: "$38" },
+      { name: "Kouzuki Oden", images: { large: getOfficialImage("OP01-031") }, game: "OP01 Leader · Green", priceDisplay: "$28" },
     ]);
   }, []);
 
