@@ -20,7 +20,7 @@ const labelStyle = {
 };
 
 const btnPrimary = {
-  background: "linear-gradient(135deg, #0050ff, #0078ff)",
+  background: "linear-gradient(135deg, #0078ff, #00ffcc)",
   color: "#fff", border: "none", borderRadius: "8px", padding: "14px",
   fontSize: "14px", fontWeight: 500, cursor: "pointer",
   fontFamily: "DM Sans, sans-serif",
@@ -96,7 +96,7 @@ export default function Sell() {
           <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", fontWeight: 700, color: "#ffffff", marginBottom: "12px" }}>Card Listed!</h1>
           <p style={{ fontSize: "14px", color: "#666680", marginBottom: "32px", lineHeight: 1.75 }}>
             Your card is now live on WaveTCG Marketplace!
-            {form.image_url && <><br /><span style={{ color: "#0078ff" }}>◈ Image stored on Sui Walrus</span></>}
+            {form.image_url && <><br /><span style={{ color: "#00ffcc" }}>◈ Image stored on Sui Walrus</span></>}
           </p>
           <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
             <a href="/marketplace" style={{ ...btnPrimary, display: "inline-block", textDecoration: "none", width: "auto", padding: "12px 24px" }}>View Marketplace</a>
@@ -112,14 +112,14 @@ export default function Sell() {
       <div style={{ maxWidth: "680px", margin: "0 auto" }}>
 
         <div style={{ marginBottom: "40px" }}>
-          <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0078ff", marginBottom: "12px" }}>Free to List · 1% on Sale · Images on Walrus</div>
-          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "36px", fontWeight: 700, color: "#ffffff" }}>List a Card</h1>
+          <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#00ffcc", marginBottom: "12px" }}>Free to List · 1% on Sale · Images on Walrus</div>
+          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "36px", fontWeight: 700, color: "#ffffff" }} style={{ background: "linear-gradient(135deg, #0078ff, #00ffcc, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>List a Card</h1>
         </div>
 
         <div style={{ display: "flex", gap: "8px", marginBottom: "40px" }}>
           {["Card Details", "Condition & Price", "Review"].map((s, i) => (
             <div key={i} style={{ flex: 1, textAlign: "center" }}>
-              <div style={{ height: "3px", borderRadius: "2px", marginBottom: "8px", background: step > i ? "#0078ff" : "rgba(255,255,255,0.1)" }} />
+              <div style={{ height: "3px", borderRadius: "2px", marginBottom: "8px", background: step > i ? "#00ffcc" : "rgba(255,255,255,0.1)" }} />
               <div style={{ fontSize: "11px", letterSpacing: "0.06em", textTransform: "uppercase", color: step > i ? "#4da8ff" : "#444460" }}>{s}</div>
             </div>
           ))}
@@ -157,7 +157,7 @@ export default function Sell() {
                 <label style={labelStyle}>Card Photo · Stored on Sui Walrus ◈</label>
                 <WalrusUpload onUpload={(url) => updateForm("image_url", url)} />
                 {form.image_url && (
-                  <div style={{ marginTop: "8px", fontSize: "11px", color: "#0078ff" }}>
+                  <div style={{ marginTop: "8px", fontSize: "11px", color: "#00ffcc" }}>
                     ✅ Image on Walrus: {form.image_url.slice(0, 50)}...
                   </div>
                 )}
@@ -178,7 +178,7 @@ export default function Sell() {
                   {["PSA 10","PSA 9","PSA 8","Mint","NM","LP","MP","HP"].map((c) => (
                     <button key={c} onClick={() => updateForm("condition", c)} style={{
                       padding: "8px 16px",
-                      border: form.condition === c ? "1px solid #0078ff" : "1px solid rgba(255,255,255,0.1)",
+                      border: form.condition === c ? "1px solid #00ffcc" : "1px solid rgba(255,255,255,0.1)",
                       borderRadius: "6px",
                       background: form.condition === c ? "rgba(0,120,255,0.1)" : "transparent",
                       color: form.condition === c ? "#4da8ff" : "#666680",
@@ -191,7 +191,7 @@ export default function Sell() {
               <div style={{ marginBottom: "20px" }}>
                 <label style={labelStyle}>Price (USD)</label>
                 <input style={inputStyle} type="number" placeholder="0.00" value={form.price_usd} onChange={e => updateForm("price_usd", e.target.value)} />
-                {form.price_sui && <div style={{ fontSize: "12px", color: "#0078ff", marginTop: "6px" }}>≈ {form.price_sui} SUI · Platform fee: 1% on sale</div>}
+                {form.price_sui && <div style={{ fontSize: "12px", color: "#00ffcc", marginTop: "6px" }}>≈ {form.price_sui} SUI · Platform fee: 1% on sale</div>}
               </div>
 
               <div style={{ marginBottom: "28px" }}>
@@ -214,7 +214,7 @@ export default function Sell() {
               {form.image_url && (
                 <div style={{ marginBottom: "20px", textAlign: "center" }}>
                   <img src={form.image_url} alt={form.name} style={{ width: "120px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.1)" }} />
-                  <div style={{ fontSize: "11px", color: "#0078ff", marginTop: "6px" }}>◈ Stored on Walrus</div>
+                  <div style={{ fontSize: "11px", color: "#00ffcc", marginTop: "6px" }}>◈ Stored on Walrus</div>
                 </div>
               )}
 

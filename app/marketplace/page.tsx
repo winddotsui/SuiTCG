@@ -76,8 +76,8 @@ export default function Marketplace() {
             <button key={g} onClick={() => setGame(g)} style={{
               display: "flex", alignItems: "center", gap: "8px",
               padding: "8px 10px", width: "100%", textAlign: "left",
-              background: game === g ? "rgba(0,120,255,0.08)" : "transparent",
-              border: game === g ? "1px solid rgba(0,120,255,0.2)" : "1px solid transparent",
+              background: game === g ? "rgba(0,180,255,0.08)" : "transparent",
+              border: game === g ? "1px solid rgba(0,180,255,0.2)" : "1px solid transparent",
               borderRadius: "8px", color: game === g ? "#4da8ff" : "#666680",
               fontSize: "13px", cursor: "pointer", marginBottom: "3px",
               fontFamily: "DM Sans, sans-serif",
@@ -103,7 +103,7 @@ export default function Marketplace() {
 
         <a href="/sell" style={{
           display: "block", textAlign: "center",
-          background: "linear-gradient(135deg, #0050ff, #0078ff)",
+          background: "linear-gradient(135deg, #00b4ff, #0078ff)",
           color: "#fff", padding: "10px",
           borderRadius: "8px", fontSize: "12px",
           fontWeight: 500, textDecoration: "none",
@@ -161,7 +161,7 @@ export default function Marketplace() {
               }}
                 onMouseEnter={e => {
                   (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)";
-                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,120,255,0.3)";
+                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,180,255,0.3)";
                 }}
                 onMouseLeave={e => {
                   (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";

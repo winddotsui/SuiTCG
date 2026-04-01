@@ -63,7 +63,7 @@ function CardGallery({ cards }: { cards: CardData[] }) {
     <div style={{ background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "16px", padding: "20px", marginTop: "12px" }}>
       <div style={{ fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "#444460", marginBottom: "16px" }}>{cards.length} versions found</div>
       {selected && (
-        <div style={{ display: "flex", gap: "20px", marginBottom: "20px", padding: "16px", background: "#0a0a18", borderRadius: "12px", border: "1px solid rgba(0,120,255,0.2)" }}>
+        <div style={{ display: "flex", gap: "20px", marginBottom: "20px", padding: "16px", background: "#0a0a18", borderRadius: "12px", border: "1px solid rgba(0,212,255,0.2)" }}>
           <img src={selected.imageLarge} alt={selected.name} style={{ width: "140px", borderRadius: "10px", flexShrink: 0, boxShadow: "0 8px 24px rgba(0,0,0,0.5)" }} />
           <div style={{ flex: 1 }}>
             <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", fontWeight: 600, color: "#ffffff", marginBottom: "4px" }}>{selected.name}</div>
@@ -76,7 +76,7 @@ function CardGallery({ cards }: { cards: CardData[] }) {
       )}
       <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
         {cards.map((card, i) => (
-          <div key={i} onClick={() => setSelected(card)} style={{ cursor: "pointer", borderRadius: "8px", overflow: "hidden", border: selected?.id === card.id ? "2px solid #0078ff" : "2px solid transparent", transition: "all 0.15s", opacity: selected?.id === card.id ? 1 : 0.7 }}>
+          <div key={i} onClick={() => setSelected(card)} style={{ cursor: "pointer", borderRadius: "8px", overflow: "hidden", border: selected?.id === card.id ? "2px solid #00d4ff" : "2px solid transparent", transition: "all 0.15s", opacity: selected?.id === card.id ? 1 : 0.7 }}>
             <img src={card.imageSmall} alt={card.name} style={{ width: "60px", display: "block" }} />
             <div style={{ fontSize: "9px", color: "#444460", textAlign: "center", padding: "2px 4px", background: "#0a0a18", maxWidth: "60px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{card.set}</div>
           </div>
@@ -115,10 +115,10 @@ export default function Oracle() {
   return (
     <div style={{ height: "calc(100vh - 60px)", background: "#000000", display: "flex", flexDirection: "column" }}>
       <div style={{ padding: "24px 40px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "#050510", display: "flex", alignItems: "center", gap: "16px" }}>
-        <div style={{ width: "44px", height: "44px", borderRadius: "50%", background: "rgba(0,120,255,0.1)", border: "1px solid rgba(0,120,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px" }}>🔮</div>
+        <div style={{ width: "44px", height: "44px", borderRadius: "50%", background: "rgba(0,212,255,0.1)", border: "1px solid rgba(0,212,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px" }}>🔮</div>
         <div>
           <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", fontWeight: 600, color: "#ffffff" }}>SuiTCG Oracle</div>
-          <div style={{ fontSize: "12px", color: "#0078ff" }}>● Online · Pokémon · Magic · Yu-Gi-Oh! · One Piece · and more</div>
+          <div style={{ fontSize: "12px", color: "#00d4ff" }}>● Online · Pokémon · Magic · Yu-Gi-Oh! · One Piece · and more</div>
         </div>
       </div>
       <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px", display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -136,23 +136,23 @@ export default function Oracle() {
         )}
         {messages.map((m, i) => (
           <div key={i} style={{ display: "flex", flexDirection: m.role === "user" ? "row-reverse" : "row", gap: "12px", alignItems: "flex-start" }}>
-            <div style={{ width: "32px", height: "32px", borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", background: m.role === "user" ? "rgba(0,120,255,0.15)" : "rgba(0,120,255,0.15)", border: m.role === "user" ? "1px solid rgba(0,120,255,0.3)" : "1px solid rgba(0,120,255,0.3)" }}>{m.role === "user" ? "👤" : "🔮"}</div>
+            <div style={{ width: "32px", height: "32px", borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", background: m.role === "user" ? "rgba(0,212,255,0.15)" : "rgba(0,212,255,0.15)", border: m.role === "user" ? "1px solid rgba(0,212,255,0.3)" : "1px solid rgba(0,212,255,0.3)" }}>{m.role === "user" ? "👤" : "🔮"}</div>
             <div style={{ maxWidth: "80%", display: "flex", flexDirection: "column", gap: "8px" }}>
-              <div style={{ padding: "12px 16px", borderRadius: "12px", fontSize: "14px", lineHeight: 1.7, background: m.role === "user" ? "rgba(0,120,255,0.08)" : "#050510", border: m.role === "user" ? "1px solid rgba(0,120,255,0.15)" : "1px solid rgba(255,255,255,0.06)", color: "#ffffff", whiteSpace: "pre-wrap" }}>{m.content}</div>
+              <div style={{ padding: "12px 16px", borderRadius: "12px", fontSize: "14px", lineHeight: 1.7, background: m.role === "user" ? "rgba(0,212,255,0.08)" : "#050510", border: m.role === "user" ? "1px solid rgba(0,212,255,0.15)" : "1px solid rgba(255,255,255,0.06)", color: "#ffffff", whiteSpace: "pre-wrap" }}>{m.content}</div>
               {m.cards && m.cards.length > 0 && <CardGallery cards={m.cards} />}
             </div>
           </div>
         ))}
         {isLoading && (
           <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
-            <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(0,120,255,0.15)", border: "1px solid rgba(0,120,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}>🔮</div>
+            <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(0,212,255,0.15)", border: "1px solid rgba(0,212,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}>🔮</div>
             <div style={{ padding: "12px 16px", background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", color: "#666680", fontSize: "14px" }}>Consulting the Oracle...</div>
           </div>
         )}
       </div>
       <div style={{ padding: "20px 40px", borderTop: "1px solid rgba(255,255,255,0.06)", background: "#050510", display: "flex", gap: "12px" }}>
         <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && sendMessage()} placeholder="Ask about any TCG card — Pokémon, Magic, Yu-Gi-Oh!, One Piece..." style={{ flex: 1, background: "#0a0a18", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "14px 20px", fontSize: "14px", color: "#ffffff", outline: "none" }} />
-        <button onClick={sendMessage} style={{ background: "#0078ff", color: "#000000", border: "none", borderRadius: "8px", padding: "14px 24px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>Send</button>
+        <button onClick={sendMessage} style={{ background: "#00d4ff", color: "#000000", border: "none", borderRadius: "8px", padding: "14px 24px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>Send</button>
       </div>
     </div>
   );

@@ -167,7 +167,7 @@ export default function PriceChecker() {
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {card.prices.usd && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
             <span style={{ fontSize: "13px", color: "#666680" }}>TCGPlayer (Normal)</span>
-            <span style={{ fontSize: "15px", fontWeight: 600, color: "#0078ff" }}>${card.prices.usd}</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#4da8ff" }}>${card.prices.usd}</span>
           </div>}
           {card.prices.usd_foil && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
             <span style={{ fontSize: "13px", color: "#666680" }}>TCGPlayer (Foil)</span>
@@ -189,7 +189,7 @@ export default function PriceChecker() {
             <div key={type} style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
               <span style={{ fontSize: "13px", color: "#666680", textTransform: "capitalize" }}>{type.replace(/([A-Z])/g, ' $1')}</span>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: "15px", fontWeight: 600, color: "#0078ff" }}>${vals.market?.toFixed(2)}</div>
+                <div style={{ fontSize: "15px", fontWeight: 600, color: "#4da8ff" }}>${vals.market?.toFixed(2)}</div>
                 <div style={{ fontSize: "11px", color: "#444460" }}>Low: ${vals.low?.toFixed(2)} · High: ${vals.high?.toFixed(2)}</div>
               </div>
             </div>
@@ -202,7 +202,7 @@ export default function PriceChecker() {
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {card.prices.tcgplayer_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
             <span style={{ fontSize: "13px", color: "#666680" }}>TCGPlayer</span>
-            <span style={{ fontSize: "15px", fontWeight: 600, color: "#0078ff" }}>${card.prices.tcgplayer_price}</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#4da8ff" }}>${card.prices.tcgplayer_price}</span>
           </div>}
           {card.prices.cardmarket_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
             <span style={{ fontSize: "13px", color: "#666680" }}>CardMarket</span>
@@ -228,8 +228,8 @@ export default function PriceChecker() {
 
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "48px" }}>
-          <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0078ff", marginBottom: "12px" }}>Live Prices · All Expansions · All Versions</div>
-          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, color: "#ffffff", marginBottom: "12px" }}>Price Checker</h1>
+          <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4da8ff", marginBottom: "12px" }}>Live Prices · All Expansions · All Versions</div>
+          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, color: "#ffffff", marginBottom: "12px" }} style={{ background: "linear-gradient(135deg, #00aaff, #4da8ff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Price Checker</h1>
           <p style={{ fontSize: "15px", color: "#666680" }}>Search any card — see all versions with live market prices</p>
         </div>
 
@@ -244,8 +244,8 @@ export default function PriceChecker() {
             <button key={g.id} onClick={() => setGame(g.id)} style={{
               padding: "8px 18px", borderRadius: "20px", cursor: "pointer",
               fontFamily: "DM Sans, sans-serif", fontSize: "13px",
-              border: game === g.id ? "1px solid #0078ff" : "1px solid rgba(255,255,255,0.1)",
-              background: game === g.id ? "rgba(0,120,255,0.1)" : "transparent",
+              border: game === g.id ? "1px solid #4da8ff" : "1px solid rgba(255,255,255,0.1)",
+              background: game === g.id ? "rgba(0,170,255,0.1)" : "transparent",
               color: game === g.id ? "#4da8ff" : "#666680",
             }}>{g.icon} {g.label}</button>
           ))}
@@ -270,7 +270,7 @@ export default function PriceChecker() {
                 boxSizing: "border-box",
                 transition: "border-color 0.2s",
               }}
-              onFocusCapture={e => (e.currentTarget.style.borderColor = "rgba(0,120,255,0.5)")}
+              onFocusCapture={e => (e.currentTarget.style.borderColor = "rgba(0,170,255,0.5)")}
               onBlurCapture={e => {
                 setTimeout(() => setShowDropdown(false), 200);
                 e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
@@ -288,7 +288,7 @@ export default function PriceChecker() {
           {showDropdown && suggestions.length > 0 && (
             <div style={{
               position: "absolute", top: "100%", left: 0, right: 0,
-              background: "#050510", border: "1px solid rgba(0,120,255,0.3)",
+              background: "#050510", border: "1px solid rgba(0,170,255,0.3)",
               borderTop: "none", borderRadius: "0 0 12px 12px",
               zIndex: 100, maxHeight: "320px", overflowY: "auto",
               boxShadow: "0 16px 48px rgba(0,0,0,0.8)",
@@ -313,7 +313,7 @@ export default function PriceChecker() {
                       {s.game === "magic" ? "Magic: The Gathering" : s.game === "pokemon" ? "Pokémon TCG" : "Yu-Gi-Oh!"}
                     </div>
                   </div>
-                  <div style={{ marginLeft: "auto", fontSize: "11px", color: "#0078ff" }}>View all versions →</div>
+                  <div style={{ marginLeft: "auto", fontSize: "11px", color: "#4da8ff" }}>View all versions →</div>
                 </div>
               ))}
             </div>
@@ -333,7 +333,7 @@ export default function PriceChecker() {
               />
               <div style={{ background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px" }}>
                 <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", fontWeight: 600, color: "#ffffff", marginBottom: "6px" }}>{selectedCard.name}</div>
-                <div style={{ fontSize: "12px", color: "#0078ff", marginBottom: "4px" }}>{selectedCard.set}</div>
+                <div style={{ fontSize: "12px", color: "#4da8ff", marginBottom: "4px" }}>{selectedCard.set}</div>
                 {selectedCard.rarity && <div style={{ fontSize: "11px", color: "#666680", textTransform: "capitalize" }}>⭐ {selectedCard.rarity}</div>}
               </div>
             </div>
@@ -358,7 +358,7 @@ export default function PriceChecker() {
                         onClick={() => setSelectedCard(v)}
                         style={{
                           cursor: "pointer",
-                          border: selectedCard.id === v.id ? "2px solid #0078ff" : "1px solid rgba(255,255,255,0.06)",
+                          border: selectedCard.id === v.id ? "2px solid #4da8ff" : "1px solid rgba(255,255,255,0.06)",
                           borderRadius: "8px", overflow: "hidden",
                           width: "72px", transition: "all 0.15s",
                           opacity: selectedCard.id === v.id ? 1 : 0.6,

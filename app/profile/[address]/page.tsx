@@ -98,14 +98,14 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
   return (
     <div style={{ minHeight: "100vh", background: "#000000" }}>
       <div style={{ height: "80px", background: "linear-gradient(135deg, #000000 0%, #050510 50%, #000000 100%)", borderBottom: "1px solid rgba(255,255,255,0.06)", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 30% 50%, rgba(0,120,255,0.08) 0%, transparent 60%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 30% 50%, rgba(68,0,255,0.08) 0%, transparent 60%)", pointerEvents: "none" }} />
       </div>
 
       <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "0 24px" }}>
         <div style={{ display: "flex", gap: "24px", alignItems: "flex-end", marginTop: "16px", marginBottom: "32px", flexWrap: "wrap" }}>
 
           <div style={{ position: "relative", flexShrink: 0 }}>
-            <div style={{ width: "90px", height: "90px", borderRadius: "50%", background: "linear-gradient(135deg, #0050ff, #0078ff)", border: "4px solid #000000", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "36px", color: "#fff", overflow: "hidden", cursor: "pointer" }}
+            <div style={{ width: "90px", height: "90px", borderRadius: "50%", background: "linear-gradient(135deg, #4400ff, #0078ff)", border: "4px solid #000000", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "36px", color: "#fff", overflow: "hidden", cursor: "pointer" }}
               onClick={() => document.getElementById("avatar-upload")?.click()}>
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -153,7 +153,7 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
         </div>
 
         {editing && (
-          <div style={{ background: "#050510", border: "1px solid rgba(0,120,255,0.2)", borderRadius: "16px", padding: "24px", marginBottom: "32px" }}>
+          <div style={{ background: "#050510", border: "1px solid rgba(68,0,255,0.2)", borderRadius: "16px", padding: "24px", marginBottom: "32px" }}>
             <h3 style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff", marginBottom: "20px" }}>Edit Profile</h3>
 
             <div style={{ marginBottom: "20px" }}>
@@ -237,7 +237,7 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
             </div>
 
             <div style={{ display: "flex", gap: "10px" }}>
-              <button onClick={saveProfile} style={{ background: "linear-gradient(135deg, #0050ff, #0078ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "10px 24px", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Save Profile</button>
+              <button onClick={saveProfile} style={{ background: "linear-gradient(135deg, #4400ff, #0078ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "10px 24px", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Save Profile</button>
               <button onClick={() => setEditing(false)} style={{ background: "transparent", color: "#666680", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "10px 20px", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Cancel</button>
             </div>
           </div>
@@ -264,7 +264,7 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
             <div style={{ textAlign: "center", padding: "60px", background: "#050510", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.06)" }}>
               <div style={{ fontSize: "48px", marginBottom: "16px" }}>🃏</div>
               <p style={{ fontSize: "14px", color: "#666680", marginBottom: "20px" }}>No active listings yet</p>
-              <a href="/sell" style={{ display: "inline-block", background: "linear-gradient(135deg, #0050ff, #0078ff)", color: "#fff", padding: "10px 24px", borderRadius: "8px", fontSize: "13px", textDecoration: "none" }}>List a Card</a>
+              <a href="/sell" style={{ display: "inline-block", background: "linear-gradient(135deg, #4400ff, #0078ff)", color: "#fff", padding: "10px 24px", borderRadius: "8px", fontSize: "13px", textDecoration: "none" }}>List a Card</a>
             </div>
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "14px" }}>

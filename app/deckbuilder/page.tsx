@@ -154,7 +154,7 @@ export default function DeckBuilder() {
       {/* Header */}
       <div style={{ background: "linear-gradient(180deg, #000000 0%, #000000 50%, #000000 100%)", padding: "40px 24px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center" }}>
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4da8ff", marginBottom: "8px" }}>🏴‍☠️ WaveTCG · One Piece TCG</div>
-        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 900, color: "#ffffff", marginBottom: "8px" }}>Deck Builder</h1>
+        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 900, color: "#ffffff", marginBottom: "8px" }} style={{ background: "linear-gradient(135deg, #7700ff, #0078ff, #00aaff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Deck Builder</h1>
         <p style={{ fontSize: "14px", color: "#666680" }}>Build your One Piece TCG deck · 1 Leader + 50 Main + 10 DON!!</p>
       </div>
 
@@ -281,7 +281,7 @@ export default function DeckBuilder() {
 
           {/* Leader */}
           {leader && (
-            <div style={{ background: "#050510", border: "1px solid rgba(0,120,255,0.3)", borderRadius: "12px", padding: "12px", marginBottom: "12px", display: "flex", gap: "10px", alignItems: "center" }}>
+            <div style={{ background: "#050510", border: "1px solid rgba(102,0,255,0.3)", borderRadius: "12px", padding: "12px", marginBottom: "12px", display: "flex", gap: "10px", alignItems: "center" }}>
               <img src={getCardImage(leader)} alt={leader.name} style={{ width: "50px", borderRadius: "4px" }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: "11px", color: "#4da8ff", marginBottom: "2px" }}>LEADER</div>
@@ -315,7 +315,7 @@ export default function DeckBuilder() {
             disabled={saving || !leader || mainDeckCount !== 50}
             style={{
               width: "100%", marginBottom: "8px",
-              background: isComplete ? "linear-gradient(135deg, #0050ff, #0078ff)" : "rgba(255,255,255,0.05)",
+              background: isComplete ? "linear-gradient(135deg, #7700ff, #0078ff)" : "rgba(255,255,255,0.05)",
               color: isComplete ? "#fff" : "#444460",
               border: "none", borderRadius: "8px", padding: "14px",
               fontSize: "14px", fontWeight: 600, cursor: isComplete ? "pointer" : "not-allowed",

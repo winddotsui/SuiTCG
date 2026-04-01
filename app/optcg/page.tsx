@@ -18,7 +18,7 @@ const ENTRY_FEE = 10;
 function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: number; maxPlayers: number }) {
   const progress = (players / maxPlayers) * 100;
   return (
-    <div style={{ background: "linear-gradient(135deg, #000000, #050510)", border: "1px solid rgba(0,120,255,0.3)", borderRadius: "20px", overflow: "hidden", position: "relative" }}>
+    <div style={{ background: "linear-gradient(135deg, #000000, #050510)", border: "1px solid rgba(0,85,255,0.3)", borderRadius: "20px", overflow: "hidden", position: "relative" }}>
       <style>{`
         @keyframes tcCoinFly1{0%{transform:translate(0,0) rotate(0deg);opacity:1}100%{transform:translate(-80px,-140px) rotate(-40deg);opacity:0}}
         @keyframes tcCoinFly2{0%{transform:translate(0,0) rotate(0deg);opacity:1}100%{transform:translate(-20px,-160px) rotate(20deg);opacity:0}}
@@ -30,7 +30,7 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
         @keyframes tcLidOpen{0%,100%{transform:rotate(-35deg)}50%{transform:rotate(-42deg)}}
         @keyframes tcSparkle{0%,100%{opacity:0;transform:scale(0)}40%,60%{opacity:1;transform:scale(1)}}
         @keyframes tcFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-        .tc-coin{position:absolute;width:38px;height:38px;border-radius:50%;background:#0078ff;border:2px solid #0050cc;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#5a3e00;}
+        .tc-coin{position:absolute;width:38px;height:38px;border-radius:50%;background:#00aaff;border:2px solid #0050cc;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#5a3e00;}
         .tc-cf1{animation:tcCoinFly1 1.6s ease-in infinite 0s}
         .tc-cf2{animation:tcCoinFly2 1.6s ease-in infinite 0.2s}
         .tc-cf3{animation:tcCoinFly3 1.6s ease-in infinite 0.4s}
@@ -150,10 +150,10 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
 
       {/* Prize info below chest */}
       <div style={{ padding: "24px", textAlign: "center" }}>
-        <div style={{ fontFamily: "Cinzel, serif", fontSize: "13px", letterSpacing: "0.15em", textTransform: "uppercase", color: "#0078ff", marginBottom: "8px" }}>Tournament Prize Pool</div>
+        <div style={{ fontFamily: "Cinzel, serif", fontSize: "13px", letterSpacing: "0.15em", textTransform: "uppercase", color: "#00aaff", marginBottom: "8px" }}>Tournament Prize Pool</div>
         <div style={{ fontFamily: "Cinzel, serif", fontSize: "44px", fontWeight: 900, color: "#4da8ff", lineHeight: 1, marginBottom: "4px" }}>{pot} SUI</div>
         <div style={{ fontSize: "12px", color: "#666680", marginBottom: "6px" }}>≈ ${(pot * 0.88).toFixed(0)} USD</div>
-        <div style={{ fontSize: "11px", color: "#0078ff", marginBottom: "20px" }}>◈ Powered by SUI × Ethena on Sui</div>
+        <div style={{ fontSize: "11px", color: "#00aaff", marginBottom: "20px" }}>◈ Powered by SUI × Ethena on Sui</div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", marginBottom: "20px" }}>
           {[
@@ -161,9 +161,9 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
             { place: "🥈 2nd", pct: 25, amount: Math.floor(pot * 0.25) },
             { place: "🥉 3rd", pct: 20, amount: Math.floor(pot * 0.2) },
           ].map((prize, i) => (
-            <div key={i} style={{ background: "rgba(0,120,255,0.08)", border: "1px solid rgba(0,120,255,0.2)", borderRadius: "10px", padding: "12px 8px" }}>
+            <div key={i} style={{ background: "rgba(0,85,255,0.08)", border: "1px solid rgba(0,85,255,0.2)", borderRadius: "10px", padding: "12px 8px" }}>
               <div style={{ fontSize: "18px", marginBottom: "4px" }}>{prize.place.split(" ")[0]}</div>
-              <div style={{ fontFamily: "Cinzel, serif", fontSize: "11px", color: "#0078ff", marginBottom: "6px" }}>{prize.place.split(" ")[1]}</div>
+              <div style={{ fontFamily: "Cinzel, serif", fontSize: "11px", color: "#00aaff", marginBottom: "6px" }}>{prize.place.split(" ")[1]}</div>
               <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", fontWeight: 600, color: "#4da8ff" }}>{prize.amount}</div>
               <div style={{ fontSize: "9px", color: "#666680" }}>SUI · {prize.pct}%</div>
             </div>
@@ -172,10 +172,10 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
 
         <div style={{ marginBottom: "8px", display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#666680" }}>
           <span>👥 {players}/{maxPlayers} players</span>
-          <span style={{ color: "#0078ff" }}>{maxPlayers - players} spots left</span>
+          <span style={{ color: "#00aaff" }}>{maxPlayers - players} spots left</span>
         </div>
         <div style={{ height: "6px", background: "rgba(255,255,255,0.08)", borderRadius: "3px", overflow: "hidden" }}>
-          <div style={{ height: "100%", borderRadius: "3px", width: `${progress}%`, background: "linear-gradient(90deg, #0050ff, #0078ff)", transition: "width 0.5s ease" }} />
+          <div style={{ height: "100%", borderRadius: "3px", width: `${progress}%`, background: "linear-gradient(90deg, #0055ff, #00aaff)", transition: "width 0.5s ease" }} />
         </div>
       </div>
     </div>
@@ -201,7 +201,7 @@ function JoinModal({ onClose, onJoin, pot }: { onClose: () => void; onJoin: (nam
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
-      <div style={{ background: "#050510", border: "1px solid rgba(0,120,255,0.3)", borderRadius: "20px", padding: "32px", width: "100%", maxWidth: "420px", position: "relative" }}>
+      <div style={{ background: "#050510", border: "1px solid rgba(0,85,255,0.3)", borderRadius: "20px", padding: "32px", width: "100%", maxWidth: "420px", position: "relative" }}>
         <button onClick={onClose} style={{ position: "absolute", top: "16px", right: "16px", background: "transparent", border: "none", color: "#666680", fontSize: "18px", cursor: "pointer" }}>✕</button>
         {step === "confirm" && (
           <>
@@ -213,12 +213,12 @@ function JoinModal({ onClose, onJoin, pot }: { onClose: () => void; onJoin: (nam
             <div style={{ background: "#0a0a18", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px", marginBottom: "20px" }}>
               {[
                 { label: "Entry Fee", val: "10 SUI", color: "#4da8ff" },
-                { label: "Min Players", val: "8 players", color: "#0078ff" },
-                { label: "Max Players", val: "64 players", color: "#0078ff" },
-                { label: "Current Pot", val: `${pot} SUI`, color: "#0078ff" },
-                { label: "1st Prize", val: `${Math.floor((pot + 10) * 0.5)} SUI`, color: "#0078ff" },
+                { label: "Min Players", val: "8 players", color: "#00aaff" },
+                { label: "Max Players", val: "64 players", color: "#00aaff" },
+                { label: "Current Pot", val: `${pot} SUI`, color: "#00aaff" },
+                { label: "1st Prize", val: `${Math.floor((pot + 10) * 0.5)} SUI`, color: "#00aaff" },
                 { label: "2nd Prize", val: `${Math.floor((pot + 10) * 0.3)} SUI`, color: "#4da8ff" },
-                { label: "3rd Prize", val: `${Math.floor((pot + 10) * 0.2)} SUI`, color: "#0078ff" },
+                { label: "3rd Prize", val: `${Math.floor((pot + 10) * 0.2)} SUI`, color: "#00aaff" },
                 { label: "Payment", val: "On-chain via Sui", color: "#666680" },
               ].map((row, i) => (
                 <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: i < 5 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
@@ -228,11 +228,11 @@ function JoinModal({ onClose, onJoin, pot }: { onClose: () => void; onJoin: (nam
               ))}
             </div>
             {!walletConnected ? (
-              <button onClick={() => setWalletConnected(true)} style={{ width: "100%", background: "rgba(0,120,255,0.1)", border: "1px solid rgba(0,120,255,0.3)", borderRadius: "8px", padding: "12px", fontSize: "13px", color: "#4da8ff", cursor: "pointer", fontFamily: "DM Sans, sans-serif", marginBottom: "10px" }}>◈ Connect Sui Wallet</button>
+              <button onClick={() => setWalletConnected(true)} style={{ width: "100%", background: "rgba(0,85,255,0.1)", border: "1px solid rgba(0,85,255,0.3)", borderRadius: "8px", padding: "12px", fontSize: "13px", color: "#4da8ff", cursor: "pointer", fontFamily: "DM Sans, sans-serif", marginBottom: "10px" }}>◈ Connect Sui Wallet</button>
             ) : (
-              <div style={{ background: "rgba(0,120,255,0.1)", border: "1px solid rgba(0,120,255,0.2)", borderRadius: "8px", padding: "10px", fontSize: "12px", color: "#0078ff", textAlign: "center", marginBottom: "10px" }}>✅ Wallet connected</div>
+              <div style={{ background: "rgba(0,85,255,0.1)", border: "1px solid rgba(0,85,255,0.2)", borderRadius: "8px", padding: "10px", fontSize: "12px", color: "#00aaff", textAlign: "center", marginBottom: "10px" }}>✅ Wallet connected</div>
             )}
-            <button onClick={handleJoin} style={{ width: "100%", background: walletConnected ? "linear-gradient(135deg, #0078ff, #4da8ff)" : "rgba(255,255,255,0.05)", color: walletConnected ? "#000000" : "#444460", border: "none", borderRadius: "8px", padding: "14px", fontSize: "14px", fontWeight: 600, cursor: walletConnected ? "pointer" : "not-allowed", fontFamily: "DM Sans, sans-serif" }}>
+            <button onClick={handleJoin} style={{ width: "100%", background: walletConnected ? "linear-gradient(135deg, #00aaff, #4da8ff)" : "rgba(255,255,255,0.05)", color: walletConnected ? "#000000" : "#444460", border: "none", borderRadius: "8px", padding: "14px", fontSize: "14px", fontWeight: 600, cursor: walletConnected ? "pointer" : "not-allowed", fontFamily: "DM Sans, sans-serif" }}>
               💰 Pay 10 SUI & Join
             </button>
             <p style={{ fontSize: "11px", color: "#444460", textAlign: "center", marginTop: "12px" }}>Payment held on-chain · Auto-distributed to winners</p>
@@ -249,7 +249,7 @@ function JoinModal({ onClose, onJoin, pot }: { onClose: () => void; onJoin: (nam
           <div style={{ textAlign: "center", padding: "20px 0" }}>
             <div style={{ fontSize: "64px", marginBottom: "20px" }}>🏴‍☠️</div>
             <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "22px", color: "#ffffff", marginBottom: "8px" }}>You're In!</h2>
-            <p style={{ fontSize: "13px", color: "#0078ff", marginBottom: "8px" }}>✅ 10 SUI paid successfully</p>
+            <p style={{ fontSize: "13px", color: "#00aaff", marginBottom: "8px" }}>✅ 10 SUI paid successfully</p>
             <p style={{ fontSize: "13px", color: "#666680" }}>Good luck, Pirate! 🏆</p>
           </div>
         )}
@@ -281,19 +281,19 @@ export default function OPTCGHub() {
   return (
     <div style={{ minHeight: "100vh", background: "#000000" }}>
       <div style={{ background: "linear-gradient(180deg, #000000 0%, #000000 50%, #000000 100%)", padding: "60px 48px 40px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, rgba(0,120,255,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, rgba(0,85,255,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4da8ff", marginBottom: "12px" }}>🏴‍☠️ WaveTCG · One Piece TCG Hub</div>
-        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(32px, 5vw, 60px)", fontWeight: 900, color: "#ffffff", marginBottom: "16px" }}>One Piece TCG Hub</h1>
+        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(32px, 5vw, 60px)", fontWeight: 900, color: "#ffffff", marginBottom: "16px" }} style={{ background: "linear-gradient(135deg, #0055ff, #00aaff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>One Piece TCG Hub</h1>
         <p style={{ fontSize: "16px", color: "#666680", maxWidth: "560px", margin: "0 auto 32px", lineHeight: 1.75 }}>Play online, compete for real SUI prizes, climb the rankings.</p>
         <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-          <button onClick={() => setShowSimulator(true)} style={{ background: "linear-gradient(135deg, #0050ff, #0078ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "14px 32px", fontSize: "15px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif", boxShadow: "0 4px 24px rgba(0,120,255,0.3)" }}>⚔️ Play OPTCGSim</button>
-          <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #0078ff, #4da8ff)", color: "#000000", border: "none", borderRadius: "8px", padding: "14px 28px", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif", boxShadow: "0 4px 24px rgba(0,120,255,0.3)" }}>💰 Join Weekly Tournament</button>
+          <button onClick={() => setShowSimulator(true)} style={{ background: "linear-gradient(135deg, #0055ff, #00aaff)", color: "#fff", border: "none", borderRadius: "8px", padding: "14px 32px", fontSize: "15px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif", boxShadow: "0 4px 24px rgba(0,85,255,0.3)" }}>⚔️ Play OPTCGSim</button>
+          <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #00aaff, #4da8ff)", color: "#000000", border: "none", borderRadius: "8px", padding: "14px 28px", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif", boxShadow: "0 4px 24px rgba(0,85,255,0.3)" }}>💰 Join Weekly Tournament</button>
         </div>
       </div>
 
       {showSimulator && (
         <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.9)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
-          <div style={{ background: "#050510", border: "1px solid rgba(0,120,255,0.3)", borderRadius: "16px", width: "100%", maxWidth: "500px" }}>
+          <div style={{ background: "#050510", border: "1px solid rgba(0,85,255,0.3)", borderRadius: "16px", width: "100%", maxWidth: "500px" }}>
             <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#0a0a18" }}>
               <div style={{ fontFamily: "Cinzel, serif", fontSize: "15px", color: "#ffffff" }}>🏴‍☠️ OPTCGSim</div>
               <button onClick={() => setShowSimulator(false)} style={{ background: "transparent", border: "none", color: "#666680", fontSize: "20px", cursor: "pointer" }}>✕</button>
@@ -302,7 +302,7 @@ export default function OPTCGHub() {
               <div style={{ fontSize: "64px", marginBottom: "20px" }}>🏴‍☠️</div>
               <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "22px", color: "#ffffff", marginBottom: "12px" }}>OPTCGSim</h2>
               <p style={{ fontSize: "14px", color: "#666680", lineHeight: 1.75, marginBottom: "32px" }}>Free fan-made One Piece TCG simulator. Practice your decks and compete worldwide.</p>
-              <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0050ff, #0078ff)", color: "#fff", padding: "14px 40px", borderRadius: "8px", fontSize: "15px", fontWeight: 600, textDecoration: "none", boxShadow: "0 4px 24px rgba(0,120,255,0.3)" }}>🏴‍☠️ Launch OPTCGSim →</a>
+              <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0055ff, #00aaff)", color: "#fff", padding: "14px 40px", borderRadius: "8px", fontSize: "15px", fontWeight: 600, textDecoration: "none", boxShadow: "0 4px 24px rgba(0,85,255,0.3)" }}>🏴‍☠️ Launch OPTCGSim →</a>
             </div>
           </div>
         </div>
@@ -329,7 +329,7 @@ export default function OPTCGHub() {
             { id: "rankings", label: "🏆 Rankings" },
             { id: "howtoplay", label: "📖 How to Play" },
           ].map(tab => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ padding: "12px 24px", background: "transparent", border: "none", borderBottom: activeTab === tab.id ? "2px solid #0078ff" : "2px solid transparent", color: activeTab === tab.id ? "#4da8ff" : "#666680", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", marginBottom: "-1px" }}>{tab.label}</button>
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ padding: "12px 24px", background: "transparent", border: "none", borderBottom: activeTab === tab.id ? "2px solid #00aaff" : "2px solid transparent", color: activeTab === tab.id ? "#4da8ff" : "#666680", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", marginBottom: "-1px" }}>{tab.label}</button>
           ))}
         </div>
 
@@ -339,7 +339,7 @@ export default function OPTCGHub() {
               <div style={{ marginBottom: "24px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
                   <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", color: "#ffffff" }}>WaveTCG Weekly #17</h2>
-                  <span style={{ padding: "4px 12px", background: "rgba(0,120,255,0.1)", border: "1px solid rgba(0,120,255,0.2)", borderRadius: "20px", fontSize: "11px", color: "#0078ff" }}>🟢 Open</span>
+                  <span style={{ padding: "4px 12px", background: "rgba(0,85,255,0.1)", border: "1px solid rgba(0,85,255,0.2)", borderRadius: "20px", fontSize: "11px", color: "#00aaff" }}>🟢 Open</span>
                 </div>
                 <p style={{ fontSize: "14px", color: "#666680", lineHeight: 1.75 }}>Weekly One Piece TCG tournament. Pay 10 SUI to enter. Winners automatically receive SUI prizes on-chain.</p>
               </div>
@@ -374,12 +374,12 @@ export default function OPTCGHub() {
                   { time: "Apr 6, 11PM PHT", event: "Winners & Prize Distribution", status: "upcoming" },
                 ].map((s, i) => (
                   <div key={i} style={{ display: "flex", gap: "16px", padding: "10px 0", borderBottom: i < 5 ? "1px solid rgba(255,255,255,0.05)" : "none", alignItems: "center" }}>
-                    <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: s.status === "active" ? "#0078ff" : "#333", flexShrink: 0, boxShadow: s.status === "active" ? "0 0 8px #0078ff" : "none" }} />
+                    <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: s.status === "active" ? "#00aaff" : "#333", flexShrink: 0, boxShadow: s.status === "active" ? "0 0 8px #00aaff" : "none" }} />
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: "13px", color: s.status === "active" ? "#ffffff" : "#666680" }}>{s.event}</div>
                       <div style={{ fontSize: "11px", color: "#444460" }}>{s.time}</div>
                     </div>
-                    {s.status === "active" && <span style={{ fontSize: "10px", color: "#0078ff", padding: "2px 8px", background: "rgba(0,120,255,0.1)", borderRadius: "10px" }}>Now</span>}
+                    {s.status === "active" && <span style={{ fontSize: "10px", color: "#00aaff", padding: "2px 8px", background: "rgba(0,85,255,0.1)", borderRadius: "10px" }}>Now</span>}
                   </div>
                 ))}
               </div>
@@ -387,7 +387,7 @@ export default function OPTCGHub() {
 
             <div style={{ position: "sticky", top: "80px" }}>
               <TreasureChest pot={pot} players={players} maxPlayers={maxPlayers} />
-              <button onClick={() => setShowJoin(true)} style={{ width: "100%", marginTop: "16px", background: "linear-gradient(135deg, #0078ff, #4da8ff)", color: "#000000", border: "none", borderRadius: "12px", padding: "18px", fontSize: "16px", fontWeight: 700, cursor: "pointer", fontFamily: "DM Sans, sans-serif", letterSpacing: "0.04em", textTransform: "uppercase", boxShadow: "0 8px 32px rgba(0,120,255,0.3)" }}>
+              <button onClick={() => setShowJoin(true)} style={{ width: "100%", marginTop: "16px", background: "linear-gradient(135deg, #00aaff, #4da8ff)", color: "#000000", border: "none", borderRadius: "12px", padding: "18px", fontSize: "16px", fontWeight: 700, cursor: "pointer", fontFamily: "DM Sans, sans-serif", letterSpacing: "0.04em", textTransform: "uppercase", boxShadow: "0 8px 32px rgba(0,85,255,0.3)" }}>
                 💰 Join for 10 SUI
               </button>
               <div style={{ textAlign: "center", marginTop: "12px", fontSize: "11px", color: "#444460" }}>⛓️ Powered by Sui Blockchain · Auto-distributed to winners</div>
@@ -396,9 +396,9 @@ export default function OPTCGHub() {
                 <div style={{ fontSize: "12px", color: "#666680", marginBottom: "12px", letterSpacing: "0.06em", textTransform: "uppercase" }}>Recent Registrations</div>
                 {["LuffyKing_PH", "ZoroSlash", "NamiNavigator", "ShanksLegend", "AceFire_PH"].map((p, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 0", borderBottom: i < 4 ? "1px solid rgba(255,255,255,0.04)" : "none" }}>
-                    <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: "rgba(0,120,255,0.1)", border: "1px solid rgba(0,120,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: "#4da8ff", fontFamily: "Cinzel, serif" }}>{p[0]}</div>
+                    <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: "rgba(0,85,255,0.1)", border: "1px solid rgba(0,85,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: "#4da8ff", fontFamily: "Cinzel, serif" }}>{p[0]}</div>
                     <span style={{ fontSize: "13px", color: "#666680" }}>{p}</span>
-                    <span style={{ marginLeft: "auto", fontSize: "10px", color: "#0078ff" }}>✓ Paid</span>
+                    <span style={{ marginLeft: "auto", fontSize: "10px", color: "#00aaff" }}>✓ Paid</span>
                   </div>
                 ))}
                 <div style={{ textAlign: "center", marginTop: "8px", fontSize: "12px", color: "#444460" }}>+{players - 5} more registered</div>
@@ -414,7 +414,7 @@ export default function OPTCGHub() {
                 <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "24px", color: "#ffffff", marginBottom: "4px" }}>Registered Players</h2>
                 <p style={{ fontSize: "13px", color: "#666680" }}>WaveTCG Weekly #17 · {players} players registered</p>
               </div>
-              <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #0078ff, #4da8ff)", color: "#000000", border: "none", borderRadius: "8px", padding: "10px 20px", fontSize: "13px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>+ Join Tournament</button>
+              <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #00aaff, #4da8ff)", color: "#000000", border: "none", borderRadius: "8px", padding: "10px 20px", fontSize: "13px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>+ Join Tournament</button>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginBottom: "24px" }}>
@@ -427,7 +427,7 @@ export default function OPTCGHub() {
               ].map((stat, i) => (
                 <div key={i} style={{ background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px", textAlign: "center" }}>
                   <div style={{ fontSize: "22px", marginBottom: "6px" }}>{stat.icon}</div>
-                  <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", fontWeight: 600, color: "#0078ff", marginBottom: "4px" }}>{stat.val}</div>
+                  <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", fontWeight: 600, color: "#00aaff", marginBottom: "4px" }}>{stat.val}</div>
                   <div style={{ fontSize: "10px", color: "#666680", textTransform: "uppercase", letterSpacing: "0.06em" }}>{stat.label}</div>
                 </div>
               ))}
@@ -449,14 +449,14 @@ export default function OPTCGHub() {
                 >
                   <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#666680" }}>#{i + 1}</div>
                   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "rgba(0,120,255,0.15)", border: "1px solid rgba(0,120,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "16px", color: "#4da8ff", flexShrink: 0 }}>
+                    <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "rgba(0,85,255,0.15)", border: "1px solid rgba(0,85,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "16px", color: "#4da8ff", flexShrink: 0 }}>
                       {reg.player_name[0]?.toUpperCase()}
                     </div>
                     <span style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff" }}>{reg.player_name}</span>
                   </div>
                   <div style={{ fontSize: "13px", color: "#666680" }}>{reg.deck_name || "—"}</div>
                   <div style={{ textAlign: "center" }}>
-                    <span style={{ padding: "4px 12px", background: "rgba(0,120,255,0.1)", border: "1px solid rgba(0,120,255,0.2)", borderRadius: "12px", fontSize: "11px", color: "#0078ff" }}>✓ Paid</span>
+                    <span style={{ padding: "4px 12px", background: "rgba(0,85,255,0.1)", border: "1px solid rgba(0,85,255,0.2)", borderRadius: "12px", fontSize: "11px", color: "#00aaff" }}>✓ Paid</span>
                   </div>
                   <div style={{ textAlign: "right", fontSize: "12px", color: "#444460" }}>
                     {new Date(reg.registered_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
@@ -470,14 +470,14 @@ export default function OPTCGHub() {
                   >
                     <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#666680" }}>#{i + 1}</div>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                      <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "rgba(0,120,255,0.15)", border: "1px solid rgba(0,120,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "16px", color: "#4da8ff", flexShrink: 0 }}>
+                      <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "rgba(0,85,255,0.15)", border: "1px solid rgba(0,85,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "16px", color: "#4da8ff", flexShrink: 0 }}>
                         {player[0]}
                       </div>
                       <span style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff" }}>{player}</span>
                     </div>
                     <div style={{ fontSize: "13px", color: "#666680" }}>OP0{(i % 4) + 1} Deck</div>
                     <div style={{ textAlign: "center" }}>
-                      <span style={{ padding: "4px 12px", background: "rgba(0,120,255,0.1)", border: "1px solid rgba(0,120,255,0.2)", borderRadius: "12px", fontSize: "11px", color: "#0078ff" }}>✓ Paid</span>
+                      <span style={{ padding: "4px 12px", background: "rgba(0,85,255,0.1)", border: "1px solid rgba(0,85,255,0.2)", borderRadius: "12px", fontSize: "11px", color: "#00aaff" }}>✓ Paid</span>
                     </div>
                     <div style={{ textAlign: "right", fontSize: "12px", color: "#444460" }}>Apr 1, 2026</div>
                   </div>
@@ -486,7 +486,7 @@ export default function OPTCGHub() {
             </div>
 
             <div style={{ marginTop: "20px", textAlign: "center" }}>
-              <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #0078ff, #4da8ff)", color: "#000000", border: "none", borderRadius: "12px", padding: "16px 40px", fontSize: "15px", fontWeight: 700, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
+              <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #00aaff, #4da8ff)", color: "#000000", border: "none", borderRadius: "12px", padding: "16px 40px", fontSize: "15px", fontWeight: 700, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
                 💰 Join for 10 SUI
               </button>
             </div>
@@ -500,7 +500,7 @@ export default function OPTCGHub() {
                 <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "24px", color: "#ffffff", marginBottom: "4px" }}>Global Rankings</h2>
                 <p style={{ fontSize: "13px", color: "#666680" }}>Updated after every tournament · Season 1</p>
               </div>
-              <div style={{ padding: "6px 14px", background: "rgba(0,120,255,0.1)", border: "1px solid rgba(0,120,255,0.2)", borderRadius: "20px", fontSize: "12px", color: "#4da8ff" }}>🔴 Live</div>
+              <div style={{ padding: "6px 14px", background: "rgba(0,85,255,0.1)", border: "1px solid rgba(0,85,255,0.2)", borderRadius: "20px", fontSize: "12px", color: "#4da8ff" }}>🔴 Live</div>
             </div>
             <div style={{ background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", overflow: "hidden" }}>
               <div style={{ display: "grid", gridTemplateColumns: "60px 1fr 140px 100px 100px 80px", padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", color: "#444460" }}>
@@ -518,10 +518,10 @@ export default function OPTCGHub() {
                   <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#ffffff" }}>{player.player}</div>
                   <div style={{ fontSize: "11px", color: "#666680" }}>{player.deck}</div>
                   <div style={{ textAlign: "center", fontSize: "12px" }}>
-                    <span style={{ color: "#0078ff" }}>{player.wins}W</span><span style={{ color: "#444460" }}> · </span><span style={{ color: "#0078ff" }}>{player.losses}L</span>
+                    <span style={{ color: "#00aaff" }}>{player.wins}W</span><span style={{ color: "#444460" }}> · </span><span style={{ color: "#00aaff" }}>{player.losses}L</span>
                   </div>
-                  <div style={{ textAlign: "right", fontFamily: "Cinzel, serif", fontSize: "14px", fontWeight: 600, color: "#0078ff" }}>{player.points.toLocaleString()}</div>
-                  <div style={{ textAlign: "right", fontSize: "12px", color: player.change.startsWith("+") ? "#0078ff" : player.change === "0" ? "#666680" : "#0078ff" }}>{player.change === "0" ? "—" : player.change}</div>
+                  <div style={{ textAlign: "right", fontFamily: "Cinzel, serif", fontSize: "14px", fontWeight: 600, color: "#00aaff" }}>{player.points.toLocaleString()}</div>
+                  <div style={{ textAlign: "right", fontSize: "12px", color: player.change.startsWith("+") ? "#00aaff" : player.change === "0" ? "#666680" : "#00aaff" }}>{player.change === "0" ? "—" : player.change}</div>
                 </div>
               ))}
             </div>
@@ -541,7 +541,7 @@ export default function OPTCGHub() {
                 { step: "6", title: "Win SUI Prizes!", desc: "1st gets 50%, 2nd gets 30%, 3rd gets 20%. Prizes sent automatically to your wallet!", icon: "🏆" },
               ].map((s, i) => (
                 <div key={i} style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "20px" }}>
-                  <div style={{ width: "44px", height: "44px", borderRadius: "50%", background: "rgba(0,120,255,0.1)", border: "1px solid rgba(0,120,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "16px", fontWeight: 600, color: "#4da8ff", flexShrink: 0 }}>{s.step}</div>
+                  <div style={{ width: "44px", height: "44px", borderRadius: "50%", background: "rgba(0,85,255,0.1)", border: "1px solid rgba(0,85,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "16px", fontWeight: 600, color: "#4da8ff", flexShrink: 0 }}>{s.step}</div>
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
                       <span style={{ fontSize: "18px" }}>{s.icon}</span>
@@ -553,7 +553,7 @@ export default function OPTCGHub() {
               ))}
             </div>
             <div style={{ marginTop: "32px", textAlign: "center" }}>
-              <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0050ff, #0078ff)", color: "#fff", padding: "14px 40px", borderRadius: "8px", fontSize: "15px", fontWeight: 600, textDecoration: "none", boxShadow: "0 4px 24px rgba(0,120,255,0.3)" }}>🏴‍☠️ Go to OPTCGSim →</a>
+              <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0055ff, #00aaff)", color: "#fff", padding: "14px 40px", borderRadius: "8px", fontSize: "15px", fontWeight: 600, textDecoration: "none", boxShadow: "0 4px 24px rgba(0,85,255,0.3)" }}>🏴‍☠️ Go to OPTCGSim →</a>
             </div>
           </div>
         )}

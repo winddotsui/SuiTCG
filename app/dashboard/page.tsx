@@ -31,7 +31,7 @@ export default function Dashboard() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "40px" }}>
           <div>
             <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0078ff", marginBottom: "8px" }}>My Account</div>
-            <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "36px", fontWeight: 700, color: "#ffffff", marginBottom: "8px" }}>Dashboard</h1>
+            <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "36px", fontWeight: 700, color: "#ffffff", marginBottom: "8px" }} style={{ background: "linear-gradient(135deg, #0030cc, #0078ff, #00aaff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Dashboard</h1>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#0078ff" }} />
               <span style={{ fontSize: "13px", color: "#666680", fontFamily: "monospace" }}>0x7f3a...9b2c</span>
@@ -101,13 +101,13 @@ export default function Dashboard() {
 
             <div style={{ background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "24px" }}>
               <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff", marginBottom: "20px" }}>Wallet</div>
-              <div style={{ background: "#0a0a18", border: "1px solid rgba(0,120,255,0.2)", borderRadius: "10px", padding: "20px", marginBottom: "16px" }}>
+              <div style={{ background: "#0a0a18", border: "1px solid rgba(0,48,204,0.2)", borderRadius: "10px", padding: "20px", marginBottom: "16px" }}>
                 <div style={{ fontSize: "11px", color: "#0078ff", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "8px" }}>SUI Balance</div>
                 <div style={{ fontFamily: "Cinzel, serif", fontSize: "36px", fontWeight: 600, color: "#4da8ff" }}>485.5 SUI</div>
                 <div style={{ fontSize: "13px", color: "#666680" }}>≈ $3,530 USD</div>
               </div>
               <div style={{ display: "flex", gap: "10px" }}>
-                <button style={{ flex: 1, background: "rgba(0,120,255,0.1)", color: "#4da8ff", border: "1px solid rgba(0,120,255,0.3)", borderRadius: "8px", padding: "12px", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Deposit</button>
+                <button style={{ flex: 1, background: "rgba(0,48,204,0.1)", color: "#4da8ff", border: "1px solid rgba(0,48,204,0.3)", borderRadius: "8px", padding: "12px", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Deposit</button>
                 <button style={{ flex: 1, background: "transparent", color: "#666680", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "12px", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Withdraw</button>
               </div>
             </div>
@@ -128,7 +128,7 @@ export default function Dashboard() {
                   <div style={{ fontSize: "16px", fontWeight: 500, color: "#4da8ff" }}>${card.price.toLocaleString()}</div>
                   <div style={{ fontSize: "11px", color: "#0078ff" }}>{card.sui} SUI</div>
                 </div>
-                <div style={{ padding: "4px 12px", borderRadius: "20px", fontSize: "11px", fontWeight: 500, background: card.status === "Active" ? "rgba(76,175,61,0.1)" : "rgba(0,120,255,0.1)", color: card.status === "Active" ? "#4caf7d" : "#4da8ff", border: card.status === "Active" ? "1px solid rgba(76,175,61,0.2)" : "1px solid rgba(0,120,255,0.2)" }}>{card.status}</div>
+                <div style={{ padding: "4px 12px", borderRadius: "20px", fontSize: "11px", fontWeight: 500, background: card.status === "Active" ? "rgba(76,175,61,0.1)" : "rgba(0,48,204,0.1)", color: card.status === "Active" ? "#4caf7d" : "#4da8ff", border: card.status === "Active" ? "1px solid rgba(76,175,61,0.2)" : "1px solid rgba(0,48,204,0.2)" }}>{card.status}</div>
                 <div style={{ display: "flex", gap: "8px" }}>
                   <button style={{ padding: "8px 16px", background: "transparent", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "6px", color: "#666680", fontSize: "12px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Edit</button>
                   <button style={{ padding: "8px 16px", background: "transparent", border: "1px solid rgba(224,85,85,0.3)", borderRadius: "6px", color: "#e05555", fontSize: "12px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Remove</button>
@@ -181,14 +181,14 @@ export default function Dashboard() {
         {/* Wallet Tab */}
         {activeTab === "Wallet" && (
           <div style={{ maxWidth: "600px" }}>
-            <div style={{ background: "#050510", border: "1px solid rgba(0,120,255,0.2)", borderRadius: "16px", padding: "32px", marginBottom: "20px" }}>
+            <div style={{ background: "#050510", border: "1px solid rgba(0,48,204,0.2)", borderRadius: "16px", padding: "32px", marginBottom: "20px" }}>
               <div style={{ fontSize: "11px", color: "#0078ff", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "12px" }}>Connected Wallet</div>
               <div style={{ fontFamily: "monospace", fontSize: "14px", color: "#ffffff", marginBottom: "20px", padding: "12px", background: "#0a0a18", borderRadius: "8px" }}>0x7f3a8b2c9d4e1f6a...9b2c</div>
               <div style={{ fontFamily: "Cinzel, serif", fontSize: "48px", fontWeight: 600, color: "#4da8ff", marginBottom: "4px" }}>485.5</div>
               <div style={{ fontSize: "16px", color: "#0078ff", marginBottom: "4px" }}>SUI</div>
               <div style={{ fontSize: "14px", color: "#666680", marginBottom: "32px" }}>≈ $3,530 USD</div>
               <div style={{ display: "flex", gap: "12px" }}>
-                <button style={{ flex: 1, background: "rgba(0,120,255,0.1)", color: "#4da8ff", border: "1px solid rgba(0,120,255,0.3)", borderRadius: "8px", padding: "14px", fontSize: "14px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>◈ Deposit SUI</button>
+                <button style={{ flex: 1, background: "rgba(0,48,204,0.1)", color: "#4da8ff", border: "1px solid rgba(0,48,204,0.3)", borderRadius: "8px", padding: "14px", fontSize: "14px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>◈ Deposit SUI</button>
                 <button style={{ flex: 1, background: "transparent", color: "#666680", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "14px", fontSize: "14px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Withdraw</button>
               </div>
             </div>
