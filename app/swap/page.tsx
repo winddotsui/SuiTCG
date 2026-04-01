@@ -45,7 +45,7 @@ export default function SwapPage() {
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000008" }}>
+    <div style={{ minHeight: "100vh", background: "#000008", overflowX: "hidden" }}>
       {/* Header */}
       <div style={{ background: "linear-gradient(180deg, #000008 0%, #000d20 50%, #000008 100%)", padding: "50px 48px 32px", borderBottom: "1px solid rgba(0,153,255,0.15)", textAlign: "center" }}>
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "10px" }}>◈ WaveTCG · Sui DeFi</div>
@@ -57,7 +57,7 @@ export default function SwapPage() {
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 24px", display: "grid", gridTemplateColumns: "480px 1fr", gap: "32px", alignItems: "start" }}>
 
         {/* LEFT - Cetus Terminal */}
-        <div style={{ overflow: "hidden", maxWidth: "100%" }}>
+        <div style={{ overflow: "hidden", maxWidth: "100%", background: "#000008" }}>
           <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff", marginBottom: "16px", display: "flex", alignItems: "center", gap: "10px" }}>
             <span style={{ color: "#0099ff" }}>🐟</span> Swap with Cetus
             <span style={{ fontSize: "10px", background: "rgba(0,255,204,0.1)", color: "#00ffcc", padding: "2px 8px", borderRadius: "8px", border: "1px solid rgba(0,255,204,0.2)" }}>BEST RATES</span>
