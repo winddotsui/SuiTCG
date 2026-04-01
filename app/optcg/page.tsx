@@ -30,7 +30,7 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
         @keyframes tcLidOpen{0%,100%{transform:rotate(-35deg)}50%{transform:rotate(-42deg)}}
         @keyframes tcSparkle{0%,100%{opacity:0;transform:scale(0)}40%,60%{opacity:1;transform:scale(1)}}
         @keyframes tcFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-        .tc-coin{position:absolute;width:38px;height:38px;border-radius:50%;background:#d4a800;border:2px solid #a07800;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#5a3e00;}
+        .tc-coin{position:absolute;width:38px;height:38px;border-radius:50%;background:#0078ff;border:2px solid #0050cc;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#5a3e00;}
         .tc-cf1{animation:tcCoinFly1 1.6s ease-in infinite 0s}
         .tc-cf2{animation:tcCoinFly2 1.6s ease-in infinite 0.2s}
         .tc-cf3{animation:tcCoinFly3 1.6s ease-in infinite 0.4s}
@@ -111,12 +111,12 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
             <div style={{ width: "170px", height: "55px", background: "#1565a0", borderRadius: "8px 8px 0 0", border: "3px solid #0a3d6e", position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: "10px", left: "8px", right: "8px", height: "3px", background: "#0f4f8a", borderRadius: "2px" }}></div>
               <div style={{ position: "absolute", top: "22px", left: "8px", right: "8px", height: "3px", background: "#0f4f8a", borderRadius: "2px" }}></div>
-              <div style={{ position: "absolute", top: "4px", left: "4px", width: "14px", height: "14px", background: "#c8961b", borderRadius: "3px" }}></div>
-              <div style={{ position: "absolute", top: "4px", right: "4px", width: "14px", height: "14px", background: "#c8961b", borderRadius: "3px" }}></div>
-              <div style={{ position: "absolute", bottom: "0", left: "0", right: "0", height: "10px", background: "#c8961b", borderTop: "2px solid #e8b830" }}></div>
+              <div style={{ position: "absolute", top: "4px", left: "4px", width: "14px", height: "14px", background: "#0060dd", borderRadius: "3px" }}></div>
+              <div style={{ position: "absolute", top: "4px", right: "4px", width: "14px", height: "14px", background: "#0060dd", borderRadius: "3px" }}></div>
+              <div style={{ position: "absolute", bottom: "0", left: "0", right: "0", height: "10px", background: "#0060dd", borderTop: "2px solid #4da8ff" }}></div>
             </div>
             {/* Inner lid glow */}
-            <div style={{ width: "158px", height: "28px", background: "#c8961b", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ width: "158px", height: "28px", background: "#0060dd", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <span style={{ color: "#5a3e00", fontSize: "10px", fontWeight: 700, letterSpacing: "1px" }}>SUI</span>
             </div>
           </div>
@@ -135,15 +135,15 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
             <div style={{ position: "absolute", top: "28px", left: 0, right: 0, height: "3px", background: "#1060a0" }}></div>
             <div style={{ position: "absolute", top: "44px", left: 0, right: 0, height: "3px", background: "#1060a0" }}></div>
             <div style={{ position: "absolute", top: "60px", left: 0, right: 0, height: "3px", background: "#1060a0" }}></div>
-            <div style={{ position: "absolute", top: "38px", left: 0, right: 0, height: "14px", background: "#c8961b", borderTop: "2px solid #e8b830", borderBottom: "2px solid #e8b830", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <div style={{ width: "22px", height: "18px", background: "#1a5fa0", borderRadius: "4px", border: "2px solid #e8b830", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <div style={{ width: "7px", height: "7px", background: "#e8b830", borderRadius: "50%" }}></div>
+            <div style={{ position: "absolute", top: "38px", left: 0, right: 0, height: "14px", background: "#0060dd", borderTop: "2px solid #4da8ff", borderBottom: "2px solid #4da8ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: "22px", height: "18px", background: "#1a5fa0", borderRadius: "4px", border: "2px solid #4da8ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ width: "7px", height: "7px", background: "#4da8ff", borderRadius: "50%" }}></div>
               </div>
             </div>
-            <div style={{ position: "absolute", bottom: "6px", left: "6px", width: "18px", height: "18px", background: "#c8961b", borderRadius: "3px" }}></div>
-            <div style={{ position: "absolute", bottom: "6px", right: "6px", width: "18px", height: "18px", background: "#c8961b", borderRadius: "3px" }}></div>
-            <div style={{ position: "absolute", top: "25px", left: "-8px", width: "12px", height: "24px", borderRadius: "3px", background: "#c8961b", border: "2px solid #8b6000" }}></div>
-            <div style={{ position: "absolute", top: "25px", right: "-8px", width: "12px", height: "24px", borderRadius: "3px", background: "#c8961b", border: "2px solid #8b6000" }}></div>
+            <div style={{ position: "absolute", bottom: "6px", left: "6px", width: "18px", height: "18px", background: "#0060dd", borderRadius: "3px" }}></div>
+            <div style={{ position: "absolute", bottom: "6px", right: "6px", width: "18px", height: "18px", background: "#0060dd", borderRadius: "3px" }}></div>
+            <div style={{ position: "absolute", top: "25px", left: "-8px", width: "12px", height: "24px", borderRadius: "3px", background: "#0060dd", border: "2px solid #003a99" }}></div>
+            <div style={{ position: "absolute", top: "25px", right: "-8px", width: "12px", height: "24px", borderRadius: "3px", background: "#0060dd", border: "2px solid #003a99" }}></div>
           </div>
         </div>
       </div>
@@ -151,7 +151,7 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
       {/* Prize info below chest */}
       <div style={{ padding: "24px", textAlign: "center" }}>
         <div style={{ fontFamily: "Cinzel, serif", fontSize: "13px", letterSpacing: "0.15em", textTransform: "uppercase", color: "#0078ff", marginBottom: "8px" }}>Tournament Prize Pool</div>
-        <div style={{ fontFamily: "Cinzel, serif", fontSize: "44px", fontWeight: 900, color: "#e8c97a", lineHeight: 1, marginBottom: "4px" }}>{pot} SUI</div>
+        <div style={{ fontFamily: "Cinzel, serif", fontSize: "44px", fontWeight: 900, color: "#4da8ff", lineHeight: 1, marginBottom: "4px" }}>{pot} SUI</div>
         <div style={{ fontSize: "12px", color: "#666680", marginBottom: "6px" }}>≈ ${(pot * 0.88).toFixed(0)} USD</div>
         <div style={{ fontSize: "11px", color: "#0078ff", marginBottom: "20px" }}>◈ Powered by SUI × Ethena on Sui</div>
 
@@ -164,7 +164,7 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
             <div key={i} style={{ background: "rgba(0,120,255,0.08)", border: "1px solid rgba(0,120,255,0.2)", borderRadius: "10px", padding: "12px 8px" }}>
               <div style={{ fontSize: "18px", marginBottom: "4px" }}>{prize.place.split(" ")[0]}</div>
               <div style={{ fontFamily: "Cinzel, serif", fontSize: "11px", color: "#0078ff", marginBottom: "6px" }}>{prize.place.split(" ")[1]}</div>
-              <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", fontWeight: 600, color: "#e8c97a" }}>{prize.amount}</div>
+              <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", fontWeight: 600, color: "#4da8ff" }}>{prize.amount}</div>
               <div style={{ fontSize: "9px", color: "#666680" }}>SUI · {prize.pct}%</div>
             </div>
           ))}
@@ -201,7 +201,7 @@ function JoinModal({ onClose, onJoin, pot }: { onClose: () => void; onJoin: (nam
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
-      <div style={{ background: "#050510", border: "1px solid rgba(255,180,0,0.3)", borderRadius: "20px", padding: "32px", width: "100%", maxWidth: "420px", position: "relative" }}>
+      <div style={{ background: "#050510", border: "1px solid rgba(0,120,255,0.3)", borderRadius: "20px", padding: "32px", width: "100%", maxWidth: "420px", position: "relative" }}>
         <button onClick={onClose} style={{ position: "absolute", top: "16px", right: "16px", background: "transparent", border: "none", color: "#666680", fontSize: "18px", cursor: "pointer" }}>✕</button>
         {step === "confirm" && (
           <>
@@ -212,13 +212,13 @@ function JoinModal({ onClose, onJoin, pot }: { onClose: () => void; onJoin: (nam
             </div>
             <div style={{ background: "#0a0a18", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px", marginBottom: "20px" }}>
               {[
-                { label: "Entry Fee", val: "10 SUI", color: "#e8c97a" },
+                { label: "Entry Fee", val: "10 SUI", color: "#4da8ff" },
                 { label: "Min Players", val: "8 players", color: "#0078ff" },
                 { label: "Max Players", val: "64 players", color: "#0078ff" },
                 { label: "Current Pot", val: `${pot} SUI`, color: "#0078ff" },
                 { label: "1st Prize", val: `${Math.floor((pot + 10) * 0.5)} SUI`, color: "#4caf7d" },
                 { label: "2nd Prize", val: `${Math.floor((pot + 10) * 0.3)} SUI`, color: "#4da8ff" },
-                { label: "3rd Prize", val: `${Math.floor((pot + 10) * 0.2)} SUI`, color: "#c9a84c" },
+                { label: "3rd Prize", val: `${Math.floor((pot + 10) * 0.2)} SUI`, color: "#0078ff" },
                 { label: "Payment", val: "On-chain via Sui", color: "#666680" },
               ].map((row, i) => (
                 <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: i < 5 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
@@ -232,7 +232,7 @@ function JoinModal({ onClose, onJoin, pot }: { onClose: () => void; onJoin: (nam
             ) : (
               <div style={{ background: "rgba(76,175,61,0.1)", border: "1px solid rgba(76,175,61,0.2)", borderRadius: "8px", padding: "10px", fontSize: "12px", color: "#4caf7d", textAlign: "center", marginBottom: "10px" }}>✅ Wallet connected</div>
             )}
-            <button onClick={handleJoin} style={{ width: "100%", background: walletConnected ? "linear-gradient(135deg, #c9a84c, #e8c97a)" : "rgba(255,255,255,0.05)", color: walletConnected ? "#000000" : "#444460", border: "none", borderRadius: "8px", padding: "14px", fontSize: "14px", fontWeight: 600, cursor: walletConnected ? "pointer" : "not-allowed", fontFamily: "DM Sans, sans-serif" }}>
+            <button onClick={handleJoin} style={{ width: "100%", background: walletConnected ? "linear-gradient(135deg, #0078ff, #4da8ff)" : "rgba(255,255,255,0.05)", color: walletConnected ? "#000000" : "#444460", border: "none", borderRadius: "8px", padding: "14px", fontSize: "14px", fontWeight: 600, cursor: walletConnected ? "pointer" : "not-allowed", fontFamily: "DM Sans, sans-serif" }}>
               💰 Pay 10 SUI & Join
             </button>
             <p style={{ fontSize: "11px", color: "#444460", textAlign: "center", marginTop: "12px" }}>Payment held on-chain · Auto-distributed to winners</p>
@@ -287,7 +287,7 @@ export default function OPTCGHub() {
         <p style={{ fontSize: "16px", color: "#666680", maxWidth: "560px", margin: "0 auto 32px", lineHeight: 1.75 }}>Play online, compete for real SUI prizes, climb the rankings.</p>
         <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
           <button onClick={() => setShowSimulator(true)} style={{ background: "linear-gradient(135deg, #cc0000, #ff3333)", color: "#fff", border: "none", borderRadius: "8px", padding: "14px 32px", fontSize: "15px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif", boxShadow: "0 4px 24px rgba(255,50,50,0.3)" }}>⚔️ Play OPTCGSim</button>
-          <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #c9a84c, #e8c97a)", color: "#000000", border: "none", borderRadius: "8px", padding: "14px 28px", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif", boxShadow: "0 4px 24px rgba(201,168,76,0.3)" }}>💰 Join Weekly Tournament</button>
+          <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #0078ff, #4da8ff)", color: "#000000", border: "none", borderRadius: "8px", padding: "14px 28px", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif", boxShadow: "0 4px 24px rgba(0,120,255,0.3)" }}>💰 Join Weekly Tournament</button>
         </div>
       </div>
 
@@ -387,7 +387,7 @@ export default function OPTCGHub() {
 
             <div style={{ position: "sticky", top: "80px" }}>
               <TreasureChest pot={pot} players={players} maxPlayers={maxPlayers} />
-              <button onClick={() => setShowJoin(true)} style={{ width: "100%", marginTop: "16px", background: "linear-gradient(135deg, #c9a84c, #e8c97a)", color: "#000000", border: "none", borderRadius: "12px", padding: "18px", fontSize: "16px", fontWeight: 700, cursor: "pointer", fontFamily: "DM Sans, sans-serif", letterSpacing: "0.04em", textTransform: "uppercase", boxShadow: "0 8px 32px rgba(201,168,76,0.3)" }}>
+              <button onClick={() => setShowJoin(true)} style={{ width: "100%", marginTop: "16px", background: "linear-gradient(135deg, #0078ff, #4da8ff)", color: "#000000", border: "none", borderRadius: "12px", padding: "18px", fontSize: "16px", fontWeight: 700, cursor: "pointer", fontFamily: "DM Sans, sans-serif", letterSpacing: "0.04em", textTransform: "uppercase", boxShadow: "0 8px 32px rgba(0,120,255,0.3)" }}>
                 💰 Join for 10 SUI
               </button>
               <div style={{ textAlign: "center", marginTop: "12px", fontSize: "11px", color: "#444460" }}>⛓️ Powered by Sui Blockchain · Auto-distributed to winners</div>
@@ -414,7 +414,7 @@ export default function OPTCGHub() {
                 <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "24px", color: "#ffffff", marginBottom: "4px" }}>Registered Players</h2>
                 <p style={{ fontSize: "13px", color: "#666680" }}>WaveTCG Weekly #17 · {players} players registered</p>
               </div>
-              <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #c9a84c, #e8c97a)", color: "#000000", border: "none", borderRadius: "8px", padding: "10px 20px", fontSize: "13px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>+ Join Tournament</button>
+              <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #0078ff, #4da8ff)", color: "#000000", border: "none", borderRadius: "8px", padding: "10px 20px", fontSize: "13px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>+ Join Tournament</button>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginBottom: "24px" }}>
@@ -486,7 +486,7 @@ export default function OPTCGHub() {
             </div>
 
             <div style={{ marginTop: "20px", textAlign: "center" }}>
-              <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #c9a84c, #e8c97a)", color: "#000000", border: "none", borderRadius: "12px", padding: "16px 40px", fontSize: "15px", fontWeight: 700, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
+              <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #0078ff, #4da8ff)", color: "#000000", border: "none", borderRadius: "12px", padding: "16px 40px", fontSize: "15px", fontWeight: 700, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
                 💰 Join for 10 SUI
               </button>
             </div>

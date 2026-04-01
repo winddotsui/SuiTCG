@@ -37,34 +37,34 @@ export default function CardDetail({ params }: { params: Promise<{ id: string }>
   }
 
   if (loading) return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0f", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ color: "#4da2ff", fontFamily: "Cinzel, serif", fontSize: "18px" }}>Loading...</div>
+    <div style={{ minHeight: "100vh", background: "#000000", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ color: "#0078ff", fontFamily: "Cinzel, serif", fontSize: "18px" }}>Loading...</div>
     </div>
   );
 
   if (!card) return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0f", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ minHeight: "100vh", background: "#000000", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ textAlign: "center" }}>
         <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</div>
-        <div style={{ color: "#888898", fontFamily: "Cinzel, serif", marginBottom: "16px" }}>Card not found</div>
-        <a href="/marketplace" style={{ color: "#4da2ff", fontSize: "13px" }}>← Back to Marketplace</a>
+        <div style={{ color: "#666680", fontFamily: "Cinzel, serif", marginBottom: "16px" }}>Card not found</div>
+        <a href="/marketplace" style={{ color: "#0078ff", fontSize: "13px" }}>← Back to Marketplace</a>
       </div>
     </div>
   );
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0f", padding: "40px 24px" }}>
+    <div style={{ minHeight: "100vh", background: "#000000", padding: "40px 24px" }}>
       <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
 
         <a href="/marketplace" style={{
-          color: "#888898", fontSize: "13px", textDecoration: "none",
+          color: "#666680", fontSize: "13px", textDecoration: "none",
           display: "inline-flex", alignItems: "center", gap: "6px", marginBottom: "32px",
         }}>← Back to Marketplace</a>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "48px" }}>
 
           <div style={{
-            background: card.bg || "#18181f", borderRadius: "16px",
+            background: card.bg || "#0a0a18", borderRadius: "16px",
             border: "1px solid rgba(255,255,255,0.12)",
             aspectRatio: "3/4", display: "flex",
             alignItems: "center", justifyContent: "center",
@@ -78,27 +78,27 @@ export default function CardDetail({ params }: { params: Promise<{ id: string }>
           <div>
             <div style={{
               fontSize: "10px", letterSpacing: "0.14em", textTransform: "uppercase",
-              color: "#78bfff", background: "rgba(77,162,255,0.1)",
-              border: "1px solid rgba(77,162,255,0.2)", borderRadius: "4px",
+              color: "#4da8ff", background: "rgba(0,120,255,0.1)",
+              border: "1px solid rgba(0,120,255,0.2)", borderRadius: "4px",
               padding: "4px 10px", display: "inline-block", marginBottom: "16px",
             }}>{card.game}</div>
 
-            <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "32px", fontWeight: 700, color: "#e6e4f0", lineHeight: 1.15, marginBottom: "8px" }}>{card.name}</h1>
+            <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "32px", fontWeight: 700, color: "#ffffff", lineHeight: 1.15, marginBottom: "8px" }}>{card.name}</h1>
 
-            <p style={{ fontSize: "13px", color: "#888898", marginBottom: "24px" }}>
+            <p style={{ fontSize: "13px", color: "#666680", marginBottom: "24px" }}>
               {card.set_name} {card.card_number ? `#${card.card_number}` : ""} · {card.condition}
             </p>
 
             <div style={{ display: "flex", alignItems: "baseline", gap: "12px", marginBottom: "6px" }}>
-              <div style={{ fontFamily: "Cinzel, serif", fontSize: "36px", fontWeight: 600, color: "#78bfff" }}>${card.price_usd?.toLocaleString()}</div>
-              <div style={{ fontSize: "14px", color: "#4da2ff" }}>{card.price_sui} SUI</div>
+              <div style={{ fontFamily: "Cinzel, serif", fontSize: "36px", fontWeight: 600, color: "#4da8ff" }}>${card.price_usd?.toLocaleString()}</div>
+              <div style={{ fontSize: "14px", color: "#0078ff" }}>{card.price_sui} SUI</div>
             </div>
             <div style={{ fontSize: "12px", color: "#4caf7d", marginBottom: "24px" }}>1% platform fee on purchase</div>
 
             <div style={{
               display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "1px", background: "rgba(255,255,255,0.07)",
-              border: "1px solid rgba(255,255,255,0.07)",
+              gap: "1px", background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.06)",
               borderRadius: "10px", overflow: "hidden", marginBottom: "24px",
             }}>
               {[
@@ -106,51 +106,51 @@ export default function CardDetail({ params }: { params: Promise<{ id: string }>
                 { label: "Game", val: card.game?.split(":")[0] },
                 { label: "Set", val: card.set_name?.split(" ").slice(0,2).join(" ") || "—" },
               ].map((s, i) => (
-                <div key={i} style={{ background: "#18181f", padding: "12px 14px" }}>
-                  <div style={{ fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", color: "#555562", marginBottom: "4px" }}>{s.label}</div>
-                  <div style={{ fontSize: "13px", fontWeight: 500, color: "#e6e4f0" }}>{s.val}</div>
+                <div key={i} style={{ background: "#0a0a18", padding: "12px 14px" }}>
+                  <div style={{ fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", color: "#444460", marginBottom: "4px" }}>{s.label}</div>
+                  <div style={{ fontSize: "13px", fontWeight: 500, color: "#ffffff" }}>{s.val}</div>
                 </div>
               ))}
             </div>
 
             <div style={{
               display: "flex", alignItems: "center", gap: "12px",
-              padding: "14px", background: "#18181f",
-              border: "1px solid rgba(255,255,255,0.07)",
+              padding: "14px", background: "#0a0a18",
+              border: "1px solid rgba(255,255,255,0.06)",
               borderRadius: "10px", marginBottom: "20px",
             }}>
               <div style={{
                 width: "38px", height: "38px", borderRadius: "50%",
-                background: "rgba(77,162,255,0.1)", border: "1px solid rgba(77,162,255,0.2)",
+                background: "rgba(0,120,255,0.1)", border: "1px solid rgba(0,120,255,0.2)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: "14px", fontWeight: 500, color: "#78bfff", fontFamily: "Cinzel, serif",
+                fontSize: "14px", fontWeight: 500, color: "#4da8ff", fontFamily: "Cinzel, serif",
               }}>{(card.seller_address || "?")[0].toUpperCase()}</div>
               <div>
-                <div style={{ fontSize: "14px", fontWeight: 500, color: "#e6e4f0" }}>
+                <div style={{ fontSize: "14px", fontWeight: 500, color: "#ffffff" }}>
                   {card.seller_address?.length > 20 ? `${card.seller_address.slice(0,8)}...${card.seller_address.slice(-6)}` : card.seller_address}
                 </div>
-                <div style={{ fontSize: "11px", color: "#888898" }}>Verified Seller</div>
+                <div style={{ fontSize: "11px", color: "#666680" }}>Verified Seller</div>
               </div>
             </div>
 
             {card.description && (
-              <div style={{ fontSize: "14px", color: "#888898", lineHeight: 1.75, marginBottom: "24px" }}>{card.description}</div>
+              <div style={{ fontSize: "14px", color: "#666680", lineHeight: 1.75, marginBottom: "24px" }}>{card.description}</div>
             )}
 
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               <button style={{
-                background: "linear-gradient(135deg, #1a8fe3, #4da2ff)", color: "#fff",
+                background: "linear-gradient(135deg, #0050ff, #0078ff)", color: "#fff",
                 border: "none", borderRadius: "8px", padding: "14px",
                 fontSize: "14px", fontWeight: 500, cursor: "pointer",
                 fontFamily: "DM Sans, sans-serif", letterSpacing: "0.05em", textTransform: "uppercase",
               }}>Buy Now · ${card.price_usd?.toLocaleString()}</button>
               <button style={{
-                background: "rgba(77,162,255,0.1)", color: "#78bfff",
-                border: "1px solid rgba(77,162,255,0.3)", borderRadius: "8px", padding: "13px",
+                background: "rgba(0,120,255,0.1)", color: "#4da8ff",
+                border: "1px solid rgba(0,120,255,0.3)", borderRadius: "8px", padding: "13px",
                 fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
               }}>◈ Buy with {card.price_sui} SUI</button>
               <button style={{
-                background: "transparent", color: "#888898",
+                background: "transparent", color: "#666680",
                 border: "1px solid rgba(255,255,255,0.12)", borderRadius: "8px", padding: "11px",
                 fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
               }}>Make an Offer</button>

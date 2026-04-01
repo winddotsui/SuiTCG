@@ -171,7 +171,7 @@ export default function PriceChecker() {
           </div>}
           {card.prices.usd_foil && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
             <span style={{ fontSize: "13px", color: "#666680" }}>TCGPlayer (Foil)</span>
-            <span style={{ fontSize: "15px", fontWeight: 600, color: "#e8c97a" }}>${card.prices.usd_foil}</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#4da8ff" }}>${card.prices.usd_foil}</span>
           </div>}
           {card.prices.eur && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
             <span style={{ fontSize: "13px", color: "#666680" }}>CardMarket</span>
@@ -210,11 +210,11 @@ export default function PriceChecker() {
           </div>}
           {card.prices.ebay_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
             <span style={{ fontSize: "13px", color: "#666680" }}>eBay</span>
-            <span style={{ fontSize: "15px", fontWeight: 600, color: "#e8c97a" }}>${card.prices.ebay_price}</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#4da8ff" }}>${card.prices.ebay_price}</span>
           </div>}
           {card.prices.amazon_price && <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "#0a0a18", borderRadius: "8px" }}>
             <span style={{ fontSize: "13px", color: "#666680" }}>Amazon</span>
-            <span style={{ fontSize: "15px", fontWeight: 600, color: "#e8c97a" }}>${card.prices.amazon_price}</span>
+            <span style={{ fontSize: "15px", fontWeight: 600, color: "#4da8ff" }}>${card.prices.amazon_price}</span>
           </div>}
         </div>
       );

@@ -327,7 +327,7 @@ export default function DeckBuilder() {
 
           <a href="/optcg" style={{
             display: "block", textAlign: "center",
-            background: isComplete ? "linear-gradient(135deg, #c9a84c, #e8c97a)" : "rgba(255,255,255,0.05)",
+            background: isComplete ? "linear-gradient(135deg, #0078ff, #4da8ff)" : "rgba(255,255,255,0.05)",
             color: isComplete ? "#000000" : "#444460",
             border: "none", borderRadius: "8px", padding: "14px",
             fontSize: "14px", fontWeight: 600, cursor: isComplete ? "pointer" : "not-allowed",

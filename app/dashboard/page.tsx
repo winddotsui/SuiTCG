@@ -39,7 +39,7 @@ export default function Dashboard() {
             </div>
           </div>
           <a href="/sell" style={{
-            background: "#c9a84c", color: "#000000",
+            background: "#0078ff", color: "#000000",
             padding: "12px 24px", borderRadius: "8px",
             fontSize: "13px", fontWeight: 500,
             textDecoration: "none", display: "inline-block",
@@ -57,7 +57,7 @@ export default function Dashboard() {
           ].map((s, i) => (
             <div key={i} style={{ background: "#050510", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "20px 24px" }}>
               <div style={{ fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "#444460", marginBottom: "8px" }}>{s.label}</div>
-              <div style={{ fontFamily: "Cinzel, serif", fontSize: "28px", fontWeight: 600, color: "#e8c97a", marginBottom: "4px" }}>{s.val}</div>
+              <div style={{ fontFamily: "Cinzel, serif", fontSize: "28px", fontWeight: 600, color: "#4da8ff", marginBottom: "4px" }}>{s.val}</div>
               <div style={{ fontSize: "12px", color: "#666680" }}>{s.sub}</div>
             </div>
           ))}
@@ -68,8 +68,8 @@ export default function Dashboard() {
           {tabs.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)} style={{
               padding: "12px 20px", background: "transparent",
-              border: "none", borderBottom: activeTab === tab ? "2px solid #c9a84c" : "2px solid transparent",
-              color: activeTab === tab ? "#e8c97a" : "#666680",
+              border: "none", borderBottom: activeTab === tab ? "2px solid #0078ff" : "2px solid transparent",
+              color: activeTab === tab ? "#4da8ff" : "#666680",
               fontSize: "13px", cursor: "pointer",
               fontFamily: "DM Sans, sans-serif",
               letterSpacing: "0.04em",
@@ -125,10 +125,10 @@ export default function Dashboard() {
                   <div style={{ fontSize: "12px", color: "#444460", textTransform: "uppercase", letterSpacing: "0.06em" }}>{card.game} · {card.views} views</div>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: "16px", fontWeight: 500, color: "#e8c97a" }}>${card.price.toLocaleString()}</div>
+                  <div style={{ fontSize: "16px", fontWeight: 500, color: "#4da8ff" }}>${card.price.toLocaleString()}</div>
                   <div style={{ fontSize: "11px", color: "#0078ff" }}>{card.sui} SUI</div>
                 </div>
-                <div style={{ padding: "4px 12px", borderRadius: "20px", fontSize: "11px", fontWeight: 500, background: card.status === "Active" ? "rgba(76,175,61,0.1)" : "rgba(201,168,76,0.1)", color: card.status === "Active" ? "#4caf7d" : "#e8c97a", border: card.status === "Active" ? "1px solid rgba(76,175,61,0.2)" : "1px solid rgba(201,168,76,0.2)" }}>{card.status}</div>
+                <div style={{ padding: "4px 12px", borderRadius: "20px", fontSize: "11px", fontWeight: 500, background: card.status === "Active" ? "rgba(76,175,61,0.1)" : "rgba(0,120,255,0.1)", color: card.status === "Active" ? "#4caf7d" : "#4da8ff", border: card.status === "Active" ? "1px solid rgba(76,175,61,0.2)" : "1px solid rgba(0,120,255,0.2)" }}>{card.status}</div>
                 <div style={{ display: "flex", gap: "8px" }}>
                   <button style={{ padding: "8px 16px", background: "transparent", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "6px", color: "#666680", fontSize: "12px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Edit</button>
                   <button style={{ padding: "8px 16px", background: "transparent", border: "1px solid rgba(224,85,85,0.3)", borderRadius: "6px", color: "#e05555", fontSize: "12px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Remove</button>
