@@ -45,7 +45,7 @@ export default function SwapPage() {
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000008", overflowX: "hidden" }}>
+    <div style={{ minHeight: "100vh", background: "#000008", overflow: "hidden" }}>
       {/* Header */}
       <div style={{ background: "linear-gradient(180deg, #000008 0%, #000d20 50%, #000008 100%)", padding: "50px 48px 32px", borderBottom: "1px solid rgba(0,153,255,0.15)", textAlign: "center" }}>
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "10px" }}>◈ WaveTCG · Sui DeFi</div>
