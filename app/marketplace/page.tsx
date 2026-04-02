@@ -1,287 +1,138 @@
 "use client";
 import { useState, useEffect } from "react";
-import { supabase, Listing } from "../../lib/supabase";
-
-const MOCK_CARDS = [
-  { id:"m1", name:"Charizard EX", set_name:"Obsidian Flames", game:"Pokémon TCG", price_usd:295, price_sui:40.5, condition:"PSA 10", art:"🔥", bg:"#2a0808" },
-  { id:"m2", name:"Black Lotus", set_name:"Alpha Edition", game:"Magic: The Gathering", price_usd:4200, price_sui:577, condition:"PSA 9", art:"✨", bg:"#14082a" },
-  { id:"m3", name:"Blue-Eyes White Dragon", set_name:"LOB 1st Ed", game:"Yu-Gi-Oh!", price_usd:850, price_sui:117, condition:"Mint", art:"⚡", bg:"#080820" },
-  { id:"m4", name:"Pikachu Promo", set_name:"World Championship", game:"Pokémon TCG", price_usd:90, price_sui:12.4, condition:"NM", art:"⚡", bg:"#1a1400" },
-  { id:"m5", name:"Mox Sapphire", set_name:"Beta Edition", game:"Magic: The Gathering", price_usd:1850, price_sui:254, condition:"PSA 9", art:"💎", bg:"#040e1c" },
-  { id:"m6", name:"Mewtwo V Alt Art", set_name:"Lost Origin", game:"Pokémon TCG", price_usd:120, price_sui:16.5, condition:"NM", art:"🌌", bg:"#14082a" },
-];
+import { supabase } from "../../lib/supabase";
 
 const GAME_ICONS: Record<string, string> = {
-  "Pokémon TCG": "⚡",
-  "Magic: The Gathering": "✨",
-  "Yu-Gi-Oh!": "👁️",
-  "One Piece": "🗡️",
-  "Dragon Ball": "🐉",
-  "Lorcana": "🌟",
-  "Flesh & Blood": "⚔️",
-  "Digimon": "🎭",
+  "One Piece TCG": "🏴‍☠️", "Pokemon TCG": "⚡", "Magic: The Gathering": "✨",
+  "Yu-Gi-Oh!": "👁️", "Flesh & Blood": "⚔️", "Digimon": "🎭",
+  "Dragon Ball": "🐉", "Lorcana": "🌟",
 };
+
+const MOCK_CARDS = [
+  { id:"m1", name:"Supreme Verdict", game:"Magic: The Gathering", set_name:"Return to Ravnica", condition:"NM", price_usd:10, price_sui:1.37, image_url:"", art:"✨", bg:"#0a0a1a" },
+  { id:"m2", name:"Fatal Push", game:"Magic: The Gathering", set_name:"Aether Revolt", condition:"NM", price_usd:20, price_sui:2.75, image_url:"", art:"✨", bg:"#0a0a1a" },
+  { id:"m3", name:"Pikachu V", game:"Pokemon TCG", set_name:"PSA 10", condition:"NM", price_usd:5, price_sui:0.69, image_url:"", art:"⚡", bg:"#1a1400" },
+  { id:"m4", name:"Charizard EX", game:"Pokemon TCG", set_name:"PSA 10", condition:"NM", price_usd:295, price_sui:40.5, image_url:"", art:"🔥", bg:"#1a0808" },
+  { id:"m5", name:"Monkey D. Luffy", game:"One Piece TCG", set_name:"OP01", condition:"NM", price_usd:45, price_sui:6.2, image_url:"https://en.onepiece-cardgame.com/images/cardlist/card/OP01-003.png", art:"🏴‍☠️", bg:"#0a0818" },
+  { id:"m6", name:"Dark Magician", game:"Yu-Gi-Oh!", set_name:"LOB", condition:"LP", price_usd:15, price_sui:2.1, image_url:"", art:"👁️", bg:"#0a0818" },
+  { id:"m7", name:"Black Lotus", game:"Magic: The Gathering", set_name:"Alpha", condition:"HP", price_usd:4200, price_sui:577, image_url:"", art:"✨", bg:"#0a0a1a" },
+  { id:"m8", name:"Roronoa Zoro", game:"One Piece TCG", set_name:"OP01", condition:"NM", price_usd:38, price_sui:5.2, image_url:"https://en.onepiece-cardgame.com/images/cardlist/card/OP01-001.png", art:"🏴‍☠️", bg:"#0a0818" },
+  { id:"m9", name:"Umbreon VMAX", game:"Pokemon TCG", set_name:"Brilliant Stars", condition:"NM", price_usd:220, price_sui:30.2, image_url:"", art:"⚡", bg:"#1a1400" },
+];
+
+const GAMES = ["all","One Piece TCG","Pokemon TCG","Magic: The Gathering","Yu-Gi-Oh!","Flesh & Blood","Dragon Ball","Lorcana","Digimon"];
 
 export default function Marketplace() {
   const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestions, setSuggestions] = useState<any[]>([]);
-  const [game, setGame] = useState("All Games");
+  const [game, setGame] = useState("all");
   const [sort, setSort] = useState("newest");
+  const [viewMode, setViewMode] = useState<"grid"|"list">("grid");
 
-  useEffect(() => {
-    fetchListings();
-  }, []);
+  useEffect(() => { fetchListings(); }, []);
 
   async function fetchListings() {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("listings")
-      .select("*")
-      .eq("status", "active")
-      .order("created_at", { ascending: false });
-
-    if (data && data.length > 0) {
-      setListings([...data, ...MOCK_CARDS]);
-    } else {
-      setListings(MOCK_CARDS);
-    }
+    try {
+      const { data } = await supabase.from("listings").select("*").eq("status","active").order("created_at",{ascending:false});
+      setListings(data && data.length > 0 ? [...data,...MOCK_CARDS] : MOCK_CARDS);
+    } catch { setListings(MOCK_CARDS); }
     setLoading(false);
   }
 
-  useEffect(() => {
-    if (search.length > 1) {
-      const matches = listings
-        .filter(c => c.name.toLowerCase().includes(search.toLowerCase()))
-        .slice(0, 6);
-      setSuggestions(matches);
-      setShowSuggestions(matches.length > 0);
-    } else {
-      setSuggestions([]);
-      setShowSuggestions(false);
-    }
-  }, [search, listings]);
-
   const filtered = listings.filter(c => {
-    const matchSearch = !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.set_name?.toLowerCase().includes(search.toLowerCase());
-    const matchGame = game === "All Games" || c.game === game;
+    const matchSearch = !search || c.name.toLowerCase().includes(search.toLowerCase());
+    const matchGame = game === "all" || c.game === game;
     return matchSearch && matchGame;
-  }).sort((a, b) => {
-    if (sort === "price-asc") return a.price_usd - b.price_usd;
-    if (sort === "price-desc") return b.price_usd - a.price_usd;
-    return 0;
-  });
+  }).sort((a,b) => sort === "price-asc" ? a.price_usd-b.price_usd : sort === "price-desc" ? b.price_usd-a.price_usd : 0);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000008", display: "flex", flexWrap: "wrap" }}>
+    <div style={{ minHeight:"100vh", background:"#000008", display:"flex" }}>
+      <aside className="desktop-only" style={{ width:"200px", flexShrink:0, background:"#050515", borderRight:"1px solid rgba(0,153,255,0.1)", padding:"20px 14px", position:"sticky", top:"56px", height:"calc(100vh - 56px)", overflowY:"auto" }}>
+        <div style={{ fontSize:"11px", letterSpacing:"0.12em", textTransform:"uppercase", color:"#0099ff", marginBottom:"10px" }}>Game</div>
+        {GAMES.map(g => (
+          <button key={g} onClick={() => setGame(g)} style={{ display:"block", width:"100%", textAlign:"left", padding:"7px 10px", borderRadius:"6px", cursor:"pointer", fontFamily:"DM Sans, sans-serif", fontSize:"12px", border:"none", background:game===g?"rgba(0,153,255,0.1)":"transparent", color:game===g?"#0099ff":"#c8d8f0", marginBottom:"2px" }}>
+            {g==="all"?"🃏 All Games":`${GAME_ICONS[g]||"🃏"} ${g}`}
+          </button>
+        ))}
+        <a href="/sell" style={{ display:"block", textAlign:"center", background:"linear-gradient(135deg, #0055ff, #0099ff)", color:"#fff", padding:"10px", borderRadius:"8px", fontSize:"12px", fontWeight:600, textDecoration:"none", marginTop:"16px" }}>+ List a Card</a>
+      </aside>
 
-      {/* SIDEBAR */}
-      <aside className="desktop-only" style={{
-        width: "240px", flexShrink: 0,
-        borderRight: "1px solid rgba(255,255,255,0.06)",
-        padding: "24px 16px", background: "#050515",
-        position: "sticky", top: "56px",
-        height: "calc(100vh - 56px)", overflowY: "auto",
-      }}>
-        <div style={{ marginBottom: "28px" }}>
-          <div style={{ fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#8899bb", marginBottom: "12px" }}>Game</div>
-          {["All Games","Pokémon TCG","Magic: The Gathering","Yu-Gi-Oh!","One Piece","Dragon Ball","Others"].map((g) => (
-            <button key={g} onClick={() => setGame(g)} style={{
-              display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px",
-              padding: "8px 10px", width: "100%", textAlign: "left",
-              background: game === g ? "rgba(0,180,255,0.08)" : "transparent",
-              border: game === g ? "1px solid rgba(0,180,255,0.2)" : "1px solid transparent",
-              borderRadius: "8px", color: game === g ? "#00d4ff" : "#c8d8f0",
-              fontSize: "13px", cursor: "pointer", marginBottom: "3px",
-              fontFamily: "DM Sans, sans-serif",
-            }}>
-              {GAME_ICONS[g] && <span>{GAME_ICONS[g]}</span>}
-              {g}
+      <main style={{ flex:1, padding:"14px 10px", minWidth:0 }}>
+        <div style={{ display:"flex", gap:"8px", marginBottom:"10px", flexWrap:"wrap" }}>
+          <input placeholder="🔍 Search cards..." value={search} onChange={e => setSearch(e.target.value)}
+            style={{ flex:1, minWidth:"150px", background:"#050515", border:"1px solid rgba(0,153,255,0.15)", borderRadius:"8px", padding:"9px 14px", fontSize:"13px", color:"#ffffff", fontFamily:"DM Sans, sans-serif", outline:"none" }} />
+          <select value={sort} onChange={e => setSort(e.target.value)}
+            style={{ background:"#050515", border:"1px solid rgba(0,153,255,0.15)", borderRadius:"8px", padding:"9px 10px", fontSize:"12px", color:"#ffffff", outline:"none", cursor:"pointer" }}>
+            <option value="newest">Newest</option>
+            <option value="price-asc">Price ↑</option>
+            <option value="price-desc">Price ↓</option>
+          </select>
+        </div>
+
+        <div style={{ display:"flex", gap:"6px", marginBottom:"10px", overflowX:"auto", paddingBottom:"2px" }}>
+          {GAMES.map(g => (
+            <button key={g} onClick={() => setGame(g)} style={{ padding:"5px 10px", borderRadius:"14px", cursor:"pointer", fontFamily:"DM Sans, sans-serif", fontSize:"11px", border:game===g?"1px solid #0099ff":"1px solid rgba(255,255,255,0.1)", background:game===g?"rgba(0,153,255,0.1)":"transparent", color:game===g?"#0099ff":"#c8d8f0", whiteSpace:"nowrap", flexShrink:0 }}>
+              {g==="all"?"All":g.split(" ")[0]}
             </button>
           ))}
         </div>
 
-        <div style={{ marginBottom: "28px" }}>
-          <div style={{ fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#8899bb", marginBottom: "12px" }}>Condition</div>
-          {["PSA 10","PSA 9","Mint","NM","LP","MP"].map((c) => (
-            <button key={c} style={{
-              padding: "5px 10px", margin: "3px",
-              border: "1px solid rgba(255,255,255,0.06)",
-              borderRadius: "6px", background: "transparent",
-              color: "#c8d8f0", fontSize: "11px",
-              cursor: "pointer", fontFamily: "DM Sans, sans-serif",
-            }}>{c}</button>
-          ))}
-        </div>
-
-        <a href="/sell" style={{
-          display: "block", textAlign: "center",
-          background: "linear-gradient(135deg, #00b4ff, #0099ff)",
-          color: "#fff", padding: "10px",
-          borderRadius: "8px", fontSize: "12px",
-          fontWeight: 500, textDecoration: "none",
-          letterSpacing: "0.06em", textTransform: "uppercase",
-        }}>+ List a Card</a>
-      </aside>
-
-      {/* MAIN */}
-      <main style={{ flex: 1, padding: "10px 8px" }}>
-        <div style={{ marginBottom: "20px", display: "flex", flexWrap: "wrap", gap: "12px" }}>
-          <div style={{ flex: 1, minWidth: "200px", position: "relative" }}>
-            <input
-              placeholder="🔍  Search cards, sets, games..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              onFocus={() => search.length > 1 && setShowSuggestions(true)}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              style={{
-                width: "100%", background: "#050515",
-                border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: "8px", padding: "10px 16px",
-                fontSize: "14px", color: "#ffffff",
-                fontFamily: "DM Sans, sans-serif", outline: "none",
-                boxSizing: "border-box",
-              }}
-            />
-            {showSuggestions && suggestions.length > 0 && (
-              <div style={{
-                position: "absolute", top: "100%", left: 0, right: 0,
-                background: "#050515", border: "1px solid rgba(0,153,255,0.2)",
-                borderRadius: "10px", zIndex: 100, marginTop: "4px",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.5)", overflow: "hidden",
-              }}>
-                {suggestions.map((card, i) => (
-                  <div key={i}
-                    onClick={() => { setSearch(card.name); setShowSuggestions(false); }}
-                    style={{
-                      display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px",
-                      padding: "10px 16px", cursor: "pointer",
-                      borderBottom: i < suggestions.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
-                      transition: "background 0.15s",
-                    }}
-                    onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#0a1628"}
-                    onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = "transparent"}
-                  >
-                    {card.image_url && (
-                      <img src={card.image_url} alt={card.name}
-                        style={{ width: "32px", height: "44px", objectFit: "cover", borderRadius: "4px", flexShrink: 0 }}
-                        onError={e => (e.currentTarget as HTMLImageElement).style.display = "none"} />
-                    )}
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: "11px", color: "#c8d8f0" }}>{card.game} · {card.condition} · ${card.price_usd}</div>
-                    </div>
-                    <div style={{ fontSize: "13px", fontWeight: 600, color: "#0099ff" }}>${card.price_usd}</div>
-                  </div>
-                ))}
-              </div>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"10px" }}>
+          <div style={{ fontSize:"12px", color:"#c8d8f0" }}><strong style={{ color:"#ffffff" }}>{filtered.length}</strong> cards{loading&&<span style={{ color:"#0099ff", marginLeft:"6px" }}>· Loading...</span>}</div>
+          <div style={{ display:"flex", gap:"4px" }}>
+            <button onClick={() => setViewMode("grid")} style={{ padding:"5px 10px", borderRadius:"6px", border:viewMode==="grid"?"1px solid #0099ff":"1px solid rgba(255,255,255,0.1)", background:viewMode==="grid"?"rgba(0,153,255,0.15)":"transparent", color:viewMode==="grid"?"#0099ff":"#c8d8f0", cursor:"pointer", fontSize:"11px", fontFamily:"DM Sans, sans-serif", fontWeight:600 }}>⊞ Grid</button>
+            <button onClick={() => setViewMode("list")} style={{ padding:"5px 10px", borderRadius:"6px", border:viewMode==="list"?"1px solid #0099ff":"1px solid rgba(255,255,255,0.1)", background:viewMode==="list"?"rgba(0,153,255,0.15)":"transparent", color:viewMode==="list"?"#0099ff":"#c8d8f0", cursor:"pointer", fontSize:"11px", fontFamily:"DM Sans, sans-serif", fontWeight:600 }}>≡ List</button>
           </div>
-          <select
-            value={sort}
-            onChange={e => setSort(e.target.value)}
-            style={{
-              background: "#050515", border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: "8px", padding: "10px 16px",
-              fontSize: "13px", color: "#ffffff",
-              fontFamily: "DM Sans, sans-serif", outline: "none", cursor: "pointer",
-            }}>
-            <option value="newest">Newest First</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-          </select>
         </div>
 
-        <div style={{ fontSize: "13px", color: "#c8d8f0", marginBottom: "20px" }}>
-          <strong style={{ color: "#ffffff" }}>{filtered.length}</strong> cards available
-          {loading && <span style={{ color: "#0099ff", marginLeft: "8px" }}>· Loading...</span>}
-        </div>
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "6px",
-        }}>
-          {filtered.map(card => (
-            <a key={card.id} href={`/card/${card.id}`} style={{ textDecoration: "none" }}>
-              <div style={{
-                background: "#050515",
-                border: "1px solid rgba(255,255,255,0.06)",
-                borderRadius: "8px", overflow: "hidden", cursor: "pointer",
-                transition: "transform 0.2s ease, border-color 0.2s ease",
-              }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)";
-                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,180,255,0.3)";
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
-                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.06)";
-                }}
-              >
-                <div style={{
-                  width: "100%", aspectRatio: "3/4",
-                  background: card.bg || "#0a1628",
-                  display: "flex", alignItems: "center",
-                  justifyContent: "center", fontSize: "32px",
-                  overflow: "hidden",
-                }}>
-                  {card.image_url ? (
-                    <img src={card.image_url} alt={card.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  ) : (
-                    card.art || GAME_ICONS[card.game] || "🃏"
-                </div>
-                <div style={{ padding: "6px 8px" }}>
-                  <div style={{
-                    fontFamily: "Cinzel, serif", fontSize: "9px",
-                    fontWeight: 600, color: "#ffffff", marginBottom: "1px",
-                    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-                  }}>{card.name}</div>
-                  <div style={{
-                    fontSize: "8px", color: "#8899bb",
-                    textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "4px",
-                  }}>{card.game}</div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div>
-                      <div style={{ fontSize: "11px", fontWeight: 700, color: "#00d4ff" }}>${card.price_usd?.toLocaleString()}</div>
-                      <div style={{ fontSize: "8px", color: "#0099ff" }}>{card.price_sui} SUI</div>
+        {viewMode==="grid" && (
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(4, 1fr)", gap:"8px" }}>
+            {filtered.map(card => (
+              <a key={card.id} href={`/card/${card.id}`} style={{ textDecoration:"none" }}>
+                <div style={{ background:"#050515", border:"1px solid rgba(255,255,255,0.06)", borderRadius:"8px", overflow:"hidden", cursor:"pointer" }}>
+                  <div style={{ width:"100%", aspectRatio:"3/4", background:card.bg||"#0a1628", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"28px", overflow:"hidden" }}>
+                    {card.image_url ? <img src={card.image_url} alt={card.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e => { (e.currentTarget as HTMLImageElement).style.display="none"; }} /> : card.art||"🃏"}
+                  </div>
+                  <div style={{ padding:"6px 7px" }}>
+                    <div style={{ fontFamily:"Cinzel, serif", fontSize:"9px", fontWeight:600, color:"#ffffff", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", marginBottom:"1px" }}>{card.name}</div>
+                    <div style={{ fontSize:"8px", color:"#8899bb", marginBottom:"3px" }}>{card.game}</div>
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                      <div style={{ fontSize:"11px", fontWeight:700, color:"#00d4ff" }}>${card.price_usd?.toLocaleString()}</div>
+                      <button style={{ padding:"2px 7px", background:"linear-gradient(135deg, #0055ff, #0099ff)", border:"none", borderRadius:"4px", fontSize:"9px", color:"#fff", fontWeight:600, cursor:"pointer" }}>Buy</button>
                     </div>
-                    <button style={{
-                      background: "transparent",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      borderRadius: "6px", padding: "5px 10px",
-                      fontSize: "10px", color: "#c8d8f0",
-                      cursor: "pointer", fontFamily: "DM Sans, sans-serif",
-                    }}>Buy</button>
                   </div>
                 </div>
-              </div>
-            </a>
-          ))}
-        </div>
-        {viewMode === "list" && <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          {filtered.map(card => (
-            <a key={card.id + "l"} href={`/card/${card.id}`} style={{ textDecoration: "none" }}>
-              <div style={{ background: "#050515", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "10px", padding: "10px 14px", display: "flex", alignItems: "center", gap: "12px", cursor: "pointer", transition: "all 0.15s" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,153,255,0.3)"; (e.currentTarget as HTMLDivElement).style.background = "#0a1628"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLDivElement).style.background = "#050515"; }}>
-                <div style={{ width: "40px", height: "56px", borderRadius: "6px", overflow: "hidden", background: card.bg || "#0a1628", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", flexShrink: 0 }}>
-                  {card.image_url ? <img src={card.image_url} alt={card.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : card.art || "🃏"}
+              </a>
+            ))}
+          </div>
+        )}
+
+        {viewMode==="list" && (
+          <div style={{ display:"flex", flexDirection:"column", gap:"7px" }}>
+            {filtered.map(card => (
+              <a key={card.id+"l"} href={`/card/${card.id}`} style={{ textDecoration:"none" }}>
+                <div style={{ background:"#050515", border:"1px solid rgba(255,255,255,0.06)", borderRadius:"10px", padding:"10px 12px", display:"flex", alignItems:"center", gap:"10px", cursor:"pointer" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor="rgba(0,153,255,0.3)"; (e.currentTarget as HTMLDivElement).style.background="#0a1628"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor="rgba(255,255,255,0.06)"; (e.currentTarget as HTMLDivElement).style.background="#050515"; }}>
+                  <div style={{ width:"38px", height:"52px", borderRadius:"5px", overflow:"hidden", background:card.bg||"#0a1628", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"18px", flexShrink:0 }}>
+                    {card.image_url ? <img src={card.image_url} alt={card.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e => { (e.currentTarget as HTMLImageElement).style.display="none"; }} /> : card.art||"🃏"}
+                  </div>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontFamily:"Cinzel, serif", fontSize:"13px", fontWeight:600, color:"#ffffff", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{card.name}</div>
+                    <div style={{ fontSize:"10px", color:"#8899bb", marginTop:"1px" }}>{card.game} · {card.condition}</div>
+                  </div>
+                  <div style={{ textAlign:"right", flexShrink:0 }}>
+                    <div style={{ fontSize:"14px", fontWeight:700, color:"#00d4ff" }}>${card.price_usd?.toLocaleString()}</div>
+                    <div style={{ fontSize:"9px", color:"#0099ff" }}>{card.price_sui} SUI</div>
+                  </div>
+                  <button style={{ padding:"7px 12px", background:"linear-gradient(135deg, #0055ff, #0099ff)", border:"none", borderRadius:"6px", fontSize:"11px", color:"#fff", fontWeight:600, cursor:"pointer", flexShrink:0 }}>Buy</button>
                 </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: "Cinzel, serif", fontSize: "13px", fontWeight: 600, color: "#ffffff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.name}</div>
-                  <div style={{ fontSize: "10px", color: "#8899bb", marginTop: "2px" }}>{card.game} · {card.condition}</div>
-                </div>
-                <div style={{ textAlign: "right", flexShrink: 0 }}>
-                  <div style={{ fontSize: "15px", fontWeight: 700, color: "#00d4ff" }}>${card.price_usd?.toLocaleString()}</div>
-                  <div style={{ fontSize: "9px", color: "#0099ff" }}>{card.price_sui} SUI</div>
-                </div>
-                <button style={{ padding: "8px 14px", background: "linear-gradient(135deg, #0055ff, #0099ff)", border: "none", borderRadius: "6px", fontSize: "12px", color: "#fff", fontWeight: 600, cursor: "pointer", flexShrink: 0 }}>Buy</button>
-              </div>
-            </a>
-          ))}
-        </div>
+              </a>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );
