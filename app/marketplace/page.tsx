@@ -262,7 +262,30 @@ export default function Marketplace() {
               </div>
             </a>
           ))}
-        </div>
+        </div>}
+
+        {viewMode === "list" && <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          {filtered.map(card => (
+            <a key={card.id + "l"} href={`/card/${card.id}`} style={{ textDecoration: "none" }}>
+              <div style={{ background: "#050515", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "10px", padding: "10px 14px", display: "flex", alignItems: "center", gap: "12px", cursor: "pointer", transition: "all 0.15s" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(0,153,255,0.3)"; (e.currentTarget as HTMLDivElement).style.background = "#0a1628"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLDivElement).style.background = "#050515"; }}>
+                <div style={{ width: "40px", height: "56px", borderRadius: "6px", overflow: "hidden", background: card.bg || "#0a1628", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", flexShrink: 0 }}>
+                  {card.image_url ? <img src={card.image_url} alt={card.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : card.art || "🃏"}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: "Cinzel, serif", fontSize: "13px", fontWeight: 600, color: "#ffffff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.name}</div>
+                  <div style={{ fontSize: "10px", color: "#8899bb", marginTop: "2px" }}>{card.game} · {card.condition}</div>
+                </div>
+                <div style={{ textAlign: "right", flexShrink: 0 }}>
+                  <div style={{ fontSize: "15px", fontWeight: 700, color: "#00d4ff" }}>${card.price_usd?.toLocaleString()}</div>
+                  <div style={{ fontSize: "9px", color: "#0099ff" }}>{card.price_sui} SUI</div>
+                </div>
+                <button style={{ padding: "8px 14px", background: "linear-gradient(135deg, #0055ff, #0099ff)", border: "none", borderRadius: "6px", fontSize: "12px", color: "#fff", fontWeight: 600, cursor: "pointer", flexShrink: 0 }}>Buy</button>
+              </div>
+            </a>
+          ))}
+        </div>}
       </main>
     </div>
   );
