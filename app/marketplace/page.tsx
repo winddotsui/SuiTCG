@@ -171,14 +171,12 @@ export default function Marketplace() {
                         onError={e => (e.currentTarget as HTMLImageElement).style.display = "none"} />
                     )}
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: "13px", fontWeight: 600, color: "#ffffff" }}>{card.name}</div>
                       <div style={{ fontSize: "11px", color: "#c8d8f0" }}>{card.game} · {card.condition} · ${card.price_usd}</div>
                     </div>
                     <div style={{ fontSize: "13px", fontWeight: 600, color: "#0099ff" }}>${card.price_usd}</div>
                   </div>
                 ))}
               </div>
-            )}
           </div>
           <select
             value={sort}
@@ -233,7 +231,6 @@ export default function Marketplace() {
                     <img src={card.image_url} alt={card.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   ) : (
                     card.art || GAME_ICONS[card.game] || "🃏"
-                  )}
                 </div>
                 <div style={{ padding: "6px 8px" }}>
                   <div style={{
@@ -262,8 +259,7 @@ export default function Marketplace() {
               </div>
             </a>
           ))}
-        </div>}
-
+        </div>
         {viewMode === "list" && <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {filtered.map(card => (
             <a key={card.id + "l"} href={`/card/${card.id}`} style={{ textDecoration: "none" }}>
@@ -285,7 +281,7 @@ export default function Marketplace() {
               </div>
             </a>
           ))}
-        </div>}
+        </div>
       </main>
     </div>
   );
