@@ -121,7 +121,14 @@ export default function Sell() {
   return (
     <div style={{ minHeight: "100vh", background: "#000008" }}>
       {/* Header */}
-      <div style={{ background: "linear-gradient(180deg, #000008 0%, #000d20 50%, #000008 100%)", padding: "60px 48px 40px", borderBottom: "1px solid rgba(0,153,255,0.15)", textAlign: "center" }}>
+      <div style={{ background: "linear-gradient(180deg, #000008 0%, #000d20 50%, #000008 100%)", padding: "24px 16px 20px", borderBottom: "1px solid rgba(0,153,255,0.15)", textAlign: "center" }}>
+        {/* Safety Note */}
+        <div style={{ background: "rgba(255,180,0,0.06)", border: "1px solid rgba(255,180,0,0.25)", borderRadius: "12px", padding: "12px 16px", marginBottom: "16px", textAlign: "left", display: "flex", gap: "10px", alignItems: "flex-start" }}>
+          <span style={{ fontSize: "18px", flexShrink: 0 }}>🛡️</span>
+          <p style={{ fontSize: "12px", color: "#e8c97a", lineHeight: 1.6, margin: 0 }}>
+            <strong>Buyer Protection:</strong> Always trade with sellers who have 4+ linked social accounts, verify their WaveTCG profile, and contact them personally before any transaction.
+          </p>
+        </div>
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "12px" }}>◈ WaveTCG · Marketplace</div>
         <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 900, background: "linear-gradient(135deg, #0099ff, #00d4ff, #00ffcc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "12px" }}>List a Card</h1>
         <p style={{ fontSize: "14px", color: "#c8d8f0" }}>Sell your cards to the WaveTCG community</p>
@@ -132,9 +139,9 @@ export default function Sell() {
         {/* Verification Gate */}
         {!isVerified ? (
           <div style={{ background: "#050515", border: "1px solid rgba(255,153,0,0.3)", borderRadius: "20px", padding: "40px", textAlign: "center" }}>
-            <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔐</div>
-            <div style={{ fontFamily: "Cinzel, serif", fontSize: "22px", color: "#ffffff", marginBottom: "12px" }}>Verification Required</div>
-            <p style={{ fontSize: "14px", color: "#c8d8f0", marginBottom: "24px", lineHeight: 1.7 }}>
+            <div style={{ fontSize: "36px", marginBottom: "12px" }}>🔐</div>
+            <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", color: "#ffffff", marginBottom: "10px" }}>Verification Required</div>
+            <p style={{ fontSize: "13px", color: "#c8d8f0", marginBottom: "16px", lineHeight: 1.6 }}>
               To list cards on WaveTCG, you need to connect at least <strong style={{ color: "#0099ff" }}>2 out of 3</strong> social accounts.
               This helps ensure legitimacy and trust in our marketplace.
             </p>
@@ -147,7 +154,7 @@ export default function Sell() {
                 { label: "Telegram", icon: "✈️", connected: hasTelegram, required: true },
                 { label: "LinkedIn", icon: "💼", connected: hasLinkedin, required: false },
               ].map((s, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: s.connected ? "rgba(0,255,100,0.05)" : "#0a1628", border: `1px solid ${s.connected ? "rgba(0,255,100,0.2)" : "rgba(255,255,255,0.08)"}`, borderRadius: "10px" }}>
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px", background: s.connected ? "rgba(0,255,100,0.05)" : "#0a1628", border: `1px solid ${s.connected ? "rgba(0,255,100,0.2)" : "rgba(255,255,255,0.08)"}`, borderRadius: "10px" }}>
                   <span style={{ fontSize: "20px" }}>{s.icon}</span>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: "13px", fontWeight: 600, color: "#ffffff" }}>{s.label}</div>
@@ -166,7 +173,7 @@ export default function Sell() {
             </div>
 
             <a href="/profile/0x91fa18b29e0603c18005f61479dd47e50cb52c85ede36c6dc44d85bc147c77f5"
-              style={{ display: "inline-block", background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", padding: "14px 32px", borderRadius: "10px", fontSize: "14px", fontWeight: 600, textDecoration: "none", fontFamily: "DM Sans, sans-serif" }}>
+              style={{ display: "block", background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", padding: "12px 24px", borderRadius: "10px", fontSize: "13px", fontWeight: 600, textDecoration: "none", fontFamily: "DM Sans, sans-serif", textAlign: "center" }}>
               Connect Socials on Profile →
             </a>
           </div>
