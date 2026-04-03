@@ -117,7 +117,7 @@ export default function Oracle() {
       <div style={{ padding: "24px 40px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "#050515", display: "flex", alignItems: "center", gap: "16px" }}>
         <div style={{ width: "44px", height: "44px", borderRadius: "50%", background: "rgba(0,212,255,0.1)", border: "1px solid rgba(0,212,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px" }}>🔮</div>
         <div>
-          <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", fontWeight: 600, color: "#ffffff" }}>SuiTCG Oracle</div>
+          <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", fontWeight: 600, color: "#ffffff" }}>TCG Agent</div>
           <div style={{ fontSize: "12px", color: "#00d4ff" }}>● Online · Pokémon · Magic · Yu-Gi-Oh! · One Piece · and more</div>
         </div>
       </div>
@@ -125,7 +125,7 @@ export default function Oracle() {
         {messages.length === 0 && (
           <div style={{ textAlign: "center", paddingTop: "60px" }}>
             <div style={{ fontSize: "64px", marginBottom: "24px" }}>🔮</div>
-            <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>SuiTCG Oracle</h2>
+            <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>TCG Agent</h2>
             <p style={{ fontSize: "15px", color: "#c8d8f0", maxWidth: "480px", margin: "0 auto 40px", lineHeight: 1.75 }}>Ask about any TCG card — I'll show all versions with live prices.</p>
             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
               {["Show me all Charizard EX versions","Tell me about Black Lotus","How much is Blue-Eyes White Dragon?","Show me Monkey D. Luffy One Piece cards"].map((q,i) => (
@@ -151,7 +151,7 @@ export default function Oracle() {
         )}
       </div>
       <div style={{ padding: "20px 40px", borderTop: "1px solid rgba(255,255,255,0.06)", background: "#050515", display: "flex", gap: "12px" }}>
-        <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && sendMessage()} placeholder="Ask about any TCG card — Pokémon, Magic, Yu-Gi-Oh!, One Piece..." style={{ flex: 1, background: "#0a1628", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "14px 20px", fontSize: "14px", color: "#ffffff", outline: "none" }} />
+        <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && sendMessage()} placeholder="Ask about any TCG card — Pokémon, Magic, Yu-Gi-Oh!, One Piece..." style={{ flex: 1, background: "#0a1628", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "10px 16px", fontSize: "14px", color: "#ffffff", outline: "none" }} />
         <button onClick={sendMessage} style={{ background: "#00d4ff", color: "#000008", border: "none", borderRadius: "8px", padding: "14px 24px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>Send</button>
       </div>
     </div>
