@@ -277,39 +277,40 @@ export default function PriceChecker() {
       <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
 
         {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "48px" }}>
-          <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#00d4ff", marginBottom: "12px" }}>Live Prices · All Expansions · All Versions</div>
-          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, background: "linear-gradient(135deg, #0099ff, #00d4ff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "12px" }}>Price Checker</h1>
-          <p style={{ fontSize: "15px", color: "#c8d8f0" }}>Search any card — see all versions with live market prices</p>
+        <div style={{ textAlign: "center", marginBottom: "20px" }}>
+          <div style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#00d4ff", marginBottom: "8px" }}>Live Prices · All Expansions · All Versions</div>
+          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(22px, 4vw, 48px)", fontWeight: 700, background: "linear-gradient(135deg, #0099ff, #00d4ff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "8px" }}>Price Checker</h1>
+          <p style={{ fontSize: "13px", color: "#c8d8f0" }}>Search any card — see all versions with live market prices</p>
         </div>
 
-        {/* Game filter */}
-        <div style={{ display: "flex", gap: "6px", justifyContent: "center", marginBottom: "24px", flexWrap: "wrap", padding: "0 12px" }}>
+        {/* Game filter - 2 col grid on mobile */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "6px", marginBottom: "16px" }}>
           {[
             { id: "all", label: "All Games", icon: "🃏" },
             { id: "onepiece", label: "One Piece", icon: "🏴‍☠️" },
             { id: "pokemon", label: "Pokémon", icon: "⚡" },
-            { id: "magic", label: "Magic: TG", icon: "✨" },
+            { id: "magic", label: "Magic", icon: "✨" },
             { id: "yugioh", label: "Yu-Gi-Oh!", icon: "👁️" },
             { id: "dragonball", label: "Dragon Ball", icon: "🐉" },
             { id: "digimon", label: "Digimon", icon: "🎭" },
             { id: "lorcana", label: "Lorcana", icon: "🌟" },
-            { id: "fab", label: "Flesh & Blood", icon: "⚔️" },
-            { id: "weiss", label: "Weiss Schwarz", icon: "🎌" },
+            { id: "fab", label: "F&B", icon: "⚔️" },
+            { id: "weiss", label: "Weiss", icon: "🎌" },
             { id: "unionarena", label: "Union Arena", icon: "🎮" },
           ].map(g => (
             <button key={g.id} onClick={() => setGame(g.id)} style={{
-              padding: "8px 18px", borderRadius: "20px", cursor: "pointer",
-              fontFamily: "DM Sans, sans-serif", fontSize: "13px",
+              padding: "8px 6px", borderRadius: "10px", cursor: "pointer",
+              fontFamily: "DM Sans, sans-serif", fontSize: "11px",
               border: game === g.id ? "1px solid #00d4ff" : "1px solid rgba(255,255,255,0.1)",
               background: game === g.id ? "rgba(0,170,255,0.1)" : "transparent",
               color: game === g.id ? "#00d4ff" : "#c8d8f0",
+              textAlign: "center",
             }}>{g.icon} {g.label}</button>
           ))}
         </div>
 
         {/* Search box */}
-        <div style={{ position: "relative", marginBottom: "40px" }}>
+        <div style={{ position: "relative", marginBottom: "16px" }}>
           <div style={{ position: "relative" }}>
             <input
               ref={inputRef}
@@ -321,8 +322,8 @@ export default function PriceChecker() {
                 width: "100%", background: "#050515",
                 border: "1px solid rgba(255,255,255,0.15)",
                 borderRadius: showDropdown ? "12px 12px 0 0" : "12px",
-                padding: "16px 50px 16px 20px",
-                fontSize: "16px", color: "#ffffff",
+                padding: "13px 44px 13px 16px",
+                fontSize: "14px", color: "#ffffff",
                 fontFamily: "DM Sans, sans-serif", outline: "none",
                 boxSizing: "border-box",
                 transition: "border-color 0.2s",
