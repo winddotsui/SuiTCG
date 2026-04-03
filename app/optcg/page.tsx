@@ -155,7 +155,7 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
         <div style={{ fontSize: "12px", color: "#c8d8f0", marginBottom: "6px" }}>≈ ${(pot * 0.88).toFixed(0)} USD</div>
         <div style={{ fontSize: "11px", color: "#0099ff", marginBottom: "20px" }}>◈ Powered by SUI × Ethena on Sui</div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", marginBottom: "20px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px", marginBottom: "16px" }}>
           {[
             { place: "🥇 1st", pct: 40, amount: Math.floor(pot * 0.4) },
             { place: "🥈 2nd", pct: 25, amount: Math.floor(pot * 0.25) },
@@ -291,7 +291,7 @@ export default function OPTCGHub() {
       <div style={{ background: "linear-gradient(180deg, #000008 0%, #000008 50%, #000008 100%)", padding: "28px 16px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, rgba(0,85,255,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#00d4ff", marginBottom: "12px" }}>🏴‍☠️ WaveTCG · One Piece TCG Hub</div>
-        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(32px, 5vw, 60px)", fontWeight: 900, background: "linear-gradient(135deg, #0055ff, #0099ff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "16px" }}>One Piece TCG Hub</h1>
+        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(22px, 5vw, 60px)", fontWeight: 900, background: "linear-gradient(135deg, #0055ff, #0099ff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "16px" }}>One Piece TCG Hub</h1>
         <p style={{ fontSize: "16px", color: "#c8d8f0", maxWidth: "560px", margin: "0 auto 32px", lineHeight: 1.75 }}>Play online, compete for real SUI prizes, climb the rankings.</p>
         <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
           <button onClick={() => setShowSimulator(true)} style={{ background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "14px 32px", fontSize: "15px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif", boxShadow: "0 4px 24px rgba(0,85,255,0.3)" }}>⚔️ Play OPTCGSim</button>
@@ -333,7 +333,7 @@ export default function OPTCGHub() {
       }} pot={pot} />}
 
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 24px" }}>
-        <div style={{ display: "flex", gap: "4px", borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: "32px" }}>
+        <div style={{ display: "flex", gap: "4px", borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: "20px", overflowX: "auto" }}>
           {[
             { id: "tournament", label: "💰 Weekly Tournament" },
             { id: "participants", label: "👥 Participants" },
@@ -345,7 +345,7 @@ export default function OPTCGHub() {
         </div>
 
         {activeTab === "tournament" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: "32px", alignItems: "start" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(380px, 100%), 1fr))", gap: "24px", alignItems: "start" }}>
             <div>
               <div style={{ marginBottom: "24px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
