@@ -122,13 +122,6 @@ export default function Sell() {
     <div style={{ minHeight: "100vh", background: "#000008" }}>
       {/* Header */}
       <div style={{ background: "#000008", padding: "12px 14px", borderBottom: "1px solid rgba(0,153,255,0.15)", textAlign: "center" }}>
-        {/* Safety Note */}
-        <div style={{ background: "rgba(255,180,0,0.06)", border: "1px solid rgba(255,180,0,0.25)", borderRadius: "12px", padding: "12px 16px", marginBottom: "16px", textAlign: "left", display: "flex", gap: "10px", alignItems: "flex-start" }}>
-          <span style={{ fontSize: "18px", flexShrink: 0 }}>🛡️</span>
-          <p style={{ fontSize: "12px", color: "#e8c97a", lineHeight: 1.6, margin: 0 }}>
-            <strong>⚠️ Safety Tip:</strong> Always buy with 4 linked socials, always check their WaveTCG profiles, and always contact your sellers before any transaction.
-          </p>
-        </div>
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "6px" }}>◈ WaveTCG · Marketplace</div>
         <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(20px, 4vw, 36px)", fontWeight: 900, background: "linear-gradient(135deg, #0099ff, #00d4ff, #00ffcc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "6px" }}>List a Card</h1>
         <p style={{ fontSize: "12px", color: "#c8d8f0" }}>Sell your cards to the WaveTCG community</p>
