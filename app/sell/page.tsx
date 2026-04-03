@@ -121,12 +121,12 @@ export default function Sell() {
   return (
     <div style={{ minHeight: "100vh", background: "#000008" }}>
       {/* Header */}
-      <div style={{ background: "linear-gradient(180deg, #000008 0%, #000d20 50%, #000008 100%)", padding: "24px 16px 20px", borderBottom: "1px solid rgba(0,153,255,0.15)", textAlign: "center" }}>
+      <div style={{ background: "linear-gradient(180deg, #000008 0%, #000d20 50%, #000008 100%)", padding: "16px 16px 16px", borderBottom: "1px solid rgba(0,153,255,0.15)", textAlign: "center" }}>
         {/* Safety Note */}
         <div style={{ background: "rgba(255,180,0,0.06)", border: "1px solid rgba(255,180,0,0.25)", borderRadius: "12px", padding: "12px 16px", marginBottom: "16px", textAlign: "left", display: "flex", gap: "10px", alignItems: "flex-start" }}>
           <span style={{ fontSize: "18px", flexShrink: 0 }}>🛡️</span>
           <p style={{ fontSize: "12px", color: "#e8c97a", lineHeight: 1.6, margin: 0 }}>
-            <strong>Buyer Protection:</strong> Always trade with sellers who have 4+ linked social accounts, verify their WaveTCG profile, and contact them personally before any transaction.
+            <strong>⚠️ Safety Tip:</strong> Always buy with 4 linked socials, always check their WaveTCG profiles, and always contact your sellers before any transaction.
           </p>
         </div>
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "12px" }}>◈ WaveTCG · Marketplace</div>
