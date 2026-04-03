@@ -58,7 +58,7 @@ export default function DownloadPage() {
       </div>
 
       <div style={{ maxWidth: "900px", margin: "0 auto", padding: "60px 24px" }}>
-        <div style={{ background: "linear-gradient(135deg, #000008, #050515)", border: "1px solid rgba(0,80,255,0.3)", borderRadius: "16px", padding: "14px 16px", marginBottom: "60px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "20px" }}>
+        <div style={{ background: "linear-gradient(135deg, #000008, #050515)", border: "1px solid rgba(0,80,255,0.3)", borderRadius: "16px", padding: "14px 10px", marginBottom: "60px", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "20px" }}>
           {[
             { label: "Entry Fee", val: "10 SUI", icon: "💰", color: "#00d4ff" },
             { label: "Min Players", val: "8 players", icon: "👥", color: "#00d4ff" },
@@ -117,11 +117,11 @@ export default function DownloadPage() {
               { place: "3rd Place", pct: "20%", icon: "🥉", color: "#00d4ff", bg: "rgba(0,80,255,0.08)", border: "rgba(0,80,255,0.2)" },
               { place: "WaveTCG", pct: "15%", icon: "🌊", color: "#00d4ff", bg: "rgba(0,80,255,0.08)", border: "rgba(0,80,255,0.2)" },
             ].map((p, i) => (
-              <div key={i} style={{ background: p.bg, border: "1px solid " + p.border, borderRadius: "12px", padding: "16px", textAlign: "center" }}>
-                <div style={{ fontSize: "24px", marginBottom: "6px" }}>{p.icon}</div>
-                <div style={{ fontFamily: "Cinzel, serif", fontSize: "11px", color: "#c8d8f0", marginBottom: "6px" }}>{p.place}</div>
-                <div style={{ fontFamily: "Cinzel, serif", fontSize: "28px", fontWeight: 700, color: p.color }}>{p.pct}</div>
-                <div style={{ fontSize: "10px", color: "#c8d8f0", marginTop: "4px" }}>of prize pool</div>
+              <div key={i} style={{ background: p.bg, border: "1px solid " + p.border, borderRadius: "12px", padding: "12px 6px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "120px" }}>
+                <div style={{ fontSize: "20px", marginBottom: "4px" }}>{p.icon}</div>
+                <div style={{ fontFamily: "Cinzel, serif", fontSize: "9px", color: "#c8d8f0", marginBottom: "4px" }}>{p.place}</div>
+                <div style={{ fontFamily: "Cinzel, serif", fontSize: "20px", fontWeight: 700, color: p.color }}>{p.pct}</div>
+                <div style={{ fontSize: "8px", color: "#c8d8f0", marginTop: "2px" }}>of prize pool</div>
               </div>
             ))}
           </div>
