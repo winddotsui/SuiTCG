@@ -128,6 +128,12 @@ export default function Sell() {
       </div>
 
       <div style={{ maxWidth: "700px", margin: "0 auto", padding: "20px 12px" }}>
+        <div style={{ background: "rgba(255,180,0,0.06)", border: "1px solid rgba(255,180,0,0.25)", borderRadius: "10px", padding: "10px 14px", marginBottom: "12px", display: "flex", gap: "8px", alignItems: "flex-start" }}>
+          <span style={{ fontSize: "16px", flexShrink: 0 }}>🛡️</span>
+          <p style={{ fontSize: "11px", color: "#e8c97a", lineHeight: 1.5, margin: 0 }}>
+            <strong>Safety Tip:</strong> Always buy with 4 linked socials, check their WaveTCG profile, and contact sellers before any transaction.
+          </p>
+        </div>
 
         {/* Verification Gate */}
         {!isVerified ? (
