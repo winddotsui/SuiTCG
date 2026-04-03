@@ -49,16 +49,16 @@ export default function DownloadPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#000008" }}>
-      <div style={{ background: "linear-gradient(180deg, #000008 0%, #000510 50%, #000008 100%)", padding: "60px 48px 40px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center", position: "relative", overflow: "hidden" }}>
+      <div style={{ background: "linear-gradient(180deg, #000008 0%, #000510 50%, #000008 100%)", padding: "24px 16px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, rgba(0,80,255,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#00d4ff", marginBottom: "12px" }}>WaveTCG OPTCG Hub</div>
-        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 900, background: "linear-gradient(135deg, #0055ff, #00d4ff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "16px" }}>Download and Play Guide</h1>
-        <p style={{ fontSize: "16px", color: "#c8d8f0", maxWidth: "560px", margin: "0 auto 32px", lineHeight: 1.75 }}>Everything you need to download OPTCGSim and join WaveTCG weekly tournaments.</p>
-        <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0055ff, #00d4ff)", color: "#fff", padding: "14px 40px", borderRadius: "8px", fontSize: "15px", fontWeight: 600, textDecoration: "none", boxShadow: "0 4px 24px rgba(0,80,255,0.3)" }}>Go to OPTCGSim</a>
+        <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(20px, 5vw, 40px)", fontWeight: 900, background: "linear-gradient(135deg, #0055ff, #00d4ff, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "16px" }}>Download and Play Guide</h1>
+        <p style={{ fontSize: "13px", color: "#c8d8f0", maxWidth: "560px", margin: "0 auto 32px", lineHeight: 1.75 }}>Everything you need to download OPTCGSim and join WaveTCG weekly tournaments.</p>
+        <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0055ff, #00d4ff)", color: "#fff", padding: "12px 24px", borderRadius: "8px", fontSize: "15px", fontWeight: 600, textDecoration: "none", boxShadow: "0 4px 24px rgba(0,80,255,0.3)" }}>Go to OPTCGSim</a>
       </div>
 
       <div style={{ maxWidth: "900px", margin: "0 auto", padding: "60px 24px" }}>
-        <div style={{ background: "linear-gradient(135deg, #000008, #050515)", border: "1px solid rgba(0,80,255,0.3)", borderRadius: "16px", padding: "24px 28px", marginBottom: "60px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "20px" }}>
+        <div style={{ background: "linear-gradient(135deg, #000008, #050515)", border: "1px solid rgba(0,80,255,0.3)", borderRadius: "16px", padding: "14px 16px", marginBottom: "60px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "20px" }}>
           {[
             { label: "Entry Fee", val: "10 SUI", icon: "💰", color: "#00d4ff" },
             { label: "Min Players", val: "8 players", icon: "👥", color: "#00d4ff" },
