@@ -5,7 +5,7 @@ const links = [
   { href: "/", label: "Home", icon: "🏠" },
   { href: "/marketplace", label: "Marketplace", icon: "🃏" },
   { href: "/price-checker", label: "Prices", icon: "📈" },
-  { href: "/oracle", label: "AI Oracle", icon: "🔮" },
+  { href: "/oracle", label: "TCG Agent", icon: "🔮" },
   { href: "/optcg", label: "OPTCG", icon: "🏴\u200d☠️" },
   { href: "/deckbuilder", label: "Deck Builder", icon: "🎴" },
   { href: "/download", label: "Download", icon: "⬇️" },
