@@ -209,7 +209,7 @@ function JoinModal({ onClose, onJoin, pot, prefillDeck }: { onClose: () => void;
       const result = await signAndExecute({ transaction: tx });
       console.log("TX:", result.digest);
       setStep("success");
-      setTimeout(() => { onJoin(playerName, decklist, deckName); onClose(); }, 1500);
+      setTimeout(() => { onJoin(playerName, decklist, deckName, result.digest); onClose(); }, 1500);
     } catch (e) {
       alert(e instanceof Error ? e.message : "Transaction failed.");
       setStep("form");
@@ -290,7 +290,7 @@ export default function OPTCGHub() {
     const { data } = await supabase
       .from("tournament_registrations")
       .select("*")
-      .eq("tournament_id", "weekly-17")
+      .eq("tournament_id", "weekly-18")
       .order("registered_at", { ascending: false });
     if (data) { setRegistrations(data); setPlayers(data.length); }
   }  const maxPlayers = 64;
@@ -329,17 +329,17 @@ export default function OPTCGHub() {
       {showJoin && <JoinModal 
         prefillDeck={prefillDeck}
         onClose={() => { setShowJoin(false); setPrefillDeck(null); }} 
-        onJoin={async (name: string, decklist: string, deckName: string) => {
+        onJoin={async (name: string, decklist: string, deckName: string, txDigest?: string) => {
         setPlayers(p => p + 1);
         const addr = localStorage.getItem("wavetcg_wallet_address") || localStorage.getItem("connected_wallet") || "anonymous";
         await supabase.from("tournament_registrations").insert({
-          tournament_id: "weekly-17",
+          tournament_id: "weekly-18",
           player_name: name,
           wallet_address: addr,
           decklist: decklist,
           deck_name: deckName,
           status: "registered",
-          tx_digest: "",
+          tx_digest: txDigest || "",
         });
         fetchRegistrations();
       }} pot={pot} />}
