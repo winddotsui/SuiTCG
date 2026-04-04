@@ -340,13 +340,15 @@ export default function OPTCGHub() {
         onClose={() => { setShowJoin(false); setPrefillDeck(null); }} 
         onJoin={async (name: string, decklist: string, deckName: string) => {
         setPlayers(p => p + 1);
+        const addr = localStorage.getItem("wavetcg_wallet_address") || localStorage.getItem("connected_wallet") || "anonymous";
         await supabase.from("tournament_registrations").insert({
           tournament_id: "weekly-17",
           player_name: name,
-          wallet_address: "anonymous",
+          wallet_address: addr,
           decklist: decklist,
           deck_name: deckName,
           status: "registered",
+          tx_digest: "",
         });
         fetchRegistrations();
       }} pot={pot} />}
