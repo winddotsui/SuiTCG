@@ -18,6 +18,9 @@ export default function Sell() {
   const [profile, setProfile] = useState<any>(null);
   const [checkingProfile, setCheckingProfile] = useState(true);
   const [walletAddress, setWalletAddress] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [form, setForm] = useState({ game: "One Piece TCG", name: "", set_name: "", card_number: "", condition: "NM", price_usd: "", quantity: "1", description: "", image_url: "" });
   const [cardSuggestions, setCardSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -38,6 +41,33 @@ export default function Sell() {
 
   const verifiedCount = [profile?.twitter, profile?.discord, profile?.telegram].filter(Boolean).length;
   const isVerified = verifiedCount >= 2;
+
+  function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setImagePreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+  }
+
+  async function uploadImage(): Promise<string> {
+    if (!imageFile) return form.image_url;
+    setUploadingImage(true);
+    try {
+      const { data, error } = await supabase.storage
+        .from("card-images")
+        .upload(`${Date.now()}-${imageFile.name}`, imageFile, { upsert: true });
+      if (error) throw error;
+      const { data: urlData } = supabase.storage.from("card-images").getPublicUrl(data.path);
+      setUploadingImage(false);
+      return urlData.publicUrl;
+    } catch (e) {
+      console.error("Image upload failed:", e);
+      setUploadingImage(false);
+      return form.image_url;
+    }
+  }
 
   async function searchCards(q: string) {
     if (q.length < 2) { setCardSuggestions([]); setShowSuggestions(false); return; }
@@ -68,16 +98,45 @@ export default function Sell() {
   async function handleSubmit() {
     if (!form.name.trim()) { setError("Please enter a card name"); return; }
     if (!form.price_usd || parseFloat(form.price_usd) <= 0) { setError("Please enter a valid price"); return; }
+    if (!walletAddress) { setError("No wallet connected. Please connect your Sui wallet first."); return; }
     setLoading(true); setError("");
     try {
-      await supabase.from("listings").insert({ ...form, price_usd: parseFloat(form.price_usd), quantity: parseInt(form.quantity), seller_address: walletAddress, status: "active" });
+      const imageUrl = await uploadImage();
+      const payload = {
+        name: form.name.trim(),
+        game: form.game,
+        set_name: form.set_name || null,
+        card_number: form.card_number || null,
+        condition: form.condition,
+        price_usd: parseFloat(form.price_usd),
+        price_sui: parseFloat((parseFloat(form.price_usd) / 7.28).toFixed(2)),
+        quantity: parseInt(form.quantity) || 1,
+        description: form.description || null,
+        image_url: imageUrl || null,
+        seller_address: walletAddress,
+        status: "active",
+      };
+      console.log("Submitting listing:", payload);
+      const { data, error: insertError } = await supabase.from("listings").insert(payload).select();
+      if (insertError) {
+        console.error("Insert error:", insertError);
+        setError(`Failed to list: ${insertError.message}`);
+        setLoading(false);
+        return;
+      }
+      console.log("Listing created:", data);
       setSuccess(true);
-    } catch (e: any) { setError(e.message || "Failed to list card"); }
+    } catch (e: any) {
+      console.error("Submit error:", e);
+      setError(e.message || "Failed to list card. Check console for details.");
+    }
     setLoading(false);
   }
 
   function resetForm() {
     setSuccess(false);
+    setImageFile(null);
+    setImagePreview("");
     setForm({ game: "One Piece TCG", name: "", set_name: "", card_number: "", condition: "NM", price_usd: "", quantity: "1", description: "", image_url: "" });
     setStep(1);
   }
@@ -96,11 +155,21 @@ export default function Sell() {
         <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(20px, 4vw, 36px)", fontWeight: 900, background: "linear-gradient(135deg, #0099ff, #00d4ff, #00ffcc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "6px" }}>List a Card</h1>
         <p style={{ fontSize: "12px", color: "#6b85a8" }}>Sell your cards to the WaveTCG community · 1% fee on sale</p>
       </div>
+
       <div style={{ maxWidth: "640px", margin: "0 auto", padding: "20px clamp(12px, 3vw, 24px)" }}>
+
+        {/* wallet debug info */}
+        {walletAddress && (
+          <div style={{ background: "rgba(0,153,255,0.05)", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "8px", padding: "8px 14px", marginBottom: "12px", fontSize: "11px", color: "#8899bb" }}>
+            🔗 Wallet: {walletAddress.slice(0, 10)}...{walletAddress.slice(-6)}
+          </div>
+        )}
+
         <div style={{ background: "rgba(255,180,0,0.05)", border: "1px solid rgba(255,180,0,0.2)", borderRadius: "10px", padding: "10px 14px", marginBottom: "16px", display: "flex", gap: "8px" }}>
           <span style={{ fontSize: "14px", flexShrink: 0 }}>🛡️</span>
           <p style={{ fontSize: "11px", color: "#c8a84b", lineHeight: 1.5, margin: 0 }}><strong>Safety Tip:</strong> Connect at least 2 social accounts to build trust with buyers.</p>
         </div>
+
         {!walletAddress ? (
           <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "16px", padding: "48px 24px", textAlign: "center" }}>
             <div style={{ fontSize: "40px", marginBottom: "14px" }}>🔌</div>
@@ -140,6 +209,7 @@ export default function Sell() {
               <span>✅</span>
               <span style={{ fontSize: "11px", color: "#00ff88" }}>Verified seller · {verifiedCount} social accounts connected</span>
             </div>
+
             <div style={{ marginBottom: "24px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                 {["Card Details", "Pricing", "Review"].map((label, i) => (
@@ -150,6 +220,7 @@ export default function Sell() {
                 {[1, 2, 3].map(s => (<div key={s} style={{ flex: 1, height: "3px", borderRadius: "2px", background: step >= s ? "linear-gradient(90deg, #0055ff, #0099ff)" : "rgba(255,255,255,0.08)", transition: "background 0.3s" }} />))}
               </div>
             </div>
+
             {step === 1 && (
               <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
                 <div style={{ fontFamily: "Cinzel, serif", fontSize: "15px", color: "#ffffff" }}>Card Details</div>
@@ -181,15 +252,43 @@ export default function Sell() {
                   <div><label style={labelStyle}>Set Name</label><input value={form.set_name} onChange={e => setForm(p => ({ ...p, set_name: e.target.value }))} placeholder="e.g. Romance Dawn" style={inputStyle} /></div>
                   <div><label style={labelStyle}>Card Number</label><input value={form.card_number} onChange={e => setForm(p => ({ ...p, card_number: e.target.value }))} placeholder="e.g. OP01-003" style={inputStyle} /></div>
                 </div>
+
+                {/* Image upload */}
                 <div>
-                  <label style={labelStyle}>Image URL (optional)</label>
-                  <input value={form.image_url} onChange={e => setForm(p => ({ ...p, image_url: e.target.value }))} placeholder="https://..." style={inputStyle} />
-                  {form.image_url && <div style={{ marginTop: "8px", width: "60px", height: "80px", borderRadius: "6px", overflow: "hidden", border: "1px solid rgba(0,153,255,0.2)" }}><img src={form.image_url} alt="preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} /></div>}
+                  <label style={labelStyle}>Card Image</label>
+                  <div style={{ border: "2px dashed rgba(0,153,255,0.2)", borderRadius: "10px", padding: "20px", textAlign: "center", cursor: "pointer", background: imagePreview ? "transparent" : "#0a1628", position: "relative" }}
+                    onClick={() => document.getElementById("card-image-upload")?.click()}
+                    onDragOver={e => { e.preventDefault(); }}
+                    onDrop={e => { e.preventDefault(); const file = e.dataTransfer.files[0]; if (file) { setImageFile(file); const reader = new FileReader(); reader.onload = ev => setImagePreview(ev.target?.result as string); reader.readAsDataURL(file); } }}>
+                    {imagePreview ? (
+                      <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                        <img src={imagePreview} alt="preview" style={{ width: "60px", height: "80px", objectFit: "cover", borderRadius: "6px", border: "1px solid rgba(0,153,255,0.3)" }} />
+                        <div style={{ textAlign: "left" }}>
+                          <div style={{ fontSize: "12px", color: "#00ff88", marginBottom: "4px" }}>✅ Image selected</div>
+                          <div style={{ fontSize: "11px", color: "#8899bb" }}>{imageFile?.name}</div>
+                          <button onClick={e => { e.stopPropagation(); setImageFile(null); setImagePreview(""); }} style={{ marginTop: "6px", fontSize: "10px", color: "#ff6b6b", background: "transparent", border: "none", cursor: "pointer", padding: 0 }}>Remove</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <div style={{ fontSize: "28px", marginBottom: "8px" }}>📸</div>
+                        <div style={{ fontSize: "13px", color: "#c8d8f0", marginBottom: "4px" }}>Click or drag to upload card image</div>
+                        <div style={{ fontSize: "11px", color: "#444460" }}>JPG, PNG, WEBP · Max 5MB</div>
+                      </div>
+                    )}
+                    <input id="card-image-upload" type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageSelect} />
+                  </div>
+                  <div style={{ marginTop: "8px" }}>
+                    <label style={{ ...labelStyle, marginBottom: "4px" }}>Or paste image URL</label>
+                    <input value={form.image_url} onChange={e => { setForm(p => ({ ...p, image_url: e.target.value })); if (e.target.value) setImagePreview(e.target.value); }} placeholder="https://..." style={inputStyle} />
+                  </div>
                 </div>
+
                 {error && <div style={{ fontSize: "12px", color: "#ff6b6b", padding: "8px 12px", background: "rgba(255,50,50,0.06)", borderRadius: "6px" }}>{error}</div>}
                 <button onClick={() => { if (!form.name.trim()) { setError("Please enter a card name"); return; } setError(""); setStep(2); }} style={{ width: "100%", background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "13px", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Next → Pricing</button>
               </div>
             )}
+
             {step === 2 && (
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 <div style={{ fontFamily: "Cinzel, serif", fontSize: "15px", color: "#ffffff" }}>Condition & Pricing</div>
@@ -221,11 +320,12 @@ export default function Sell() {
                 </div>
               </div>
             )}
+
             {step === 3 && (
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 <div style={{ fontFamily: "Cinzel, serif", fontSize: "15px", color: "#ffffff" }}>Review & List</div>
                 <div style={{ background: "#0a1628", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "12px", padding: "16px", display: "flex", gap: "14px", alignItems: "flex-start" }}>
-                  {form.image_url && <div style={{ width: "60px", height: "80px", borderRadius: "6px", overflow: "hidden", flexShrink: 0 }}><img src={form.image_url} alt={form.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} /></div>}
+                  {(imagePreview || form.image_url) && <div style={{ width: "60px", height: "80px", borderRadius: "6px", overflow: "hidden", flexShrink: 0 }}><img src={imagePreview || form.image_url} alt={form.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} /></div>}
                   <div style={{ flex: 1 }}>
                     <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff", marginBottom: "4px" }}>{form.name}</div>
                     <div style={{ fontSize: "12px", color: "#8899bb", marginBottom: "8px" }}>{GAME_ICONS[form.game]} {form.game}{form.set_name ? ` · ${form.set_name}` : ""}{form.card_number ? ` · ${form.card_number}` : ""}</div>
@@ -244,10 +344,12 @@ export default function Sell() {
                     </div>
                   ))}
                 </div>
-                {error && <div style={{ fontSize: "12px", color: "#ff6b6b", padding: "8px 12px", background: "rgba(255,50,50,0.06)", borderRadius: "6px" }}>{error}</div>}
+                {error && <div style={{ fontSize: "12px", color: "#ff6b6b", padding: "10px 14px", background: "rgba(255,50,50,0.06)", borderRadius: "8px", border: "1px solid rgba(255,50,50,0.15)" }}>{error}</div>}
                 <div style={{ display: "flex", gap: "10px" }}>
                   <button onClick={() => setStep(2)} style={{ flex: 1, background: "transparent", color: "#8899bb", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "13px", fontSize: "14px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>← Back</button>
-                  <button onClick={handleSubmit} disabled={loading} style={{ flex: 2, background: loading ? "rgba(0,153,255,0.3)" : "linear-gradient(135deg, #0055ff, #0099ff, #00ffcc)", color: "#fff", border: "none", borderRadius: "8px", padding: "13px", fontSize: "14px", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer", fontFamily: "DM Sans, sans-serif" }}>{loading ? "Listing..." : "🚀 List Card Now"}</button>
+                  <button onClick={handleSubmit} disabled={loading} style={{ flex: 2, background: loading ? "rgba(0,153,255,0.3)" : "linear-gradient(135deg, #0055ff, #0099ff, #00ffcc)", color: "#fff", border: "none", borderRadius: "8px", padding: "13px", fontSize: "14px", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer", fontFamily: "DM Sans, sans-serif" }}>
+                    {loading ? (uploadingImage ? "Uploading image..." : "Listing...") : "🚀 List Card Now"}
+                  </button>
                 </div>
               </div>
             )}
