@@ -101,7 +101,7 @@ export default function SwapPage() {
 
             {/* Other DEXs */}
             <div>
-              <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#c8d8f0", marginBottom: "12px", letterSpacing: "0.06em", textTransform: "uppercase", fontSize: "11px" }}>Other DEXs on Sui</div>
+              <div style={{ fontFamily: "Cinzel, serif", fontSize: "11px", color: "#c8d8f0", marginBottom: "12px", letterSpacing: "0.06em", textTransform: "uppercase" }}>Other DEXs on Sui</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 {DEXS.map((dex, i) => (
                   <a key={i} href={dex.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
