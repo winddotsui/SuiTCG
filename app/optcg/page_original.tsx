@@ -1,12 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
-import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
-import { Transaction } from "@mysten/sui/transactions";
-const PACKAGE_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
-const TOURNAMENT_ID = process.env.NEXT_PUBLIC_TOURNAMENT_ID || "";
-const ENTRY_FEE = BigInt("10000000000");
-const ENTRY_FEE_SUI = 10;
 
 const RANKINGS = [
   { rank: 1, player: "LuffyKing_PH", wins: 47, losses: 8, points: 2350, deck: "OP01 - Luffy Red", badge: "👑", change: "+2" },
@@ -19,6 +13,7 @@ const RANKINGS = [
   { rank: 8, player: "FrankyShip", wins: 26, losses: 24, points: 1450, deck: "OP03 - Franky Blue", badge: "⭐", change: "+4" },
 ];
 
+const ENTRY_FEE = 10;
 
 function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: number; maxPlayers: number }) {
   const progress = (players / maxPlayers) * 100;
@@ -189,9 +184,7 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
 
 
 function JoinModal({ onClose, onJoin, pot, prefillDeck }: { onClose: () => void; onJoin: (name: string, deck: string, deckName: string) => void; pot: number; prefillDeck?: {name: string, decklist: string, leader: string} | null }) {
-  const account = useCurrentAccount();
-  const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
-  const [step, setStep] = useState<"form" | "confirm" | "paying" | "success">("confirm");
+  const [step, setStep] = useState<"form" | "confirm" | "paying" | "success">("form");
   const [walletConnected, setWalletConnected] = useState(false);
   const [playerName, setPlayerName] = useState("");
   const [deckName, setDeckName] = useState(prefillDeck?.name || "");
@@ -206,23 +199,11 @@ function JoinModal({ onClose, onJoin, pot, prefillDeck }: { onClose: () => void;
   }, [prefillDeck]);
 
   async function handleJoin() {
-    if (!account) { alert("Please connect your Sui wallet first!"); return; }
+    if (!walletConnected) { alert("Please connect your Sui wallet first!"); return; }
     setStep("paying");
-    try {
-      const tx = new Transaction();
-      const [coin] = tx.splitCoins(tx.gas, [ENTRY_FEE]);
-      tx.moveCall({
-        target: `${PACKAGE_ID}::marketplace::join_tournament`,
-        arguments: [tx.object(TOURNAMENT_ID), coin],
-      });
-      const result = await signAndExecute({ transaction: tx });
-      console.log("TX:", result.digest);
-      setStep("success");
-      setTimeout(() => { onJoin(playerName, decklist, deckName); onClose(); }, 1500);
-    } catch (e) {
-      alert(e instanceof Error ? e.message : "Transaction failed.");
-      setStep("form");
-    }
+    await new Promise(r => setTimeout(r, 2000));
+    setStep("success");
+    setTimeout(() => { onJoin(playerName, decklist, deckName); onClose(); }, 2000);
   }
 
   return (
@@ -253,12 +234,12 @@ function JoinModal({ onClose, onJoin, pot, prefillDeck }: { onClose: () => void;
                 </div>
               ))}
             </div>
-            {account ? (
-              <div style={{ background: "rgba(0,85,255,0.1)", border: "1px solid rgba(0,85,255,0.2)", borderRadius: "8px", padding: "10px", fontSize: "12px", color: "#0099ff", textAlign: "center", marginBottom: "10px" }}>✅ {account.address.slice(0,8)}...{account.address.slice(-6)}</div>
+            {!walletConnected ? (
+              <button onClick={() => setWalletConnected(true)} style={{ width: "100%", background: "rgba(0,85,255,0.1)", border: "1px solid rgba(0,85,255,0.3)", borderRadius: "8px", padding: "12px", fontSize: "13px", color: "#00d4ff", cursor: "pointer", fontFamily: "DM Sans, sans-serif", marginBottom: "10px" }}>◈ Connect Sui Wallet</button>
             ) : (
-              <div style={{ background: "rgba(255,50,50,0.1)", border: "1px solid rgba(255,50,50,0.2)", borderRadius: "8px", padding: "10px", fontSize: "12px", color: "#ff6b6b", textAlign: "center", marginBottom: "10px" }}>⚠️ Connect your Sui wallet first</div>
+              <div style={{ background: "rgba(0,85,255,0.1)", border: "1px solid rgba(0,85,255,0.2)", borderRadius: "8px", padding: "10px", fontSize: "12px", color: "#0099ff", textAlign: "center", marginBottom: "10px" }}>✅ Wallet connected</div>
             )}
-            <button onClick={handleJoin} disabled={!account} style={{ width: "100%", background: account ? "linear-gradient(135deg, #0099ff, #00d4ff)" : "rgba(255,255,255,0.05)", color: account ? "#000008" : "#8899bb", border: "none", borderRadius: "8px", padding: "14px", fontSize: "14px", fontWeight: 600, cursor: account ? "pointer" : "not-allowed", fontFamily: "DM Sans, sans-serif" }}>
+            <button onClick={handleJoin} style={{ width: "100%", background: walletConnected ? "linear-gradient(135deg, #0099ff, #00d4ff)" : "rgba(255,255,255,0.05)", color: walletConnected ? "#000008" : "#8899bb", border: "none", borderRadius: "8px", padding: "14px", fontSize: "14px", fontWeight: 600, cursor: walletConnected ? "pointer" : "not-allowed", fontFamily: "DM Sans, sans-serif" }}>
               💰 Pay 10 SUI & Join
             </button>
             <p style={{ fontSize: "11px", color: "#8899bb", textAlign: "center", marginTop: "12px" }}>Payment held on-chain · Auto-distributed to winners</p>
@@ -303,7 +284,7 @@ export default function OPTCGHub() {
       .order("registered_at", { ascending: false });
     if (data) setRegistrations(data);
   }  const maxPlayers = 64;
-  const pot = players * ENTRY_FEE_SUI;
+  const pot = players * ENTRY_FEE;
 
   return (
     <div style={{ minHeight: "100vh", background: "#000008" }}>

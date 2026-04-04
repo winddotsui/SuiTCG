@@ -1,0 +1,10 @@
+[package]
+name = "wave_tcg"
+version = "0.0.1"
+edition = "2024.beta"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "testnet-v1.39.3" }
+
+[addresses]
+wave_tcg = "0x0"
