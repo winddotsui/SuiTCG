@@ -292,7 +292,7 @@ export default function OPTCGHub() {
       .select("*")
       .eq("tournament_id", "weekly-17")
       .order("registered_at", { ascending: false });
-    if (data) setRegistrations(data);
+    if (data) { setRegistrations(data); setPlayers(data.length); }
   }  const maxPlayers = 64;
   const pot = players * ENTRY_FEE_SUI;
 
