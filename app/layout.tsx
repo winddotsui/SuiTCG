@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }
         `}</style>
       </head>
-      <body style={{ position: "relative" }}>
+      <body style={{ position: "relative", background: "#000008", margin: 0, padding: 0 }}>
         <Providers>
           <nav style={{
             position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
