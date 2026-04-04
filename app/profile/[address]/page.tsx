@@ -97,7 +97,7 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
         .edit-btn:hover { background: rgba(255,255,255,0.08) !important; }
       `}</style>
 
-      <div style={{ height: "160px", background: "linear-gradient(135deg, #000520 0%, #001040 40%, #000d30 70%, #000008 100%)", position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(0,153,255,0.12)" }}>
+      <div style={{ height: "0px", background: "linear-gradient(135deg, #000520 0%, #001040 40%, #000d30 70%, #000008 100%)", position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(0,153,255,0.12)" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 30% 50%, rgba(0,80,255,0.15) 0%, transparent 60%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 80% 50%, rgba(0,180,255,0.08) 0%, transparent 50%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(0,153,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,153,255,0.04) 1px, transparent 1px)", backgroundSize: "40px 40px", pointerEvents: "none" }} />
@@ -105,7 +105,7 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
 
       <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "0 clamp(12px, 3vw, 24px)" }}>
 
-        <div style={{ display: "flex", gap: "20px", alignItems: "flex-end", marginTop: "-30px", marginBottom: "28px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "20px", alignItems: "flex-end", marginTop: "24px", marginBottom: "28px", flexWrap: "wrap" }}>
           <div style={{ position: "relative", flexShrink: 0 }}>
             <div style={{ width: "100px", height: "100px", borderRadius: "50%", background: "linear-gradient(135deg, #0055ff, #0099ff)", border: "4px solid #000008", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "36px", color: "#fff", overflow: "hidden", cursor: isOwner ? "pointer" : "default", boxShadow: "0 4px 20px rgba(0,0,0,0.8)" }}
               onClick={() => isOwner && document.getElementById("avatar-upload")?.click()}>
