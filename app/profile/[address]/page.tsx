@@ -105,7 +105,7 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
 
       <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "0 clamp(12px, 3vw, 24px)" }}>
 
-        <div style={{ display: "flex", gap: "20px", alignItems: "flex-end", marginTop: "-50px", marginBottom: "28px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "20px", alignItems: "flex-end", marginTop: "-30px", marginBottom: "28px", flexWrap: "wrap" }}>
           <div style={{ position: "relative", flexShrink: 0 }}>
             <div style={{ width: "100px", height: "100px", borderRadius: "50%", background: "linear-gradient(135deg, #0055ff, #0099ff)", border: "4px solid #000008", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "36px", color: "#fff", overflow: "hidden", cursor: isOwner ? "pointer" : "default", boxShadow: "0 4px 20px rgba(0,0,0,0.8)" }}
               onClick={() => isOwner && document.getElementById("avatar-upload")?.click()}>
