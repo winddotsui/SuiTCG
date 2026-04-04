@@ -279,7 +279,7 @@ export default function OPTCGHub() {
   const [activeTab, setActiveTab] = useState("tournament");
   const [showSimulator, setShowSimulator] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
-  const [players, setPlayers] = useState(8);
+  const [players, setPlayers] = useState(0);
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [prefillDeck, setPrefillDeck] = useState<{name: string, decklist: string, leader: string} | null>(null);
   useEffect(() => {
