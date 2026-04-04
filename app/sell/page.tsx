@@ -110,7 +110,7 @@ export default function Sell() {
         condition: form.condition,
         price_usd: parseFloat(form.price_usd),
         price_sui: parseFloat((parseFloat(form.price_usd) / 7.28).toFixed(2)),
-        quantity: parseInt(form.quantity) || 1,
+        
         description: form.description || null,
         image_url: imageUrl || null,
         seller_address: walletAddress,
