@@ -12,7 +12,7 @@ const links = [
   { href: "/sell", label: "Sell", icon: "💰" },
   { href: "/swap", label: "Swap", icon: "💱" },
   { href: "/alerts", label: "Alerts", icon: "🔔" },
-  { href: "/users", label: "Traders", icon: "👥" },
+  { href: "/users", label: "Collectors", icon: "👥" },
   { href: "/dashboard", label: "Dashboard", icon: "📊" },
   { href: "/profile/0x91fa18b29e0603c18005f61479dd47e50cb52c85ede36c6dc44d85bc147c77f5", label: "Profile", icon: "👤" },
 ];
