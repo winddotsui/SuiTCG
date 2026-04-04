@@ -8,16 +8,7 @@ const TOURNAMENT_ID = process.env.NEXT_PUBLIC_TOURNAMENT_ID || "";
 const ENTRY_FEE = BigInt("10000000000");
 const ENTRY_FEE_SUI = 10;
 
-const RANKINGS = [
-  { rank: 1, player: "LuffyKing_PH", wins: 47, losses: 8, points: 2350, deck: "OP01 - Luffy Red", badge: "👑", change: "+2" },
-  { rank: 2, player: "ZoroSlash", wins: 42, losses: 11, points: 2180, deck: "OP02 - Zoro Green", badge: "🥈", change: "+1" },
-  { rank: 3, player: "NamiNavigator", wins: 39, losses: 14, points: 2050, deck: "OP03 - Nami Blue", badge: "🥉", change: "-1" },
-  { rank: 4, player: "ShanksLegend", wins: 36, losses: 15, points: 1920, deck: "OP01 - Shanks Red", badge: "⭐", change: "+3" },
-  { rank: 5, player: "AceFire_PH", wins: 34, losses: 17, points: 1850, deck: "OP02 - Ace Purple", badge: "⭐", change: "0" },
-  { rank: 6, player: "RobinFlower", wins: 31, losses: 19, points: 1720, deck: "OP04 - Robin Black", badge: "⭐", change: "-2" },
-  { rank: 7, player: "ChopperDoc", wins: 28, losses: 22, points: 1580, deck: "OP01 - Chopper Green", badge: "⭐", change: "+1" },
-  { rank: 8, player: "FrankyShip", wins: 26, losses: 24, points: 1450, deck: "OP03 - Franky Blue", badge: "⭐", change: "+4" },
-];
+const RANKINGS: any[] = [];
 
 
 function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: number; maxPlayers: number }) {
@@ -426,7 +417,7 @@ export default function OPTCGHub() {
 
               <div style={{ marginTop: "20px", background: "#050515", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px" }}>
                 <div style={{ fontSize: "12px", color: "#c8d8f0", marginBottom: "12px", letterSpacing: "0.06em", textTransform: "uppercase" }}>Recent Registrations</div>
-                {["LuffyKing_PH", "ZoroSlash", "NamiNavigator", "ShanksLegend", "AceFire_PH"].map((p, i) => (
+                {[].map((p: any, i: number) => (
                   <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 0", borderBottom: i < 4 ? "1px solid rgba(255,255,255,0.04)" : "none" }}>
                     <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: "rgba(0,85,255,0.1)", border: "1px solid rgba(0,85,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: "#00d4ff", fontFamily: "Cinzel, serif" }}>{p[0]}</div>
                     <span style={{ fontSize: "13px", color: "#c8d8f0" }}>{p}</span>
@@ -495,7 +486,7 @@ export default function OPTCGHub() {
                   </div>
                 </div>
               )) : (
-                ["LuffyKing_PH", "ZoroSlash", "NamiNavigator", "ShanksLegend", "AceFire_PH", "RobinFlower", "ChopperDoc", "FrankyShip"].map((player, i) => (
+                [].map((player: any, i: number) => (
                   <div key={i} style={{ display: "grid", gridTemplateColumns: "60px 1fr 1fr 120px 140px", padding: "18px 24px", alignItems: "center", borderBottom: i < 7 ? "1px solid rgba(255,255,255,0.05)" : "none", transition: "background 0.15s" }}
                     onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#0a1628"}
                     onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = "transparent"}
