@@ -304,12 +304,23 @@ export default function OPTCGHub() {
         const parsed = e.parsedJson as any;
         return parsed?.tournament_id === TOURNAMENT;
       });
+      const wallets = filtered.map((e: any) => (e.parsedJson as any).participant);
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("wallet_address, username, avatar_url")
+        .in("wallet_address", wallets);
+      const profileMap: Record<string, any> = {};
+      (profiles || []).forEach((p: any) => { profileMap[p.wallet_address] = p; });
+
       const chainParticipants = filtered.map((e: any) => {
         const parsed = e.parsedJson as any;
+        const wallet = parsed.participant;
+        const profile = profileMap[wallet];
         return {
           id: e.id.txDigest,
-          player_name: parsed.participant.slice(0, 8) + "..." + parsed.participant.slice(-6),
-          wallet_address: parsed.participant,
+          player_name: profile?.username || (wallet.slice(0, 8) + "..." + wallet.slice(-6)),
+          avatar_url: profile?.avatar_url || null,
+          wallet_address: wallet,
           deck_name: "On-chain",
           status: "registered",
           registered_at: e.timestampMs,
