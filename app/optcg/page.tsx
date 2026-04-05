@@ -379,6 +379,9 @@ export default function OPTCGHub() {
           deck_name: deckName,
           status: "registered",
           tx_digest: txDigest || "",
+          points: 100,
+          wins: 0,
+          losses: 0,
         });
         fetchRegistrations();
       }} pot={pot} />}
