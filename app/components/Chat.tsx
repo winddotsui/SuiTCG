@@ -87,7 +87,7 @@ export default function Chat({ listingId, sellerAddress, cardName, onClose }: Ch
   const shortAddr = (addr: string) => addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : "";
 
   return (
-    <div style={{ position: "fixed", bottom: "20px", right: "20px", width: "340px", height: "460px", background: "#050515", border: "1px solid rgba(0,153,255,0.3)", borderRadius: "16px", display: "flex", flexDirection: "column", zIndex: 1000, boxShadow: "0 8px 40px rgba(0,0,0,0.6)" }}>
+    <div style={{ position: "fixed", bottom: "0px", right: "0px", width: "min(340px, 100vw)", height: "460px", background: "#050515", border: "1px solid rgba(0,153,255,0.3)", borderRadius: "16px", display: "flex", flexDirection: "column", zIndex: 1000, boxShadow: "0 8px 40px rgba(0,0,0,0.6)" }}>
       {/* Header */}
       <div style={{ padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", gap: "10px" }}>
         <div style={{ flex: 1 }}>
