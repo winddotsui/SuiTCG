@@ -179,7 +179,7 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
 }
 
 
-function JoinModal({ onClose, onJoin, pot, prefillDeck }: { onClose: () => void; onJoin: (name: string, deck: string, deckName: string) => void; pot: number; prefillDeck?: {name: string, decklist: string, leader: string} | null }) {
+function JoinModal({ onClose, onJoin, pot, prefillDeck }: { onClose: () => void; onJoin: (name: string, deck: string, deckName: string, txDigest?: string) => void; pot: number; prefillDeck?: {name: string, decklist: string, leader: string} | null }) {
   const account = useCurrentAccount();
   const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
   const [step, setStep] = useState<"form" | "confirm" | "paying" | "success">("confirm");
