@@ -185,12 +185,12 @@ export default function CardDetail({ params }: { params: Promise<{ id: string }>
                 border: "none", borderRadius: "8px", padding: "14px",
                 fontSize: "14px", fontWeight: 500, cursor: "pointer",
                 fontFamily: "DM Sans, sans-serif", letterSpacing: "0.05em", textTransform: "uppercase",
-              onClick: handleBuy, disabled: buying }}>{ buying ? "Processing..." : `Buy Now · $${card.price_usd?.toLocaleString()}` }</button>
+              }}  onClick={handleBuy} disabled={buying}>{ buying ? "Processing..." : `Buy Now · $${card.price_usd?.toLocaleString()}` }</button>
               <button style={{
                 background: "rgba(0,120,255,0.1)", color: "#4da8ff",
                 border: "1px solid rgba(0,120,255,0.3)", borderRadius: "8px", padding: "13px",
                 fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
-              onClick: handleBuy, disabled: buying }}>◈ Buy with {card.price_sui} SUI</button>
+              }} onClick={handleBuy} disabled={buying}>◈ Buy with {card.price_sui} SUI</button>
               <button style={{
                 background: "transparent", color: "#666680",
                 border: "1px solid rgba(255,255,255,0.12)", borderRadius: "8px", padding: "11px",
