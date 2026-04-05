@@ -320,6 +320,8 @@ function PlacementRow({ place, registrations, tournamentId, onUpdate }: { place:
 }
 
 export default function OPTCGHub() {
+  const hubAccount = useCurrentAccount();
+  const isAdmin = hubAccount?.address === ADMIN_WALLET;
   const [activeTab, setActiveTab] = useState("tournament");
   const [showSimulator, setShowSimulator] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
