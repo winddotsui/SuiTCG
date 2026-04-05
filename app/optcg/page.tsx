@@ -275,10 +275,53 @@ function JoinModal({ onClose, onJoin, pot, prefillDeck }: { onClose: () => void;
   );
 }
 
+
+function PlacementRow({ place, registrations, tournamentId, onUpdate }: { place: number; registrations: any[]; tournamentId: string; onUpdate: () => void }) {
+  const [selected, setSelected] = useState("");
+  const [saving, setSaving] = useState(false);
+  const placePoints = place === 1 ? 500 : place === 2 ? 300 : 200;
+  const placeLabel = place === 1 ? "🥇 1st" : place === 2 ? "🥈 2nd" : "🥉 3rd";
+
+  async function award() {
+    if (!selected) return;
+    setSaving(true);
+    await supabase.rpc("award_placement_points", {
+      p_wallet_address: selected,
+      p_placement: place,
+      p_tournament_id: tournamentId,
+    });
+    setSaving(false);
+    onUpdate();
+    alert(`${placeLabel} place awarded to ${selected.slice(0,8)}...`);
+  }
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <span style={{ fontSize: "14px", minWidth: "50px" }}>{placeLabel}</span>
+      <span style={{ fontSize: "11px", color: "#00d4ff", minWidth: "80px" }}>+{placePoints} pts</span>
+      <select value={selected} onChange={e => setSelected(e.target.value)}
+        style={{ flex: 1, background: "#0a1628", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "6px", padding: "6px 10px", fontSize: "12px", color: "#fff", fontFamily: "DM Sans, sans-serif" }}>
+        <option value="">Select player...</option>
+        {registrations.map(r => (
+          <option key={r.id} value={r.wallet_address}>
+            {r.player_name || r.wallet_address.slice(0,12)}
+          </option>
+        ))}
+      </select>
+      <button onClick={award} disabled={!selected || saving}
+        style={{ background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", border: "none", borderRadius: "6px", padding: "6px 14px", fontSize: "12px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
+        {saving ? "..." : "Award"}
+      </button>
+    </div>
+  );
+}
+
 export default function OPTCGHub() {
   const [activeTab, setActiveTab] = useState("tournament");
   const [showSimulator, setShowSimulator] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
+  const isAdmin = account?.address === ADMIN_WALLET;
   const [players, setPlayers] = useState(0);
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [prefillDeck, setPrefillDeck] = useState<{name: string, decklist: string, leader: string} | null>(null);
@@ -362,6 +405,26 @@ export default function OPTCGHub() {
               <a href="https://optcgsim.com" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", padding: "14px 40px", borderRadius: "8px", fontSize: "15px", fontWeight: 600, textDecoration: "none", boxShadow: "0 4px 24px rgba(0,85,255,0.3)" }}>🏴‍☠️ Launch OPTCGSim →</a>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Admin Panel */}
+      {isAdmin && (
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 24px 24px" }}>
+          <button onClick={() => setShowAdmin(!showAdmin)} style={{ background: "rgba(255,50,50,0.1)", color: "#ff6b6b", border: "1px solid rgba(255,50,50,0.2)", borderRadius: "8px", padding: "8px 16px", fontSize: "12px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
+            🔧 Admin Panel
+          </button>
+          {showAdmin && (
+            <div style={{ marginTop: "12px", background: "#050515", border: "1px solid rgba(255,50,50,0.2)", borderRadius: "12px", padding: "20px" }}>
+              <h3 style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ff6b6b", marginBottom: "16px" }}>🏆 Award Tournament Placements</h3>
+              <p style={{ fontSize: "12px", color: "#8899bb", marginBottom: "16px" }}>1st = +500pts, 2nd = +300pts, 3rd = +200pts (on top of 100 base points)</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {[1, 2, 3].map(place => (
+                  <PlacementRow key={place} place={place} registrations={registrations} tournamentId="weekly-18" onUpdate={fetchRegistrations} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
