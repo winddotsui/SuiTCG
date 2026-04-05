@@ -40,12 +40,7 @@ function MarketplaceContent() {
       const listingsJson = await listingsRes.json();
       const chainListings = listingsJson.listings || [];
 
-      // Also fetch from Supabase
-      const { data } = await supabase.from("listings").select("*").eq("status","active").order("created_at",{ascending:false});
-      const supaListings = (data || []).map((l: any) => ({ ...l, is_chain: false }));
-
-      const combined = [...chainListings, ...supaListings];
-      setListings(combined);
+      setListings(chainListings);
     } catch {
       setListings([]);
     }
