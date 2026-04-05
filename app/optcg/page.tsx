@@ -287,12 +287,35 @@ export default function OPTCGHub() {
   }, []);
 
   async function fetchRegistrations() {
-    const { data } = await supabase
-      .from("tournament_registrations")
-      .select("*")
-      .eq("tournament_id", "weekly-18")
-      .order("registered_at", { ascending: false });
-    if (data) { setRegistrations(data); setPlayers(data.length); }
+    try {
+      const { createSuiClient } = await import("@mysten/sui/client");
+      const client = createSuiClient({ url: "https://fullnode.testnet.sui.io:443" });
+      const events = await client.queryEvents({
+        query: { MoveEventType: `${process.env.NEXT_PUBLIC_CONTRACT_ID}::marketplace::TournamentJoined` },
+        limit: 100,
+        order: "descending",
+      });
+      const filtered = events.data.filter((e: any) => {
+        const parsed = e.parsedJson as any;
+        return parsed?.tournament_id === process.env.NEXT_PUBLIC_TOURNAMENT_ID;
+      });
+      const chainParticipants = filtered.map((e: any) => {
+        const parsed = e.parsedJson as any;
+        return {
+          id: e.id.txDigest,
+          player_name: parsed.participant.slice(0, 8) + "..." + parsed.participant.slice(-6),
+          wallet_address: parsed.participant,
+          deck_name: "On-chain",
+          status: "registered",
+          registered_at: e.timestampMs,
+          tx_digest: e.id.txDigest,
+        };
+      });
+      setRegistrations(chainParticipants);
+      setPlayers(chainParticipants.length);
+    } catch (err) {
+      console.error("Failed to fetch from chain:", err);
+    }
   }  const maxPlayers = 64;
   const pot = players * ENTRY_FEE_SUI;
 
