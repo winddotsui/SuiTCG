@@ -55,15 +55,21 @@ export default function Sell() {
     if (!imageFile) return form.image_url;
     setUploadingImage(true);
     try {
-      const { data, error } = await supabase.storage
-        .from("card-images")
-        .upload(`${Date.now()}-${imageFile.name}`, imageFile, { upsert: true });
-      if (error) throw error;
-      const { data: urlData } = supabase.storage.from("card-images").getPublicUrl(data.path);
+      const WALRUS_PUBLISHER = "https://publisher.walrus-testnet.walrus.space";
+      const WALRUS_AGGREGATOR = "https://aggregator.walrus-testnet.walrus.space";
+      const res = await fetch(`${WALRUS_PUBLISHER}/v1/blobs?epochs=10`, {
+        method: "PUT",
+        body: imageFile,
+        headers: { "Content-Type": imageFile.type },
+      });
+      if (!res.ok) throw new Error(`Walrus upload failed: ${res.status}`);
+      const json = await res.json();
+      const blobId = json.newlyCreated?.blobObject?.blobId || json.alreadyCertified?.blobId;
+      if (!blobId) throw new Error("No blobId returned from Walrus");
       setUploadingImage(false);
-      return urlData.publicUrl;
+      return `${WALRUS_AGGREGATOR}/v1/blobs/${blobId}`;
     } catch (e) {
-      console.error("Image upload failed:", e);
+      console.error("Walrus upload failed:", e);
       setUploadingImage(false);
       return form.image_url;
     }
