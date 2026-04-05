@@ -34,13 +34,13 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
   async function uploadAvatar(file: File) {
     setUploading(true);
     try {
-      const res = await fetch("https://publisher.walrus-testnet.walrus.space/v1/blobs?epochs=5", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_WALRUS_PUBLISHER || "https://publisher.walrus-testnet.walrus.space"}/v1/blobs?epochs=5`, {
         method: "PUT", body: file, headers: { "Content-Type": file.type },
       });
       const data = await res.json();
       const blobId = data.newlyCreated?.blobObject?.blobId || data.alreadyCertified?.blobId;
       if (blobId) {
-        const url = `https://aggregator.walrus-testnet.walrus.space/v1/blobs/${blobId}`;
+        const url = `${process.env.NEXT_PUBLIC_WALRUS_AGGREGATOR || "https://aggregator.walrus-testnet.walrus.space"}/v1/blobs/${blobId}`;
         setForm(prev => ({ ...prev, avatar_url: url }));
         await supabase.from("profiles").upsert({ wallet_address: address, avatar_url: url }, { onConflict: "wallet_address" });
         await fetchProfile();

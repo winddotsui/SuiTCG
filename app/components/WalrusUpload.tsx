@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 
-const WALRUS_PUBLISHER = "https://publisher.walrus-testnet.walrus.space";
-const WALRUS_AGGREGATOR = "https://aggregator.walrus-testnet.walrus.space";
+const WALRUS_PUBLISHER = process.env.NEXT_PUBLIC_WALRUS_PUBLISHER || "https://publisher.walrus-testnet.walrus.space";
+const WALRUS_AGGREGATOR = process.env.NEXT_PUBLIC_WALRUS_AGGREGATOR || "https://aggregator.walrus-testnet.walrus.space";
 
 export default function WalrusUpload({ onUpload }: { onUpload: (url: string) => void }) {
   const [uploading, setUploading] = useState(false);

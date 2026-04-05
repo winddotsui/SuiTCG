@@ -44,7 +44,7 @@ export async function POST(request: Request) {
             ${data.shipping_notes ? `<p style="color: #ffcc00; margin: 8px 0;">📝 Notes: ${data.shipping_notes}</p>` : ''}
           </div>
 
-          <a href="https://wave-tcg.vercel.app/orders" style="display: inline-block; background: linear-gradient(135deg, #0055ff, #0099ff); color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">View Order →</a>
+          <a href="https://www.wavetcgmarket.com/orders" style="display: inline-block; background: linear-gradient(135deg, #0055ff, #0099ff); color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">View Order →</a>
           
           <p style="color: #444460; font-size: 12px; margin-top: 24px;">WaveTCG · Powered by Sui Blockchain</p>
         </div>
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
             <p style="color: #8899bb;">From: <span style="color: #fff;">${data.sender?.slice(0, 8)}...${data.sender?.slice(-6)}</span></p>
             <p style="color: #ffffff; font-size: 16px; margin-top: 12px;">"${data.message}"</p>
           </div>
-          <a href="https://wave-tcg.vercel.app/marketplace" style="display: inline-block; background: linear-gradient(135deg, #0055ff, #0099ff); color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">Reply →</a>
+          <a href="https://www.wavetcgmarket.com/marketplace" style="display: inline-block; background: linear-gradient(135deg, #0055ff, #0099ff); color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">Reply →</a>
           <p style="color: #444460; font-size: 12px; margin-top: 24px;">WaveTCG · Powered by Sui Blockchain</p>
         </div>
       `;
@@ -73,7 +73,7 @@ export async function POST(request: Request) {
             <p style="color: #8899bb;">Offer: <span style="color: #00d4ff; font-size: 20px; font-weight: bold;">${data.offer_sui} SUI</span></p>
             <p style="color: #8899bb;">From: <span style="color: #fff;">${data.buyer?.slice(0, 8)}...${data.buyer?.slice(-6)}</span></p>
           </div>
-          <a href="https://wave-tcg.vercel.app/marketplace" style="display: inline-block; background: linear-gradient(135deg, #0055ff, #0099ff); color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">View Offer →</a>
+          <a href="https://www.wavetcgmarket.com/marketplace" style="display: inline-block; background: linear-gradient(135deg, #0055ff, #0099ff); color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">View Offer →</a>
           <p style="color: #444460; font-size: 12px; margin-top: 24px;">WaveTCG · Powered by Sui Blockchain</p>
         </div>
       `;

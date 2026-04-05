@@ -17,10 +17,13 @@ const wagmiConfig = getDefaultConfig({
   ssr: true,
 });
 
+const suiNetwork = (process.env.NEXT_PUBLIC_SUI_NETWORK || "testnet") as "testnet" | "mainnet";
+const suiRpc = process.env.NEXT_PUBLIC_SUI_RPC || "https://fullnode.testnet.sui.io:443";
+
 const suiNetworks = {
-  testnet: {
-    url: "https://fullnode.testnet.sui.io:443",
-    network: "testnet" as const,
+  [suiNetwork]: {
+    url: suiRpc,
+    network: suiNetwork,
   },
 };
 
@@ -39,7 +42,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <WagmiProvider config={wagmiConfig}>
         <RainbowKitProvider>
-          <SuiClientProvider networks={suiNetworks} defaultNetwork="testnet">
+          <SuiClientProvider networks={suiNetworks} defaultNetwork={suiNetwork}>
             <WalletProvider autoConnect>
               {children}
             </WalletProvider>

@@ -3,7 +3,7 @@ import { rateLimit, getIP } from "../../../lib/rateLimit";
 
 const CONTRACT_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
 const USD_PER_SUI = 3.5;
-const RPC = "https://fullnode.testnet.sui.io:443";
+const RPC = process.env.NEXT_PUBLIC_SUI_RPC || "https://fullnode.testnet.sui.io:443";
 
 async function rpc(method: string, params: any[]) {
   const res = await fetch(RPC, {

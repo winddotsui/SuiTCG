@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 const CONTRACT_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
-const RPC = "https://fullnode.testnet.sui.io:443";
+const RPC = process.env.NEXT_PUBLIC_SUI_RPC || "https://fullnode.testnet.sui.io:443";
 
 async function rpc(method: string, params: any[]) {
   const res = await fetch(RPC, {

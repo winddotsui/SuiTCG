@@ -22,7 +22,7 @@ export default function ZkLogin() {
       const zklogin = await import("@mysten/zklogin");
       const { Ed25519Keypair } = await import("@mysten/sui/keypairs/ed25519");
 
-      const res = await fetch("https://fullnode.testnet.sui.io:443", {
+      const res = await fetch(process.env.NEXT_PUBLIC_SUI_RPC || "https://fullnode.testnet.sui.io:443", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "suix_getLatestSuiSystemState", params: [] }),

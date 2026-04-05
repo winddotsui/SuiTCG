@@ -133,7 +133,7 @@ function OrdersContent() {
 
                     {/* Tx link */}
                     {order.tx_digest && (
-                      <a href={`https://suiexplorer.com/txblock/${order.tx_digest}?network=testnet`} target="_blank" rel="noopener noreferrer"
+                      <a href={`https://suiexplorer.com/txblock/${order.tx_digest}?network=${process.env.NEXT_PUBLIC_SUI_NETWORK || "testnet"}`} target="_blank" rel="noopener noreferrer"
                         style={{ fontSize: "11px", color: "#0099ff", display: "block", marginBottom: "12px" }}>
                         View Transaction ↗
                       </a>

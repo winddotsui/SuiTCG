@@ -386,7 +386,7 @@ function OPTCGHubInner({ isAdmin, walletAddress }: { isAdmin: boolean; walletAdd
     try {
       const PACKAGE = process.env.NEXT_PUBLIC_CONTRACT_ID;
       const TOURNAMENT = process.env.NEXT_PUBLIC_TOURNAMENT_ID;
-      const res = await fetch("https://fullnode.testnet.sui.io:443", {
+      const res = await fetch(process.env.NEXT_PUBLIC_SUI_RPC || "https://fullnode.testnet.sui.io:443", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

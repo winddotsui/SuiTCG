@@ -20,7 +20,7 @@ const STEPS_WIN = [
 ];
 
 const TOURNAMENT_STEPS = [
-  { step: "1", title: "Connect Your Sui Wallet", desc: "Go to wave-tcg.vercel.app and click Connect. You need a Sui wallet with at least 10 SUI.", icon: "◈", color: "#00d4ff" },
+  { step: "1", title: "Connect Your Sui Wallet", desc: "Go to www.wavetcgmarket.com and click Connect. You need a Sui wallet with at least 10 SUI.", icon: "◈", color: "#00d4ff" },
   { step: "2", title: "Go to OPTCG Hub", desc: "Click OPTCG in the navbar to see the current tournament and prize pool.", icon: "🏴", color: "#00d4ff" },
   { step: "3", title: "Pay 10 SUI Entry Fee", desc: "Click Join for 10 SUI. Your wallet will ask you to confirm. The SUI goes into the prize pool smart contract.", icon: "💰", color: "#00d4ff" },
   { step: "4", title: "Minimum 8 Players Required", desc: "Tournament starts when at least 8 players register. Maximum 64 players. Register early!", icon: "👥", color: "#00d4ff" },

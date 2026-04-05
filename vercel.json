@@ -30,7 +30,7 @@
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
-          "value": "https://wave-tcg.vercel.app"
+          "value": "https://www.wavetcgmarket.com"
         },
         {
           "key": "Access-Control-Allow-Methods",
