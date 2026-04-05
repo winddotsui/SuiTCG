@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, use } from "react";
 import { supabase } from "../../../lib/supabase";
+import Chat from "../../components/Chat";
 import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 
@@ -29,6 +30,7 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const [offerAmount, setOfferAmount] = useState("");
   const [showOfferInput, setShowOfferInput] = useState(false);
   const [showShippingForm, setShowShippingForm] = useState(false);
+  const [showChat, setShowChat] = useState(false);
   const [shipping, setShipping] = useState({ name: "", email: "", phone: "", address: "", city: "", province: "", country: "Philippines", zip: "", notes: "" });
   const isSeller = account?.address === card?.seller_address;
 
@@ -315,6 +317,15 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
                     border: "1px solid rgba(0,120,255,0.3)", borderRadius: "8px", padding: "13px",
                     fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
                   }} onClick={handleBuy} disabled={buying}>◈ Buy with {card.price_sui} SUI</button>
+                  {/* Chat with seller button */}
+                  {!isSeller && (
+                    <button onClick={() => setShowChat(true)} style={{
+                      background: "transparent", color: "#00d4ff",
+                      border: "1px solid rgba(0,212,255,0.3)", borderRadius: "8px", padding: "11px",
+                      fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
+                    }}>💬 Chat with Seller</button>
+                  )}
+
                   {showOfferInput ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                       <div style={{ display: "flex", gap: "8px" }}>
@@ -345,6 +356,16 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
           </div>
         </div>
       </div>
+      {/* Chat */}
+      {showChat && card && (
+        <Chat
+          listingId={card.id}
+          sellerAddress={card.seller_address}
+          cardName={card.name}
+          onClose={() => setShowChat(false)}
+        />
+      )}
+
       {/* Shipping Form Modal */}
       {showShippingForm && (
         <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
