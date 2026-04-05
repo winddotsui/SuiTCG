@@ -1,6 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useCurrentAccount, ConnectButton } from "@mysten/dapp-kit";
+
+const CONTRACT_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
+const REGISTRY_ID = process.env.NEXT_PUBLIC_REGISTRY_ID || "";
+import { useCurrentAccount, ConnectButton, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { Transaction } from "@mysten/sui/transactions";
 import { supabase } from "../../lib/supabase";
 
 const GAMES = ["One Piece TCG", "Pokémon TCG", "Magic: The Gathering", "Yu-Gi-Oh!", "Flesh & Blood", "Digimon", "Lorcana", "Dragon Ball", "Weiss Schwarz", "Union Arena"];
@@ -13,6 +17,7 @@ const labelStyle = { display: "block", fontSize: "11px", letterSpacing: "0.08em"
 
 function SellContent() {
   const currentAccount = useCurrentAccount();
+  const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -110,6 +115,25 @@ function SellContent() {
     setLoading(true); setError("");
     try {
       const imageUrl = await uploadImage();
+
+      // On-chain listing transaction
+      const priceSui = parseFloat((parseFloat(form.price_usd) / 3.5).toFixed(4));
+      const priceMist = BigInt(Math.round(priceSui * 1_000_000_000));
+      const tx = new Transaction();
+      tx.moveCall({
+        target: `${CONTRACT_ID}::marketplace::create_listing`,
+        arguments: [
+          tx.object(REGISTRY_ID),
+          tx.pure.string(form.name.trim()),
+          tx.pure.string(form.game),
+          tx.pure.string(form.condition),
+          tx.pure.u64(priceMist),
+          tx.pure.string(imageUrl || ""),
+        ],
+      });
+      const result = await signAndExecute({ transaction: tx });
+      console.log("On-chain listing TX:", result.digest);
+
       const payload = {
         name: form.name.trim(),
         game: form.game,
