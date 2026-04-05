@@ -80,7 +80,7 @@ export async function POST(request: Request) {
     }
 
     const { data: emailData, error } = await resend.emails.send({
-      from: "WaveTCG <onboarding@resend.dev>",
+      from: "WaveTCG <noreply@wavetcgmarket.com>",
       to: [to],
       subject,
       html,
