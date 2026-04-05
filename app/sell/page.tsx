@@ -406,5 +406,5 @@ export default function Sell() {
     setMounted(true);
   }, []);
   if (!mounted) return null;
-  return <SellInner />;
+  return <SellContent />;
 }
