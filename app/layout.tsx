@@ -5,8 +5,50 @@ import NavClient from "./components/NavClient";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
-  title: "WaveTCG — TCG Marketplace",
-  description: "Buy, sell and trade TCG cards on any blockchain.",
+  title: "WaveTCG — Web3 TCG Marketplace on Sui",
+  description: "Buy, sell and trade One Piece TCG, Pokémon, Magic: The Gathering, Yu-Gi-Oh! and more on Sui blockchain. Free listings, 1% fee, instant on-chain settlement.",
+  keywords: ["TCG marketplace", "One Piece TCG", "Pokemon TCG", "Magic The Gathering", "Yu-Gi-Oh", "Sui blockchain", "Web3 trading cards", "NFT cards", "WaveTCG"],
+  authors: [{ name: "WaveTCG" }],
+  creator: "WaveTCG",
+  publisher: "WaveTCG",
+  metadataBase: new URL("https://www.wavetcgmarket.com"),
+  alternates: {
+    canonical: "https://www.wavetcgmarket.com",
+  },
+  openGraph: {
+    title: "WaveTCG — Web3 TCG Marketplace on Sui",
+    description: "Buy, sell and trade One Piece TCG, Pokémon, Magic and more on Sui blockchain. Free listings, 1% fee only on sale.",
+    url: "https://www.wavetcgmarket.com",
+    siteName: "WaveTCG",
+    images: [
+      {
+        url: "https://www.wavetcgmarket.com/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "WaveTCG — Web3 TCG Marketplace",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WaveTCG — Web3 TCG Marketplace on Sui",
+    description: "Buy, sell and trade One Piece TCG, Pokémon, Magic and more on Sui blockchain.",
+    images: ["https://www.wavetcgmarket.com/og-image.png"],
+    creator: "@wavetcg",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export const viewport: Viewport = {
