@@ -60,9 +60,11 @@ function MarketplaceContent() {
           });
           const txJson = await txRes.json();
           const changes = txJson.result?.objectChanges || [];
+          console.log("changes:", JSON.stringify(changes));
           const listing = changes.find((c: any) =>
-            c.type === "created" && c.objectType?.includes("::marketplace::Listing")
+            c.type === "created" && c.objectType?.includes("Listing")
           );
+          console.log("listing found:", listing?.objectId);
           if (listing) objectIdMap[e.id.txDigest] = listing.objectId;
         } catch {}
       }));
