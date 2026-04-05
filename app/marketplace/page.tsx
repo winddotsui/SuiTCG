@@ -54,11 +54,33 @@ function MarketplaceContent() {
         })
       });
       const json = await res.json();
+      // Fetch listing object IDs from chain
+      const txDigests = (json.result?.data || []).map((e: any) => e.id.txDigest);
+      const objectIds: Record<string, string> = {};
+      for (const digest of txDigests) {
+        try {
+          const txRes = await fetch("https://fullnode.testnet.sui.io:443", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              jsonrpc: "2.0", id: 1, method: "sui_getTransactionBlock",
+              params: [digest, { showObjectChanges: true }]
+            })
+          });
+          const txJson = await txRes.json();
+          const changes = txJson.result?.objectChanges || [];
+          const listingObj = changes.find((c: any) =>
+            c.type === "created" && c.objectType?.includes("::marketplace::Listing")
+          );
+          if (listingObj) objectIds[digest] = listingObj.objectId;
+        } catch {}
+      }
+
       const chainListings = (json.result?.data || []).map((e: any) => {
         const p = e.parsedJson;
         return {
           id: e.id.txDigest,
-          listing_object_id: null,
+          listing_object_id: objectIds[e.id.txDigest] || null,
           name: p.card_name,
           game: p.game,
           condition: p.condition || "NM",
