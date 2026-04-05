@@ -26,7 +26,33 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
 
   const [newPrice, setNewPrice] = useState("");
+  const [offerAmount, setOfferAmount] = useState("");
+  const [showOfferInput, setShowOfferInput] = useState(false);
   const isSeller = account?.address === card?.seller_address;
+
+  async function handleOffer() {
+    if (!account) { alert("Connect your Sui wallet first!"); return; }
+    if (!card?.listing_object_id) { alert("Cannot make offer on this listing yet."); return; }
+    const sui = parseFloat(offerAmount);
+    if (isNaN(sui) || sui <= 0) { alert("Enter a valid offer amount in SUI."); return; }
+    setBuying(true);
+    try {
+      const offerMist = BigInt(Math.round(sui * 1_000_000_000));
+      const tx = new Transaction();
+      const [coin] = tx.splitCoins(tx.gas, [offerMist]);
+      tx.moveCall({
+        target: `${CONTRACT_ID}::marketplace::make_offer`,
+        arguments: [tx.object(card.listing_object_id), coin],
+      });
+      const result = await signAndExecute({ transaction: tx });
+      alert("Offer sent! TX: " + result.digest);
+      setShowOfferInput(false);
+      setOfferAmount("");
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Offer failed.");
+    }
+    setBuying(false);
+  }
 
   async function handleBuy() {
     if (!account) { alert("Connect your Sui wallet first!"); return; }
@@ -255,11 +281,30 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
                     border: "1px solid rgba(0,120,255,0.3)", borderRadius: "8px", padding: "13px",
                     fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
                   }} onClick={handleBuy} disabled={buying}>◈ Buy with {card.price_sui} SUI</button>
-                  <button style={{
-                    background: "transparent", color: "#666680",
-                    border: "1px solid rgba(255,255,255,0.12)", borderRadius: "8px", padding: "11px",
-                    fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
-                  }}>Make an Offer</button>
+                  {showOfferInput ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <input
+                          value={offerAmount}
+                          onChange={e => setOfferAmount(e.target.value)}
+                          placeholder="Offer amount in SUI"
+                          type="number"
+                          min="0"
+                          style={{ flex: 1, background: "#0a1628", border: "1px solid rgba(0,120,255,0.3)", borderRadius: "8px", padding: "10px 12px", fontSize: "13px", color: "#fff", fontFamily: "DM Sans, sans-serif" }}
+                        />
+                        <button onClick={handleOffer} disabled={buying} style={{ background: "linear-gradient(135deg, #0050ff, #0078ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "10px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
+                          {buying ? "..." : "Send"}
+                        </button>
+                      </div>
+                      <button onClick={() => setShowOfferInput(false)} style={{ background: "transparent", color: "#666680", border: "none", fontSize: "12px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Cancel</button>
+                    </div>
+                  ) : (
+                    <button onClick={() => setShowOfferInput(true)} style={{
+                      background: "transparent", color: "#666680",
+                      border: "1px solid rgba(255,255,255,0.12)", borderRadius: "8px", padding: "11px",
+                      fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
+                    }}>Make an Offer</button>
+                  )}
                 </>
               )}
             </div>
