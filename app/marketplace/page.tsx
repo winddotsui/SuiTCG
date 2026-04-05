@@ -13,17 +13,7 @@ const GAME_ICONS: Record<string, string> = {
   "Dragon Ball": "🐉", "Lorcana": "🌟",
 };
 
-const MOCK_CARDS = [
-  { id:"m1", name:"Supreme Verdict", game:"Magic: The Gathering", set_name:"Return to Ravnica", condition:"NM", price_usd:10, price_sui:1.37, image_url:"", art:"✨", bg:"#0a0a1a" },
-  { id:"m2", name:"Fatal Push", game:"Magic: The Gathering", set_name:"Aether Revolt", condition:"NM", price_usd:20, price_sui:2.75, image_url:"", art:"✨", bg:"#0a0a1a" },
-  { id:"m3", name:"Pikachu V", game:"Pokemon TCG", set_name:"PSA 10", condition:"NM", price_usd:5, price_sui:0.69, image_url:"", art:"⚡", bg:"#1a1400" },
-  { id:"m4", name:"Charizard EX", game:"Pokemon TCG", set_name:"PSA 10", condition:"NM", price_usd:295, price_sui:40.5, image_url:"", art:"🔥", bg:"#1a0808" },
-  { id:"m5", name:"Monkey D. Luffy", game:"One Piece TCG", set_name:"OP01", condition:"NM", price_usd:45, price_sui:6.2, image_url:"https://en.onepiece-cardgame.com/images/cardlist/card/OP01-003.png", art:"🏴‍☠️", bg:"#0a0818" },
-  { id:"m6", name:"Dark Magician", game:"Yu-Gi-Oh!", set_name:"LOB", condition:"LP", price_usd:15, price_sui:2.1, image_url:"", art:"👁️", bg:"#0a0818" },
-  { id:"m7", name:"Black Lotus", game:"Magic: The Gathering", set_name:"Alpha", condition:"HP", price_usd:4200, price_sui:577, image_url:"", art:"✨", bg:"#0a0a1a" },
-  { id:"m8", name:"Roronoa Zoro", game:"One Piece TCG", set_name:"OP01", condition:"NM", price_usd:38, price_sui:5.2, image_url:"https://en.onepiece-cardgame.com/images/cardlist/card/OP01-001.png", art:"🏴‍☠️", bg:"#0a0818" },
-  { id:"m9", name:"Umbreon VMAX", game:"Pokemon TCG", set_name:"Brilliant Stars", condition:"NM", price_usd:220, price_sui:30.2, image_url:"", art:"⚡", bg:"#1a1400" },
-];
+const MOCK_CARDS: any[] = [];
 
 const GAMES = ["all","One Piece TCG","Pokemon TCG","Magic: The Gathering","Yu-Gi-Oh!","Flesh & Blood","Dragon Ball","Lorcana","Digimon"];
 
@@ -98,9 +88,9 @@ function MarketplaceContent() {
       const supaListings = (data || []).map((l: any) => ({ ...l, is_chain: false }));
 
       const combined = [...chainListings, ...supaListings];
-      setListings(combined.length > 0 ? [...combined, ...MOCK_CARDS] : MOCK_CARDS);
+      setListings(combined);
     } catch {
-      setListings(MOCK_CARDS);
+      setListings([]);
     }
     setLoading(false);
   }
