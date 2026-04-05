@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
-import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 const PACKAGE_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
 const TOURNAMENT_ID = process.env.NEXT_PUBLIC_TOURNAMENT_ID || "";
@@ -276,7 +276,6 @@ function JoinModal({ onClose, onJoin, pot, prefillDeck }: { onClose: () => void;
 }
 
 export default function OPTCGHub() {
-  const suiClient = useSuiClient();
   const [activeTab, setActiveTab] = useState("tournament");
   const [showSimulator, setShowSimulator] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
@@ -289,14 +288,21 @@ export default function OPTCGHub() {
 
   async function fetchRegistrations() {
     try {
-      const events = await suiClient.queryEvents({
-        query: { MoveEventType: `${process.env.NEXT_PUBLIC_CONTRACT_ID}::marketplace::TournamentJoined` },
-        limit: 100,
-        order: "descending",
+      const PACKAGE = process.env.NEXT_PUBLIC_CONTRACT_ID;
+      const TOURNAMENT = process.env.NEXT_PUBLIC_TOURNAMENT_ID;
+      const res = await fetch("https://fullnode.testnet.sui.io:443", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
+          params: [{ MoveEventType: `${PACKAGE}::marketplace::TournamentJoined` }, null, 100, true]
+        })
       });
-      const filtered = events.data.filter((e: any) => {
+      const json = await res.json();
+      const events = json.result?.data || [];
+      const filtered = events.filter((e: any) => {
         const parsed = e.parsedJson as any;
-        return parsed?.tournament_id === process.env.NEXT_PUBLIC_TOURNAMENT_ID;
+        return parsed?.tournament_id === TOURNAMENT;
       });
       const chainParticipants = filtered.map((e: any) => {
         const parsed = e.parsedJson as any;
