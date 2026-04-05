@@ -323,6 +323,8 @@ function OPTCGHubInner({ isAdmin }: { isAdmin: boolean }) {
   const [activeTab, setActiveTab] = useState("tournament");
   const [showSimulator, setShowSimulator] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
+  const [bracketData, setBracketData] = useState<any>(null);
+  const [bracketLoading, setBracketLoading] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [players, setPlayers] = useState(0);
   const [registrations, setRegistrations] = useState<any[]>([]);
@@ -330,6 +332,55 @@ function OPTCGHubInner({ isAdmin }: { isAdmin: boolean }) {
   useEffect(() => {
     fetchRegistrations();
   }, []);
+
+  async function fetchBracket() {
+    setBracketLoading(true);
+    try {
+      const res = await fetch("/api/tournament");
+      const json = await res.json();
+      setBracketData(json);
+    } catch {}
+    setBracketLoading(false);
+  }
+
+  async function startTournament() {
+    if (!confirm("Start tournament and generate Round 1 pairings?")) return;
+    const res = await fetch("/api/tournament", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "start" }),
+    });
+    const json = await res.json();
+    if (json.success) { alert("Round 1 pairings generated!"); fetchBracket(); fetchRegistrations(); }
+    else alert(json.error || "Failed to start tournament");
+  }
+
+  async function nextRound() {
+    if (!confirm("Generate next round pairings?")) return;
+    const res = await fetch("/api/tournament", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "next_round" }),
+    });
+    const json = await res.json();
+    if (json.success) { alert(`Round ${json.round} pairings generated!`); fetchBracket(); }
+    else alert(json.error || "Failed");
+  }
+
+  async function reportResult(matchId: string, winnerWallet: string, p1Score: number, p2Score: number) {
+    const myAddr = account?.address || "";
+    const res = await fetch("/api/tournament", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "report_result",
+        data: { match_id: matchId, winner_wallet: winnerWallet, player1_score: p1Score, player2_score: p2Score, reporter: myAddr }
+      }),
+    });
+    const json = await res.json();
+    if (json.success) { alert("Result reported!"); fetchBracket(); }
+    else alert("Failed to report result");
+  }
 
   async function fetchRegistrations() {
     try {
@@ -457,6 +508,7 @@ function OPTCGHubInner({ isAdmin }: { isAdmin: boolean }) {
             { id: "tournament", label: "💰 Weekly Tournament" },
             { id: "participants", label: "👥 Participants" },
             { id: "rankings", label: "🏆 Rankings" },
+            { id: "bracket", label: "⚔️ Bracket" },
             { id: "howtoplay", label: "📖 How to Play" },
           ].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ padding: "12px 24px", background: "transparent", border: "none", borderBottom: activeTab === tab.id ? "2px solid #0099ff" : "2px solid transparent", color: activeTab === tab.id ? "#00d4ff" : "#c8d8f0", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", marginBottom: "-1px" }}>{tab.label}</button>
@@ -658,6 +710,132 @@ function OPTCGHubInner({ isAdmin }: { isAdmin: boolean }) {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+
+        {activeTab === "bracket" && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
+              <div>
+                <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "24px", color: "#ffffff", marginBottom: "4px" }}>⚔️ Tournament Bracket</h2>
+                <p style={{ fontSize: "13px", color: "#c8d8f0" }}>Swiss format · {bracketData?.state?.total_rounds || 4} rounds</p>
+              </div>
+              {isAdmin && (
+                <div style={{ display: "flex", gap: "8px" }}>
+                  {!bracketData?.state || bracketData?.state?.status === "registration" ? (
+                    <button onClick={startTournament} style={{ background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "10px 20px", fontSize: "13px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
+                      🚀 Start Tournament
+                    </button>
+                  ) : (
+                    <button onClick={nextRound} style={{ background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "10px 20px", fontSize: "13px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
+                      ➡️ Next Round
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {bracketLoading ? (
+              <div style={{ textAlign: "center", padding: "40px", color: "#0099ff" }}>Loading...</div>
+            ) : !bracketData?.matches?.length ? (
+              <div style={{ textAlign: "center", padding: "60px", color: "#8899bb" }}>
+                <div style={{ fontSize: "48px", marginBottom: "12px" }}>⚔️</div>
+                <p>Tournament hasn't started yet.</p>
+                {isAdmin && <p style={{ fontSize: "12px", marginTop: "8px", color: "#444460" }}>Click "Start Tournament" to generate pairings.</p>}
+              </div>
+            ) : (
+              <div>
+                {/* Group matches by round */}
+                {Array.from(new Set(bracketData.matches.map((m: any) => m.round))).map((round: any) => {
+                  const roundMatches = bracketData.matches.filter((m: any) => m.round === round);
+                  return (
+                    <div key={round} style={{ marginBottom: "32px" }}>
+                      <h3 style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#00d4ff", marginBottom: "16px" }}>Round {round}</h3>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                        {roundMatches.map((match: any) => {
+                          const myWallet = account?.address;
+                          const isMyMatch = match.player1_wallet === myWallet || match.player2_wallet === myWallet;
+                          const p1 = bracketData.standings?.find((s: any) => s.wallet_address === match.player1_wallet);
+                          const p2 = bracketData.standings?.find((s: any) => s.wallet_address === match.player2_wallet);
+
+                          return (
+                            <div key={match.id} style={{ background: isMyMatch ? "rgba(0,153,255,0.08)" : "#050515", border: `1px solid ${isMyMatch ? "rgba(0,153,255,0.3)" : "rgba(255,255,255,0.06)"}`, borderRadius: "12px", padding: "16px" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                                {/* Player 1 */}
+                                <div style={{ flex: 1, textAlign: "right" }}>
+                                  <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: match.winner_wallet === match.player1_wallet ? "#00ff88" : "#fff" }}>
+                                    {p1?.player_name || match.player1_wallet?.slice(0, 8) + "..."}
+                                  </div>
+                                  <div style={{ fontSize: "11px", color: "#8899bb" }}>{p1?.match_wins || 0}W</div>
+                                </div>
+
+                                {/* Score */}
+                                <div style={{ textAlign: "center", minWidth: "60px" }}>
+                                  {match.status === "completed" ? (
+                                    <div style={{ fontSize: "18px", fontWeight: 700, color: "#0099ff" }}>
+                                      {match.player1_score} - {match.player2_score}
+                                    </div>
+                                  ) : match.status === "bye" ? (
+                                    <div style={{ fontSize: "12px", color: "#8899bb" }}>BYE</div>
+                                  ) : (
+                                    <div style={{ fontSize: "12px", color: "#444460" }}>vs</div>
+                                  )}
+                                </div>
+
+                                {/* Player 2 */}
+                                <div style={{ flex: 1 }}>
+                                  {match.player2_wallet ? (
+                                    <>
+                                      <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: match.winner_wallet === match.player2_wallet ? "#00ff88" : "#fff" }}>
+                                        {p2?.player_name || match.player2_wallet?.slice(0, 8) + "..."}
+                                      </div>
+                                      <div style={{ fontSize: "11px", color: "#8899bb" }}>{p2?.match_wins || 0}W</div>
+                                    </>
+                                  ) : (
+                                    <div style={{ fontSize: "13px", color: "#8899bb" }}>BYE</div>
+                                  )}
+                                </div>
+
+                                {/* Report Result */}
+                                {isMyMatch && match.status === "pending" && match.player2_wallet && (
+                                  <div style={{ display: "flex", gap: "6px" }}>
+                                    <button onClick={() => reportResult(match.id, match.player1_wallet, 2, 0)}
+                                      style={{ background: "rgba(0,255,136,0.1)", color: "#00ff88", border: "1px solid rgba(0,255,136,0.2)", borderRadius: "6px", padding: "6px 10px", fontSize: "11px", cursor: "pointer" }}>
+                                      {match.player1_wallet === myWallet ? "I Won" : "They Won (P1)"}
+                                    </button>
+                                    <button onClick={() => reportResult(match.id, match.player2_wallet, 0, 2)}
+                                      style={{ background: "rgba(0,255,136,0.1)", color: "#00ff88", border: "1px solid rgba(0,255,136,0.2)", borderRadius: "6px", padding: "6px 10px", fontSize: "11px", cursor: "pointer" }}>
+                                      {match.player2_wallet === myWallet ? "I Won" : "They Won (P2)"}
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {/* Standings */}
+                {bracketData.standings?.length > 0 && (
+                  <div style={{ marginTop: "32px" }}>
+                    <h3 style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#00d4ff", marginBottom: "16px" }}>📊 Current Standings</h3>
+                    <div style={{ background: "#050515", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", overflow: "hidden" }}>
+                      {bracketData.standings.map((player: any, i: number) => (
+                        <div key={player.wallet_address} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", borderBottom: i < bracketData.standings.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
+                          <div style={{ width: "28px", fontFamily: "Cinzel, serif", fontSize: "13px", color: "#8899bb" }}>#{i+1}</div>
+                          <div style={{ flex: 1, fontSize: "13px", color: "#fff" }}>{player.player_name || player.wallet_address?.slice(0,8) + "..."}</div>
+                          <div style={{ fontSize: "13px", color: "#00d4ff", fontWeight: 700 }}>{player.match_wins}W</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
