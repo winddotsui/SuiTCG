@@ -59,9 +59,19 @@ export default function Chat({ listingId, sellerAddress, cardName, onClose }: Ch
   async function sendMessage() {
     if (!newMessage.trim() || !myAddress) return;
     setSending(true);
-    const receiver = isSeller
-      ? messages.find(m => m.sender_address !== sellerAddress)?.sender_address || ""
-      : sellerAddress;
+
+    // Buyer always sends to seller, seller sends to first buyer who messaged
+    let receiver = sellerAddress;
+    if (isSeller) {
+      const buyerMsg = messages.find(m => m.sender_address !== sellerAddress);
+      receiver = buyerMsg?.sender_address || otherAddress || "";
+    }
+
+    if (!receiver) {
+      alert("No buyer to reply to yet.");
+      setSending(false);
+      return;
+    }
 
     await supabase.from("messages").insert({
       listing_id: listingId,
