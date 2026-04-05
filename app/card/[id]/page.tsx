@@ -28,6 +28,8 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const [newPrice, setNewPrice] = useState("");
   const [offerAmount, setOfferAmount] = useState("");
   const [showOfferInput, setShowOfferInput] = useState(false);
+  const [showShippingForm, setShowShippingForm] = useState(false);
+  const [shipping, setShipping] = useState({ name: "", email: "", phone: "", address: "", city: "", province: "", country: "Philippines", zip: "", notes: "" });
   const isSeller = account?.address === card?.seller_address;
 
   async function handleOffer() {
@@ -57,6 +59,14 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
   async function handleBuy() {
     if (!account) { alert("Connect your Sui wallet first!"); return; }
     if (!card?.listing_object_id) { alert("This listing cannot be purchased on-chain yet."); return; }
+    setShowShippingForm(true);
+  }
+
+  async function confirmBuy() {
+    if (!shipping.name || !shipping.address || !shipping.city || !shipping.phone) {
+      alert("Please fill in all required fields.");
+      return;
+    }
     setBuying(true);
     try {
       const priceMist = BigInt(Math.round(card.price_sui * 1_000_000_000));
@@ -68,7 +78,30 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
       });
       const result = await signAndExecute({ transaction: tx });
       setTxDigest(result.digest);
-      alert("Purchase successful! TX: " + result.digest);
+
+      // Save to Supabase with shipping + notification for seller
+      await supabase.from("transactions").insert({
+        listing_id: card.id,
+        buyer_address: account?.address,
+        seller_address: card.seller_address,
+        card_name: card.name,
+        price_sui: card.price_sui,
+        tx_digest: result.digest,
+        shipping_name: shipping.name,
+        shipping_email: shipping.email,
+        shipping_phone: shipping.phone,
+        shipping_address: shipping.address,
+        shipping_city: shipping.city,
+        shipping_province: shipping.province,
+        shipping_country: shipping.country,
+        shipping_zip: shipping.zip,
+        shipping_notes: shipping.notes,
+        status: "paid",
+        read_by_seller: false,
+      });
+
+      setShowShippingForm(false);
+      alert("Purchase successful! Shipping details sent to seller.");
     } catch (e) {
       alert(e instanceof Error ? e.message : "Transaction failed.");
     }
@@ -311,6 +344,44 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
           </div>
         </div>
       </div>
+      {/* Shipping Form Modal */}
+      {showShippingForm && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div style={{ background: "#050515", border: "1px solid rgba(0,120,255,0.3)", borderRadius: "20px", padding: "32px", width: "100%", maxWidth: "480px" }}>
+            <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "20px", color: "#fff", marginBottom: "6px" }}>📦 Shipping Details</h2>
+            <p style={{ fontSize: "12px", color: "#8899bb", marginBottom: "20px" }}>Your details will be sent directly to the seller after payment.</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {[
+                { label: "Full Name *", key: "name", placeholder: "Juan dela Cruz" },
+                { label: "Email *", key: "email", placeholder: "juan@email.com" },
+                { label: "Phone / Cellphone *", key: "phone", placeholder: "+63 912 345 6789" },
+                { label: "Home Address *", key: "address", placeholder: "123 Rizal St, Barangay San Jose" },
+                { label: "City / Municipality *", key: "city", placeholder: "Makati City" },
+                { label: "Province / State *", key: "province", placeholder: "Metro Manila" },
+                { label: "Country", key: "country", placeholder: "Philippines" },
+                { label: "ZIP / Postal Code", key: "zip", placeholder: "1200" },
+                { label: "Delivery Notes", key: "notes", placeholder: "e.g. Leave at guard house, call before delivery" },
+              ].map(({ label, key, placeholder }) => (
+                <div key={key}>
+                  <label style={{ fontSize: "11px", color: "#8899bb", display: "block", marginBottom: "4px" }}>{label}</label>
+                  <input
+                    value={shipping[key as keyof typeof shipping]}
+                    onChange={e => setShipping(s => ({ ...s, [key]: e.target.value }))}
+                    placeholder={placeholder}
+                    style={{ width: "100%", background: "#0a1628", border: "1px solid rgba(0,120,255,0.2)", borderRadius: "8px", padding: "10px 12px", fontSize: "13px", color: "#fff", fontFamily: "DM Sans, sans-serif", boxSizing: "border-box" as const }}
+                  />
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+              <button onClick={() => setShowShippingForm(false)} style={{ flex: 1, background: "transparent", color: "#8899bb", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "12px", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Cancel</button>
+              <button onClick={confirmBuy} disabled={buying} style={{ flex: 2, background: "linear-gradient(135deg, #0050ff, #0078ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "12px", fontSize: "13px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
+                {buying ? "Processing..." : `Confirm & Pay ${card?.price_sui} SUI`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
