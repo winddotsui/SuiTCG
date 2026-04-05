@@ -156,21 +156,7 @@ function DashboardContent() {
               <a href="/profile" style={{ display: "inline-block", marginTop: "12px", fontSize: "11px", color: "#0099ff", textDecoration: "none" }}>Edit Profile →</a>
             </div>
 
-            {/* Real Stats */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px" }}>
-              {[
-                { label: "Active Listings", value: chainListings.length, icon: "🃏", color: "#0099ff" },
-                { label: "Total Sales", value: orders.filter(o => o.seller_address === walletAddress).length, icon: "💰", color: "#00ff88" },
-                { label: "Purchases Made", value: orders.filter(o => o.buyer_address === walletAddress).length, icon: "🛒", color: "#00d4ff" },
-                { label: "Price Alerts", value: alerts.length, icon: "🔔", color: "#ffcc00" },
-              ].map(({ label, value, icon, color }) => (
-                <div key={label} style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.1)", borderRadius: "12px", padding: "16px", textAlign: "center" }}>
-                  <div style={{ fontSize: "24px", marginBottom: "6px" }}>{icon}</div>
-                  <div style={{ fontSize: "24px", fontWeight: 700, color }}>{value}</div>
-                  <div style={{ fontSize: "11px", color: "#8899bb", marginTop: "4px" }}>{label}</div>
-                </div>
-              ))}
-            </div>
+
             {/* Recent listings */}
             <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "16px", padding: "16px" }}>
               <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#ffffff", marginBottom: "14px" }}>My On-Chain Listings</div>
