@@ -179,7 +179,7 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
 }
 
 
-function JoinModal({ onClose, onJoin, pot, prefillDeck }: { onClose: () => void; onJoin: (name: string, deck: string, deckName: string, txDigest?: string) => void; pot: number; prefillDeck?: {name: string, decklist: string, leader: string} | null }) {
+function JoinModal({ onClose, onJoin, pot, prefillDeck }: { onClose: () => void; onJoin: (name: string, deck: string, deckName: string, txDigest?: string, walletAddress?: string) => void; pot: number; prefillDeck?: {name: string, decklist: string, leader: string} | null }) {
   const account = useCurrentAccount();
   const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
   const [step, setStep] = useState<"form" | "confirm" | "paying" | "success">("confirm");
@@ -209,7 +209,7 @@ function JoinModal({ onClose, onJoin, pot, prefillDeck }: { onClose: () => void;
       const result = await signAndExecute({ transaction: tx });
       console.log("TX:", result.digest);
       setStep("success");
-      setTimeout(() => { onJoin(playerName, decklist, deckName, result.digest); onClose(); }, 1500);
+      setTimeout(() => { onJoin(playerName, decklist, deckName, result.digest, account?.address || 'anonymous'); onClose(); }, 1500);
     } catch (e) {
       alert(e instanceof Error ? e.message : "Transaction failed.");
       setStep("form");
@@ -331,7 +331,7 @@ export default function OPTCGHub() {
         onClose={() => { setShowJoin(false); setPrefillDeck(null); }} 
         onJoin={async (name: string, decklist: string, deckName: string, txDigest?: string) => {
         setPlayers(p => p + 1);
-        const addr = localStorage.getItem("wavetcg_wallet_address") || localStorage.getItem("connected_wallet") || "anonymous";
+        const addr = localStorage.getItem("wavetcg_wallet_address") || localStorage.getItem("connected_wallet") || (typeof window !== 'undefined' ? (document.querySelector('[data-testid="connect-button"]') as any)?.textContent : '') || "anonymous";
         await supabase.from("tournament_registrations").insert({
           tournament_id: "weekly-18",
           player_name: name,
