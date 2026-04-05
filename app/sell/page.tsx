@@ -11,7 +11,7 @@ const GAME_ICONS: Record<string, string> = { "One Piece TCG": "🏴‍☠️", "
 const inputStyle = { width: "100%", background: "#0a1628", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "8px", padding: "11px 14px", fontSize: "14px", color: "#ffffff", fontFamily: "DM Sans, sans-serif", outline: "none", boxSizing: "border-box" as const };
 const labelStyle = { display: "block", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "#8899bb", marginBottom: "7px" };
 
-export default function Sell() {
+function SellContent() {
   const currentAccount = useCurrentAccount();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -368,4 +368,11 @@ export default function Sell() {
       </div>
     </div>
   );
+}
+
+export default function Sell() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted) return null;
+  return <SellContent />;
 }
