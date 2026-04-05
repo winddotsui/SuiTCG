@@ -35,6 +35,19 @@ export async function GET() {
         c.type === "created" && c.objectType?.includes("Listing")
       );
 
+      // Check if listing is still active
+      let isActive = true;
+      if (listingObj?.objectId) {
+        const objRes = await rpc("sui_getObject", [
+          listingObj.objectId,
+          { showContent: true }
+        ]);
+        const fields = objRes?.data?.content?.fields;
+        isActive = fields?.is_active === true;
+      }
+
+      if (!isActive) return null;
+
       return {
         id: e.id.txDigest,
         listing_object_id: listingObj?.objectId || null,
@@ -49,7 +62,7 @@ export async function GET() {
       };
     }));
 
-    return NextResponse.json({ listings });
+    return NextResponse.json({ listings: listings.filter(Boolean) });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ listings: [], error: String(err) });
