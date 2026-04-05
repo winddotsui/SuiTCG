@@ -318,13 +318,11 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
                     fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
                   }} onClick={handleBuy} disabled={buying}>◈ Buy with {card.price_sui} SUI</button>
                   {/* Chat with seller button */}
-                  {!isSeller && (
-                    <button onClick={() => setShowChat(true)} style={{
-                      background: "transparent", color: "#00d4ff",
-                      border: "1px solid rgba(0,212,255,0.3)", borderRadius: "8px", padding: "11px",
-                      fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
-                    }}>💬 Chat with Seller</button>
-                  )}
+                  <button onClick={() => setShowChat(true)} style={{
+                    background: "transparent", color: "#00d4ff",
+                    border: "1px solid rgba(0,212,255,0.3)", borderRadius: "8px", padding: "11px",
+                    fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
+                  }}>💬 Chat with Seller</button>
 
                   {showOfferInput ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
