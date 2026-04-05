@@ -1,6 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
+import { useCurrentAccount, useSignAndExecuteTransaction, ConnectButton } from "@mysten/dapp-kit";
+import { Transaction } from "@mysten/sui/transactions";
+
+const CONTRACT_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
+const REGISTRY_ID = process.env.NEXT_PUBLIC_REGISTRY_ID || "";
 
 const GAME_ICONS: Record<string, string> = {
   "One Piece TCG": "🏴‍☠️", "Pokemon TCG": "⚡", "Magic: The Gathering": "✨",
@@ -22,8 +27,12 @@ const MOCK_CARDS = [
 
 const GAMES = ["all","One Piece TCG","Pokemon TCG","Magic: The Gathering","Yu-Gi-Oh!","Flesh & Blood","Dragon Ball","Lorcana","Digimon"];
 
-export default function Marketplace() {
+function MarketplaceContent() {
+  const account = useCurrentAccount();
+  const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
   const [listings, setListings] = useState<any[]>([]);
+  const [buying, setBuying] = useState<string | null>(null);
+  const [txSuccess, setTxSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [game, setGame] = useState("all");
@@ -35,10 +44,67 @@ export default function Marketplace() {
   async function fetchListings() {
     setLoading(true);
     try {
+      // Fetch from blockchain
+      const res = await fetch("https://fullnode.testnet.sui.io:443", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
+          params: [{ MoveEventType: `${CONTRACT_ID}::marketplace::ListingCreated` }, null, 50, true]
+        })
+      });
+      const json = await res.json();
+      const chainListings = (json.result?.data || []).map((e: any) => {
+        const p = e.parsedJson;
+        return {
+          id: e.id.txDigest,
+          listing_object_id: null,
+          name: p.card_name,
+          game: p.game,
+          condition: p.condition || "NM",
+          price_sui: Number(p.price_mist) / 1_000_000_000,
+          price_usd: (Number(p.price_mist) / 1_000_000_000) * 3.5,
+          seller_address: p.seller,
+          image_url: "",
+          is_chain: true,
+        };
+      });
+
+      // Also fetch from Supabase
       const { data } = await supabase.from("listings").select("*").eq("status","active").order("created_at",{ascending:false});
-      setListings(data && data.length > 0 ? [...data,...MOCK_CARDS] : MOCK_CARDS);
-    } catch { setListings(MOCK_CARDS); }
+      const supaListings = (data || []).map((l: any) => ({ ...l, is_chain: false }));
+
+      const combined = [...chainListings, ...supaListings];
+      setListings(combined.length > 0 ? [...combined, ...MOCK_CARDS] : MOCK_CARDS);
+    } catch {
+      setListings(MOCK_CARDS);
+    }
     setLoading(false);
+  }
+
+  async function handleBuy(card: any) {
+    if (!account) { alert("Connect your Sui wallet first!"); return; }
+    if (!card.listing_object_id) { alert("This listing is not yet on-chain purchasable. Coming soon!"); return; }
+    setBuying(card.id);
+    try {
+      const priceMist = BigInt(Math.round(card.price_sui * 1_000_000_000));
+      const tx = new Transaction();
+      const [coin] = tx.splitCoins(tx.gas, [priceMist]);
+      tx.moveCall({
+        target: `${CONTRACT_ID}::marketplace::buy_listing`,
+        arguments: [
+          tx.object(REGISTRY_ID),
+          tx.object(card.listing_object_id),
+          coin,
+        ],
+      });
+      const result = await signAndExecute({ transaction: tx });
+      setTxSuccess(result.digest);
+      fetchListings();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Transaction failed.");
+    }
+    setBuying(null);
   }
 
   const filtered = listings.filter(c => {
@@ -132,7 +198,7 @@ export default function Marketplace() {
                       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                         <div style={{ fontSize:"10px", fontWeight:700, color:"#00d4ff" }}>${card.price_usd?.toLocaleString()}</div>
                         <button
-                          onClick={e => e.preventDefault()}
+                          onClick={() => handleBuy(card)}
                           style={{ padding:"2px 6px", background:"linear-gradient(135deg, #0055ff, #0099ff)", border:"none", borderRadius:"4px", fontSize:"8px", color:"#fff", fontWeight:600, cursor:"pointer" }}>
                           Buy
                         </button>
@@ -164,7 +230,7 @@ export default function Marketplace() {
                     <div style={{ fontSize:"14px", fontWeight:700, color:"#00d4ff" }}>${card.price_usd?.toLocaleString()}</div>
                     <div style={{ fontSize:"9px", color:"#0099ff" }}>{card.price_sui} SUI</div>
                   </div>
-                  <button onClick={e => e.preventDefault()} style={{ padding:"7px 12px", background:"linear-gradient(135deg, #0055ff, #0099ff)", border:"none", borderRadius:"6px", fontSize:"11px", color:"#fff", fontWeight:600, cursor:"pointer", flexShrink:0 }}>Buy</button>
+                  <button onClick={() => handleBuy(card)} style={{ padding:"7px 12px", background:buying===card.id?"rgba(0,153,255,0.3)":"linear-gradient(135deg, #0055ff, #0099ff)", border:"none", borderRadius:"6px", fontSize:"11px", color:"#fff", fontWeight:600, cursor:"pointer", flexShrink:0 }}>{buying===card.id?"..." : "Buy"}</button>
                 </div>
               </a>
             ))}
@@ -174,4 +240,11 @@ export default function Marketplace() {
       </main>
     </div>
   );
+}
+
+export default function Marketplace() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted) return null;
+  return <MarketplaceContent />;
 }
