@@ -34,6 +34,10 @@ function SellContent() {
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
+    fetch("/api/sui-price").then(r => r.json()).then(d => setSuiPrice(d.price || 0.87)).catch(() => {});
+  }, []);
+
+  useEffect(() => {
     const addr = typeof window !== "undefined" ? (localStorage.getItem("wavetcg_wallet_address") || localStorage.getItem("connected_wallet") || "") : "";
     setWalletAddress(addr);
     if (addr) checkProfile(addr);
@@ -118,7 +122,7 @@ function SellContent() {
       const imageUrl = await uploadImage();
 
       // On-chain listing transaction
-      const priceSui = parseFloat((parseFloat(form.price_usd) / USD_PER_SUI).toFixed(4));
+      const priceSui = parseFloat((parseFloat(form.price_usd) / suiPrice).toFixed(4));
       const priceMist = BigInt(Math.round(priceSui * 1_000_000_000));
       const tx = new Transaction();
       tx.moveCall({
@@ -142,7 +146,7 @@ function SellContent() {
         card_number: form.card_number || null,
         condition: form.condition,
         price_usd: parseFloat(form.price_usd),
-        price_sui: parseFloat((parseFloat(form.price_usd) / USD_PER_SUI).toFixed(2)),
+        price_sui: parseFloat((parseFloat(form.price_usd) / suiPrice).toFixed(2)),
         
         description: form.description || null,
         image_url: imageUrl || null,
@@ -341,7 +345,7 @@ function SellContent() {
                       <span style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "#8899bb", fontSize: "14px" }}>$</span>
                       <input value={form.price_usd} onChange={e => setForm(p => ({ ...p, price_usd: e.target.value }))} placeholder="0.00" type="number" min="0" style={{ ...inputStyle, paddingLeft: "28px" }} />
                     </div>
-                    {form.price_usd && <div style={{ fontSize: "10px", color: "#8899bb", marginTop: "4px" }}>≈ {(parseFloat(form.price_usd) / USD_PER_SUI).toFixed(2)} SUI</div>}
+                    {form.price_usd && <div style={{ fontSize: "10px", color: "#8899bb", marginTop: "4px" }}>≈ {(parseFloat(form.price_usd) / suiPrice).toFixed(2)} SUI</div>}
                   </div>
                   <div><label style={labelStyle}>Quantity</label><input value={form.quantity} onChange={e => setForm(p => ({ ...p, quantity: e.target.value }))} placeholder="1" type="number" min="1" style={inputStyle} /></div>
                 </div>
@@ -397,6 +401,10 @@ function SellContent() {
 
 export default function Sell() {
   const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    fetch("/api/sui-price").then(r => r.json()).then(d => setSuiPrice(d.price || 0.87)).catch(() => {});
+  }, []);
+
   useEffect(() => { setMounted(true); }, []);
   if (!mounted) return null;
   return <SellContent />;
