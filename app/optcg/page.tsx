@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
+
+const ADMIN_WALLET = '0x91fa18b29e0603c18005f61479dd47e50cb52c85ede36c6dc44d85bc147c77f5';
 const PACKAGE_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
 const TOURNAMENT_ID = process.env.NEXT_PUBLIC_TOURNAMENT_ID || "";
 const ENTRY_FEE = BigInt("10000000000");
