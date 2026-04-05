@@ -319,9 +319,7 @@ function PlacementRow({ place, registrations, tournamentId, onUpdate }: { place:
   );
 }
 
-export default function OPTCGHub() {
-  const hubAccount = useCurrentAccount();
-  const isAdmin = hubAccount?.address === ADMIN_WALLET;
+function OPTCGHubInner({ isAdmin }: { isAdmin: boolean }) {
   const [activeTab, setActiveTab] = useState("tournament");
   const [showSimulator, setShowSimulator] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
@@ -697,3 +695,10 @@ export default function OPTCGHub() {
   );
 }
 
+export default function OPTCGHub() {
+  const [mounted, setMounted] = useState(false);
+  const account = useCurrentAccount();
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted) return null;
+  return <OPTCGHubInner isAdmin={account?.address === ADMIN_WALLET} />;
+}
