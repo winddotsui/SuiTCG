@@ -319,7 +319,7 @@ function PlacementRow({ place, registrations, tournamentId, onUpdate }: { place:
   );
 }
 
-function OPTCGHubInner({ isAdmin }: { isAdmin: boolean }) {
+function OPTCGHubInner({ isAdmin, walletAddress }: { isAdmin: boolean; walletAddress: string }) {
   const [activeTab, setActiveTab] = useState("tournament");
   const [showSimulator, setShowSimulator] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
@@ -368,7 +368,7 @@ function OPTCGHubInner({ isAdmin }: { isAdmin: boolean }) {
   }
 
   async function reportResult(matchId: string, winnerWallet: string, p1Score: number, p2Score: number) {
-    const myAddr = account?.address || "";
+    const myAddr = walletAddress || "";
     const res = await fetch("/api/tournament", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -754,7 +754,7 @@ function OPTCGHubInner({ isAdmin }: { isAdmin: boolean }) {
                       <h3 style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#00d4ff", marginBottom: "16px" }}>Round {round}</h3>
                       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                         {roundMatches.map((match: any) => {
-                          const myWallet = account?.address;
+                          const myWallet = walletAddress;
                           const isMyMatch = match.player1_wallet === myWallet || match.player2_wallet === myWallet;
                           const p1 = bracketData.standings?.find((s: any) => s.wallet_address === match.player1_wallet);
                           const p2 = bracketData.standings?.find((s: any) => s.wallet_address === match.player2_wallet);
@@ -875,7 +875,7 @@ function OPTCGHubInner({ isAdmin }: { isAdmin: boolean }) {
 
 function OPTCGHubWrapper() {
   const account = useCurrentAccount();
-  return <OPTCGHubInner isAdmin={account?.address === ADMIN_WALLET} />;
+  return <OPTCGHubInner isAdmin={account?.address === ADMIN_WALLET} walletAddress={account?.address || ""} />;
 }
 
 export default function OPTCGHub() {
