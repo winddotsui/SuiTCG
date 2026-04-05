@@ -28,8 +28,6 @@ export default function NavClient() {
 
     // Poll every 10 seconds
     const interval = setInterval(() => {
-      const addr2 = account?.address || (typeof window !== "undefined" ? localStorage.getItem("wavetcg_wallet_address") || "" : "");
-      if (!addr2) return;
       supabase.from("messages").select("id", { count: "exact" })
         .eq("receiver_address", addr).eq("read", false)
         .then(({ count }) => setUnreadMessages(count || 0));
