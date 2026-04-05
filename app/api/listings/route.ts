@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 const CONTRACT_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
+const USD_PER_SUI = 3.5;
 const RPC = "https://fullnode.testnet.sui.io:443";
 
 async function rpc(method: string, params: any[]) {
@@ -55,7 +56,7 @@ export async function GET() {
         game: p.game,
         condition: p.condition || "NM",
         price_sui: Number(p.price_mist) / 1_000_000_000,
-        price_usd: (Number(p.price_mist) / 1_000_000_000) * 3.5,
+        price_usd: (Number(p.price_mist) / 1_000_000_000) * USD_PER_SUI,
         seller_address: p.seller,
         image_url: "",
         is_chain: true,

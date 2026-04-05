@@ -1,17 +1,28 @@
 import { NextResponse } from "next/server";
 import { supabase } from "../../../lib/supabase";
 
+const TOURNAMENT_ID = process.env.NEXT_PUBLIC_TOURNAMENT_ID || TOURNAMENT_ID;
+
 const TOURNAMENT_ID = process.env.NEXT_PUBLIC_TOURNAMENT_ID || "";
 
 export async function POST(request: Request) {
-  const { action, data } = await request.json();
+  const { action, data, adminKey } = await request.json();
+
+  // Admin actions require secret key
+  const ADMIN_WALLET = "0x91fa18b29e0603c18005f61479dd47e50cb52c85ede36c6dc44d85bc147c77f5";
+  const ADMIN_ACTIONS = ["start", "next_round"];
+  if (ADMIN_ACTIONS.includes(action)) {
+    if (data?.callerWallet !== ADMIN_WALLET && adminKey !== process.env.ADMIN_SECRET_KEY) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  }
 
   if (action === "start") {
     // Get all registered players
     const { data: players } = await supabase
       .from("tournament_registrations")
       .select("*")
-      .eq("tournament_id", "weekly-18")
+      .eq("tournament_id", TOURNAMENT_ID)
       .eq("status", "registered");
 
     if (!players || players.length < 2) {
@@ -29,7 +40,7 @@ export async function POST(request: Request) {
 
     // Save matches to Supabase
     const matchRows = matches.map((m: any) => ({
-      tournament_id: "weekly-18",
+      tournament_id: TOURNAMENT_ID,
       round: 1,
       player1_wallet: m.player1,
       player2_wallet: m.player2 || null,
@@ -41,7 +52,7 @@ export async function POST(request: Request) {
 
     // Update tournament state
     await supabase.from("tournament_state").upsert({
-      tournament_id: "weekly-18",
+      tournament_id: TOURNAMENT_ID,
       current_round: 1,
       status: "active",
       total_rounds: Math.ceil(Math.log2(players.length)),
@@ -55,7 +66,7 @@ export async function POST(request: Request) {
     const { data: state } = await supabase
       .from("tournament_state")
       .select("*")
-      .eq("tournament_id", "weekly-18")
+      .eq("tournament_id", TOURNAMENT_ID)
       .single();
 
     if (!state) return NextResponse.json({ error: "No active tournament" }, { status: 400 });
@@ -66,7 +77,7 @@ export async function POST(request: Request) {
     const { data: allMatches } = await supabase
       .from("tournament_matches")
       .select("*")
-      .eq("tournament_id", "weekly-18")
+      .eq("tournament_id", TOURNAMENT_ID)
       .not("winner_wallet", "is", null);
 
     // Calculate scores
@@ -81,7 +92,7 @@ export async function POST(request: Request) {
     const { data: players } = await supabase
       .from("tournament_registrations")
       .select("wallet_address")
-      .eq("tournament_id", "weekly-18");
+      .eq("tournament_id", TOURNAMENT_ID);
 
     const { Swiss } = await import("tournament-pairings");
     const swissPlayers = (players || []).map((p: any) => ({
@@ -91,7 +102,7 @@ export async function POST(request: Request) {
 
     const matches = Swiss(swissPlayers, nextRound);
     const matchRows = matches.map((m: any) => ({
-      tournament_id: "weekly-18",
+      tournament_id: TOURNAMENT_ID,
       round: nextRound,
       player1_wallet: m.player1,
       player2_wallet: m.player2 || null,
@@ -102,7 +113,7 @@ export async function POST(request: Request) {
     await supabase.from("tournament_matches").insert(matchRows);
     await supabase.from("tournament_state")
       .update({ current_round: nextRound })
-      .eq("tournament_id", "weekly-18");
+      .eq("tournament_id", TOURNAMENT_ID);
 
     return NextResponse.json({ success: true, round: nextRound, matches: matchRows });
   }
@@ -128,19 +139,19 @@ export async function GET() {
   const { data: state } = await supabase
     .from("tournament_state")
     .select("*")
-    .eq("tournament_id", "weekly-18")
+    .eq("tournament_id", TOURNAMENT_ID)
     .single();
 
   const { data: matches } = await supabase
     .from("tournament_matches")
     .select("*")
-    .eq("tournament_id", "weekly-18")
+    .eq("tournament_id", TOURNAMENT_ID)
     .order("round", { ascending: true });
 
   const { data: players } = await supabase
     .from("tournament_registrations")
     .select("wallet_address, player_name, points, wins, losses, deck_name")
-    .eq("tournament_id", "weekly-18");
+    .eq("tournament_id", TOURNAMENT_ID);
 
   // Build standings
   const scores: Record<string, number> = {};

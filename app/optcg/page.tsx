@@ -348,7 +348,7 @@ function OPTCGHubInner({ isAdmin, walletAddress }: { isAdmin: boolean; walletAdd
     const res = await fetch("/api/tournament", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "start" }),
+      body: JSON.stringify({ action: "start", data: { callerWallet: walletAddress } }),
     });
     const json = await res.json();
     if (json.success) { alert("Round 1 pairings generated!"); fetchBracket(); fetchRegistrations(); }
@@ -360,7 +360,7 @@ function OPTCGHubInner({ isAdmin, walletAddress }: { isAdmin: boolean; walletAdd
     const res = await fetch("/api/tournament", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "next_round" }),
+      body: JSON.stringify({ action: "next_round", data: { callerWallet: walletAddress } }),
     });
     const json = await res.json();
     if (json.success) { alert(`Round ${json.round} pairings generated!`); fetchBracket(); }
@@ -473,7 +473,7 @@ function OPTCGHubInner({ isAdmin, walletAddress }: { isAdmin: boolean; walletAdd
               <p style={{ fontSize: "12px", color: "#8899bb", marginBottom: "16px" }}>1st = +500pts, 2nd = +300pts, 3rd = +200pts (on top of 100 base points)</p>
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 {[1, 2, 3].map(place => (
-                  <PlacementRow key={place} place={place} registrations={registrations} tournamentId="weekly-18" onUpdate={fetchRegistrations} />
+                  <PlacementRow key={place} place={place} registrations={registrations} tournamentId={TOURNAMENT_ID} onUpdate={fetchRegistrations} />
                 ))}
               </div>
             </div>
@@ -488,7 +488,7 @@ function OPTCGHubInner({ isAdmin, walletAddress }: { isAdmin: boolean; walletAdd
         setPlayers(p => p + 1);
         const addr = localStorage.getItem("wavetcg_wallet_address") || localStorage.getItem("connected_wallet") || (typeof window !== 'undefined' ? (document.querySelector('[data-testid="connect-button"]') as any)?.textContent : '') || "anonymous";
         await supabase.from("tournament_registrations").insert({
-          tournament_id: "weekly-18",
+          tournament_id: TOURNAMENT_ID,
           player_name: name,
           wallet_address: addr,
           decklist: decklist,
