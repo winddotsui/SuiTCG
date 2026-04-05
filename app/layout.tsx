@@ -6,6 +6,14 @@ import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "WaveTCG — Web3 TCG Marketplace on Sui",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png" }],
+  },
   description: "Buy, sell and trade One Piece TCG, Pokémon, Magic: The Gathering, Yu-Gi-Oh! and more on Sui blockchain. Free listings, 1% fee, instant on-chain settlement.",
   keywords: ["TCG marketplace", "One Piece TCG", "Pokemon TCG", "Magic The Gathering", "Yu-Gi-Oh", "Sui blockchain", "Web3 trading cards", "NFT cards", "WaveTCG"],
   authors: [{ name: "WaveTCG" }],
