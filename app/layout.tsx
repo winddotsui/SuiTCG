@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Providers from "./providers";
 import NavClient from "./components/NavClient";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "WaveTCG — TCG Marketplace",
@@ -55,7 +56,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main style={{ paddingTop: "56px", position: "relative", zIndex: 1 }}>
             {children}
           </main>
-        </Providers>
+          <Toaster position="bottom-right" toastOptions={{ style: { background: "#0a1628", color: "#ffffff", border: "1px solid rgba(0,153,255,0.2)", fontFamily: "DM Sans, sans-serif", fontSize: "14px" }, success: { iconTheme: { primary: "#00ff88", secondary: "#000008" } }, error: { iconTheme: { primary: "#ff6b6b", secondary: "#000008" } } }} />
+</Providers>
       </body>
     </html>
   );

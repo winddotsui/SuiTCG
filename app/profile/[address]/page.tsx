@@ -1,4 +1,5 @@
 "use client";
+import { showSuccess, showError } from "../../../lib/toast";
 import { useState, useEffect, use } from "react";
 import { supabase } from "../../../lib/supabase";
 
@@ -45,7 +46,7 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
         await supabase.from("profiles").upsert({ wallet_address: address, avatar_url: url }, { onConflict: "wallet_address" });
         await fetchProfile();
       }
-    } catch (e) { console.error("Avatar upload failed:", e); }
+    } catch (e) { showError("Avatar upload failed"); console.error("Avatar upload failed:", e); }
     setUploading(false);
   }
 

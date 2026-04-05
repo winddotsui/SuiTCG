@@ -1,4 +1,5 @@
 "use client";
+import { showSuccess, showError } from "../../lib/toast";
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 
@@ -38,10 +39,10 @@ export default function AlertsPage() {
         .from("price_alerts")
         .select("*")
         .order("created_at", { ascending: false });
-      if (error) console.error("Supabase error:", error);
+      if (error) showError("Failed to load alerts"); console.error("Supabase error:", error);
       if (data) setAlerts(data);
     } catch (e) {
-      console.error("Fetch error:", e);
+      showError("Failed to load alerts"); console.error("Fetch error:", e);
     }
     setLoading(false);
   }

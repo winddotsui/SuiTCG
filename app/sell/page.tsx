@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { showSuccess, showError } from "../../lib/toast";
 
 const CONTRACT_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
 const REGISTRY_ID = process.env.NEXT_PUBLIC_REGISTRY_ID || "";
@@ -115,9 +116,9 @@ function SellContent() {
   }
 
   async function handleSubmit() {
-    if (!form.name.trim()) { setError("Please enter a card name"); return; }
-    if (!form.price_usd || parseFloat(form.price_usd) <= 0) { setError("Please enter a valid price"); return; }
-    if (!effectiveWallet) { setError("No wallet connected. Please connect your Sui wallet first."); return; }
+    if (!form.name.trim()) { showError("Please enter a card name"); return; }
+    if (!form.price_usd || parseFloat(form.price_usd) <= 0) { showError("Please enter a valid price"); return; }
+    if (!effectiveWallet) { showError("No wallet connected. Please connect your Sui wallet first."); return; }
     setLoading(true); setError("");
     try {
       const imageUrl = await uploadImage();
@@ -158,15 +159,15 @@ function SellContent() {
       const { data, error: insertError } = await supabase.from("listings").insert(payload).select();
       if (insertError) {
         console.error("Insert error:", insertError);
-        setError(`Failed to list: ${insertError.message}`);
+        showError(`Failed to list: ${insertError.message}`);
         setLoading(false);
         return;
       }
       console.log("Listing created:", data);
-      setSuccess(true);
+      setSuccess(true); showSuccess("Card listed successfully! 🎉");
     } catch (e: any) {
       console.error("Submit error:", e);
-      setError(e.message || "Failed to list card. Check console for details.");
+      showError(e.message || "Failed to list card. Check console for details.");
     }
     setLoading(false);
   }
@@ -325,7 +326,7 @@ function SellContent() {
                 </div>
 
                 {error && <div style={{ fontSize: "12px", color: "#ff6b6b", padding: "8px 12px", background: "rgba(255,50,50,0.06)", borderRadius: "6px" }}>{error}</div>}
-                <button onClick={() => { if (!form.name.trim()) { setError("Please enter a card name"); return; } setError(""); setStep(2); }} style={{ width: "100%", background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "13px", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Next → Pricing</button>
+                <button onClick={() => { if (!form.name.trim()) { showError("Please enter a card name"); return; } setError(""); setStep(2); }} style={{ width: "100%", background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "13px", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Next → Pricing</button>
               </div>
             )}
 
@@ -356,7 +357,7 @@ function SellContent() {
                 {error && <div style={{ fontSize: "12px", color: "#ff6b6b", padding: "8px 12px", background: "rgba(255,50,50,0.06)", borderRadius: "6px" }}>{error}</div>}
                 <div style={{ display: "flex", gap: "10px" }}>
                   <button onClick={() => setStep(1)} style={{ flex: 1, background: "transparent", color: "#8899bb", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "13px", fontSize: "14px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>← Back</button>
-                  <button onClick={() => { if (!form.price_usd || parseFloat(form.price_usd) <= 0) { setError("Please enter a valid price"); return; } setError(""); setStep(3); }} style={{ flex: 2, background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "13px", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Next → Review</button>
+                  <button onClick={() => { if (!form.price_usd || parseFloat(form.price_usd) <= 0) { showError("Please enter a valid price"); return; } setError(""); setStep(3); }} style={{ flex: 2, background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "13px", fontSize: "14px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>Next → Review</button>
                 </div>
               </div>
             )}

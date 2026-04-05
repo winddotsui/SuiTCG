@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { showSuccess, showError } from "../../lib/toast";
 import { supabase } from "../../lib/supabase";
 import { useCurrentAccount, useSignAndExecuteTransaction, ConnectButton } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
@@ -64,9 +65,10 @@ function MarketplaceContent() {
         ],
       });
       const result = await signAndExecute({ transaction: tx });
-      setTxSuccess(result.digest);
+      setTxSuccess(result.digest); showSuccess("Card purchased! 🎉");
       fetchListings();
-    } catch (e) {
+    } catch (e: any) {
+    showError(e.message || "Purchase failed. Try again.");
       alert(e instanceof Error ? e.message : "Transaction failed.");
     }
     setBuying(null);
