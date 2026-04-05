@@ -13,7 +13,7 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
   const [saved, setSaved] = useState(false);
   const [form, setForm] = useState({ username: "", bio: "", twitter: "", discord: "", telegram: "", avatar_url: "", email: "" });
 
-  const walletAddress = typeof window !== "undefined" ? localStorage.getItem("wavetcg_wallet_address") : null;
+  const walletAddress = typeof window !== "undefined" ? (localStorage.getItem("wavetcg_wallet_address") || localStorage.getItem("connected_wallet") || localStorage.getItem("wallet_address")) : null;
   const isOwner = walletAddress === address;
 
   useEffect(() => { if (address) fetchProfile(); }, [address]);

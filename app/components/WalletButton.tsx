@@ -16,6 +16,12 @@ export default function WalletButton() {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (account?.address) {
+      localStorage.setItem("wavetcg_wallet_address", account.address);
+    }
+  }, [account?.address]);
+
   if (!mounted) return (
     <button style={{
       background: "linear-gradient(135deg, #1a8fe3, #4da2ff)",
@@ -96,7 +102,7 @@ export default function WalletButton() {
                       connectSui(
                         { wallet },
                         {
-                          onSuccess: () => setShowModal(false),
+                          onSuccess: () => { setShowModal(false); },
                           onError: (e) => alert("Connection failed: " + e.message),
                         }
                       );
