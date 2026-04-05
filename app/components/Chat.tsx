@@ -24,15 +24,20 @@ export default function Chat({ listingId, sellerAddress, cardName, onClose }: Ch
     fetchMessages();
     // Real-time subscription
     const channel = supabase
-      .channel(`chat-${listingId}`)
+      .channel(`chat-${listingId}-${Date.now()}`)
       .on("postgres_changes", {
         event: "INSERT",
         schema: "public",
         table: "messages",
-        filter: `listing_id=eq.${listingId}`,
       }, (payload) => {
-        setMessages(prev => [...prev, payload.new]);
-        setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+        const msg = payload.new as any;
+        if (msg.listing_id === listingId) {
+          setMessages(prev => {
+            if (prev.find(m => m.id === msg.id)) return prev;
+            return [...prev, msg];
+          });
+          setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+        }
       })
       .subscribe();
 
