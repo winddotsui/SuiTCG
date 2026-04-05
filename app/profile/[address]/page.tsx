@@ -10,7 +10,7 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
   const [editing, setEditing] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [form, setForm] = useState({ username: "", bio: "", twitter: "", discord: "", telegram: "", avatar_url: "" });
+  const [form, setForm] = useState({ username: "", bio: "", twitter: "", discord: "", telegram: "", avatar_url: "", email: "" });
 
   const walletAddress = typeof window !== "undefined" ? localStorage.getItem("wavetcg_wallet_address") : null;
   const isOwner = walletAddress === address;
@@ -23,7 +23,7 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
     const { data: listingsData } = await supabase.from("listings").select("*").eq("seller_address", address).eq("status", "active").order("created_at", { ascending: false });
     if (profileData) {
       setProfile(profileData);
-      setForm({ username: profileData.username || "", bio: profileData.bio || "", twitter: profileData.twitter || "", discord: profileData.discord || "", telegram: profileData.telegram || "", avatar_url: profileData.avatar_url || "" });
+      setForm({ username: profileData.username || "", bio: profileData.bio || "", twitter: profileData.twitter || "", discord: profileData.discord || "", telegram: profileData.telegram || "", avatar_url: profileData.avatar_url || "", email: profileData.email || "" });
     } else {
       setProfile({ wallet_address: address });
     }
@@ -66,6 +66,7 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
       wallet_address: address,
       username: form.username || null,
       bio: form.bio || null,
+      email: form.email || null,
       twitter: form.twitter || null,
       discord: form.discord || null,
       telegram: form.telegram || null,
@@ -175,6 +176,7 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "10px", marginBottom: "16px" }}>
               {[
+                { label: "Email (for notifications)", key: "email", placeholder: "your@email.com" },
                 { label: "Twitter / X", key: "twitter", placeholder: "username (no @)" },
                 { label: "Discord", key: "discord", placeholder: "username#1234" },
                 { label: "Telegram", key: "telegram", placeholder: "username (no @)" },
