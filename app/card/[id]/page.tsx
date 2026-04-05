@@ -1,6 +1,11 @@
 "use client";
 import { useState, useEffect, use } from "react";
 import { supabase } from "../../../lib/supabase";
+import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { Transaction } from "@mysten/sui/transactions";
+
+const CONTRACT_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
+const REGISTRY_ID = process.env.NEXT_PUBLIC_REGISTRY_ID || "";
 
 const MOCK_CARDS: Record<string, any> = {
   "m1": { name:"Charizard EX", game:"Pokémon TCG", set_name:"Obsidian Flames", card_number:"125/197", condition:"PSA 10", price_usd:295, price_sui:40.5, art:"🔥", bg:"#2a0808", seller_address:"TrainerRed", description:"Beautiful PSA 10 Charizard EX from Obsidian Flames." },
@@ -15,6 +20,31 @@ export default function CardDetail({ params }: { params: Promise<{ id: string }>
   const { id } = use(params);
   const [card, setCard] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [buying, setBuying] = useState(false);
+  const [txDigest, setTxDigest] = useState("");
+  const account = useCurrentAccount();
+  const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
+
+  async function handleBuy() {
+    if (!account) { alert("Connect your Sui wallet first!"); return; }
+    if (!card?.listing_object_id) { alert("This listing cannot be purchased on-chain yet."); return; }
+    setBuying(true);
+    try {
+      const priceMist = BigInt(Math.round(card.price_sui * 1_000_000_000));
+      const tx = new Transaction();
+      const [coin] = tx.splitCoins(tx.gas, [priceMist]);
+      tx.moveCall({
+        target: `${CONTRACT_ID}::marketplace::buy_listing`,
+        arguments: [tx.object(REGISTRY_ID), tx.object(card.listing_object_id), coin],
+      });
+      const result = await signAndExecute({ transaction: tx });
+      setTxDigest(result.digest);
+      alert("Purchase successful! TX: " + result.digest);
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Transaction failed.");
+    }
+    setBuying(false);
+  }
 
   useEffect(() => {
     if (!id) return;
@@ -27,6 +57,18 @@ export default function CardDetail({ params }: { params: Promise<{ id: string }>
       setLoading(false);
       return;
     }
+    // Try on-chain listings first
+    try {
+      const res = await fetch("/api/listings");
+      const json = await res.json();
+      const chainListing = (json.listings || []).find((l: any) => l.id === cardId);
+      if (chainListing) {
+        setCard(chainListing);
+        setLoading(false);
+        return;
+      }
+    } catch {}
+    // Fall back to Supabase
     const { data } = await supabase
       .from("listings")
       .select("*")
@@ -143,12 +185,12 @@ export default function CardDetail({ params }: { params: Promise<{ id: string }>
                 border: "none", borderRadius: "8px", padding: "14px",
                 fontSize: "14px", fontWeight: 500, cursor: "pointer",
                 fontFamily: "DM Sans, sans-serif", letterSpacing: "0.05em", textTransform: "uppercase",
-              }}>Buy Now · ${card.price_usd?.toLocaleString()}</button>
+              onClick: handleBuy, disabled: buying }}>{ buying ? "Processing..." : `Buy Now · $${card.price_usd?.toLocaleString()}` }</button>
               <button style={{
                 background: "rgba(0,120,255,0.1)", color: "#4da8ff",
                 border: "1px solid rgba(0,120,255,0.3)", borderRadius: "8px", padding: "13px",
                 fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
-              }}>◈ Buy with {card.price_sui} SUI</button>
+              onClick: handleBuy, disabled: buying }}>◈ Buy with {card.price_sui} SUI</button>
               <button style={{
                 background: "transparent", color: "#666680",
                 border: "1px solid rgba(255,255,255,0.12)", borderRadius: "8px", padding: "11px",
