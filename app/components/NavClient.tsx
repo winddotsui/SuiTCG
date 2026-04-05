@@ -62,7 +62,7 @@ export default function NavClient() {
               <span style={{ position: "absolute", top: "-4px", right: "-8px", width: "8px", height: "8px", background: "#ff3b3b", borderRadius: "50%" }} />
             )}
           </a>
-          <a key={link.href} href={link.href} style={{
+          <a href={link.href} style={{
             fontSize: "11px", letterSpacing: "0.08em",
             textTransform: "uppercase", color: "#666680",
             textDecoration: "none",
