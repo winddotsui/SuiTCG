@@ -25,6 +25,9 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const account = useCurrentAccount();
   const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
 
+  const [newPrice, setNewPrice] = useState("");
+  const isSeller = account?.address === card?.seller_address;
+
   async function handleBuy() {
     if (!account) { alert("Connect your Sui wallet first!"); return; }
     if (!card?.listing_object_id) { alert("This listing cannot be purchased on-chain yet."); return; }
@@ -42,6 +45,45 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
       alert("Purchase successful! TX: " + result.digest);
     } catch (e) {
       alert(e instanceof Error ? e.message : "Transaction failed.");
+    }
+    setBuying(false);
+  }
+
+  async function handleCancel() {
+    if (!account || !card?.listing_object_id) return;
+    setBuying(true);
+    try {
+      const tx = new Transaction();
+      tx.moveCall({
+        target: `${CONTRACT_ID}::marketplace::cancel_listing`,
+        arguments: [tx.object(card.listing_object_id)],
+      });
+      await signAndExecute({ transaction: tx });
+      alert("Listing cancelled!");
+      window.location.href = "/marketplace";
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Cancel failed.");
+    }
+    setBuying(false);
+  }
+
+  async function handleEdit() {
+    if (!account || !card?.listing_object_id) return;
+    const sui = parseFloat(newPrice);
+    if (isNaN(sui) || sui <= 0) { alert("Enter a valid price in SUI."); return; }
+    setBuying(true);
+    try {
+      const priceMist = BigInt(Math.round(sui * 1_000_000_000));
+      const tx = new Transaction();
+      tx.moveCall({
+        target: `${CONTRACT_ID}::marketplace::edit_listing`,
+        arguments: [tx.object(card.listing_object_id), tx.pure.u64(priceMist)],
+      });
+      await signAndExecute({ transaction: tx });
+      alert("Price updated!");
+      window.location.reload();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Edit failed.");
     }
     setBuying(false);
   }
@@ -180,22 +222,46 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
             )}
 
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <button style={{
-                background: "linear-gradient(135deg, #0050ff, #0078ff)", color: "#fff",
-                border: "none", borderRadius: "8px", padding: "14px",
-                fontSize: "14px", fontWeight: 500, cursor: "pointer",
-                fontFamily: "DM Sans, sans-serif", letterSpacing: "0.05em", textTransform: "uppercase",
-              }}  onClick={handleBuy} disabled={buying}>{ buying ? "Processing..." : `Buy Now · $${card.price_usd?.toLocaleString()}` }</button>
-              <button style={{
-                background: "rgba(0,120,255,0.1)", color: "#4da8ff",
-                border: "1px solid rgba(0,120,255,0.3)", borderRadius: "8px", padding: "13px",
-                fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
-              }} onClick={handleBuy} disabled={buying}>◈ Buy with {card.price_sui} SUI</button>
-              <button style={{
-                background: "transparent", color: "#666680",
-                border: "1px solid rgba(255,255,255,0.12)", borderRadius: "8px", padding: "11px",
-                fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
-              }}>Make an Offer</button>
+              {isSeller ? (
+                <>
+                  <div style={{ background: "rgba(255,180,0,0.08)", border: "1px solid rgba(255,180,0,0.2)", borderRadius: "8px", padding: "12px", fontSize: "12px", color: "#c8a84b" }}>
+                    👑 You own this listing
+                  </div>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <input
+                      value={newPrice}
+                      onChange={e => setNewPrice(e.target.value)}
+                      placeholder="New price in SUI"
+                      style={{ flex: 1, background: "#0a1628", border: "1px solid rgba(0,120,255,0.3)", borderRadius: "8px", padding: "10px 12px", fontSize: "13px", color: "#fff", fontFamily: "DM Sans, sans-serif" }}
+                    />
+                    <button onClick={handleEdit} disabled={buying} style={{ background: "linear-gradient(135deg, #0050ff, #0078ff)", color: "#fff", border: "none", borderRadius: "8px", padding: "10px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
+                      Edit Price
+                    </button>
+                  </div>
+                  <button onClick={handleCancel} disabled={buying} style={{ background: "rgba(255,50,50,0.1)", color: "#ff6b6b", border: "1px solid rgba(255,50,50,0.3)", borderRadius: "8px", padding: "13px", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
+                    {buying ? "Processing..." : "❌ Cancel Listing"}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button style={{
+                    background: "linear-gradient(135deg, #0050ff, #0078ff)", color: "#fff",
+                    border: "none", borderRadius: "8px", padding: "14px",
+                    fontSize: "14px", fontWeight: 500, cursor: "pointer",
+                    fontFamily: "DM Sans, sans-serif", letterSpacing: "0.05em", textTransform: "uppercase",
+                  }} onClick={handleBuy} disabled={buying}>{ buying ? "Processing..." : `Buy Now · $${card.price_usd?.toLocaleString()}` }</button>
+                  <button style={{
+                    background: "rgba(0,120,255,0.1)", color: "#4da8ff",
+                    border: "1px solid rgba(0,120,255,0.3)", borderRadius: "8px", padding: "13px",
+                    fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
+                  }} onClick={handleBuy} disabled={buying}>◈ Buy with {card.price_sui} SUI</button>
+                  <button style={{
+                    background: "transparent", color: "#666680",
+                    border: "1px solid rgba(255,255,255,0.12)", borderRadius: "8px", padding: "11px",
+                    fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif",
+                  }}>Make an Offer</button>
+                </>
+              )}
             </div>
           </div>
         </div>
