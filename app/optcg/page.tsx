@@ -1,4 +1,14 @@
 "use client";
+
+// Auto-calculate week number starting from April 6, 2026 (Monday PH time)
+function getCurrentWeekNumber(): number {
+  const start = new Date("2026-04-06T00:01:00+08:00");
+  const now = new Date();
+  const diffMs = now.getTime() - start.getTime();
+  const diffWeeks = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
+  return Math.max(1, diffWeeks + 1);
+}
+
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
@@ -520,7 +530,7 @@ function OPTCGHubInner({ isAdmin, walletAddress }: { isAdmin: boolean; walletAdd
             <div>
               <div style={{ marginBottom: "24px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
-                  <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", color: "#ffffff" }}>WaveTCG Weekly #17</h2>
+                  <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", color: "#ffffff" }}>WaveTCG Weekly #{getCurrentWeekNumber()}</h2>
                   <span style={{ padding: "4px 12px", background: "rgba(0,85,255,0.1)", border: "1px solid rgba(0,85,255,0.2)", borderRadius: "20px", fontSize: "11px", color: "#0099ff" }}>🟢 Open</span>
                 </div>
                 <p style={{ fontSize: "14px", color: "#c8d8f0", lineHeight: 1.75 }}>Weekly One Piece TCG tournament. Pay 10 SUI to enter. Winners automatically receive SUI prizes on-chain.</p>
@@ -594,7 +604,7 @@ function OPTCGHubInner({ isAdmin, walletAddress }: { isAdmin: boolean; walletAdd
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
               <div>
                 <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "24px", color: "#ffffff", marginBottom: "4px" }}>Registered Players</h2>
-                <p style={{ fontSize: "13px", color: "#c8d8f0" }}>WaveTCG Weekly #17 · {players} players registered</p>
+                <p style={{ fontSize: "13px", color: "#c8d8f0" }}>WaveTCG Weekly #{getCurrentWeekNumber()} · {players} players registered</p>
               </div>
               <button onClick={() => setShowJoin(true)} style={{ background: "linear-gradient(135deg, #0099ff, #00d4ff)", color: "#000008", border: "none", borderRadius: "8px", padding: "10px 20px", fontSize: "13px", fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>+ Join Tournament</button>
             </div>
