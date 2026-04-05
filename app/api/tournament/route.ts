@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "../../../lib/supabase";
 
-const TOURNAMENT_ID = process.env.NEXT_PUBLIC_TOURNAMENT_ID || TOURNAMENT_ID;
-
-const TOURNAMENT_ID = process.env.NEXT_PUBLIC_TOURNAMENT_ID || "";
+const TOURNAMENT_ID = process.env.NEXT_PUBLIC_TOURNAMENT_ID || "weekly-1";
 
 export async function POST(request: Request) {
   const { action, data, adminKey } = await request.json();
