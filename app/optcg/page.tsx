@@ -695,10 +695,14 @@ function OPTCGHubInner({ isAdmin }: { isAdmin: boolean }) {
   );
 }
 
+function OPTCGHubWrapper() {
+  const account = useCurrentAccount();
+  return <OPTCGHubInner isAdmin={account?.address === ADMIN_WALLET} />;
+}
+
 export default function OPTCGHub() {
   const [mounted, setMounted] = useState(false);
-  const account = useCurrentAccount();
   useEffect(() => { setMounted(true); }, []);
   if (!mounted) return null;
-  return <OPTCGHubInner isAdmin={account?.address === ADMIN_WALLET} />;
+  return <OPTCGHubWrapper />;
 }
