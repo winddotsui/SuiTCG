@@ -1,9 +1,14 @@
 import { NextResponse } from "next/server";
 import { supabase } from "../../../lib/supabase";
+import { rateLimit, getIP } from "../../../lib/rateLimit";
 
 const TOURNAMENT_ID = process.env.NEXT_PUBLIC_TOURNAMENT_ID || "weekly-1";
 
 export async function POST(request: Request) {
+  const ip = getIP(request);
+  if (!rateLimit(ip, 20, 60_000)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
   const { action, data, adminKey } = await request.json();
 
   // Admin actions require secret key

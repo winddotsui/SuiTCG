@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { rateLimit, getIP } from "../../../lib/rateLimit";
 
 const CONTRACT_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
 const USD_PER_SUI = 3.5;
