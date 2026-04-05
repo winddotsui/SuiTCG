@@ -356,7 +356,7 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
                   <button onClick={() => setShowChat(true)} style={{ background: "transparent", color: "#00d4ff", border: "1px solid rgba(0,212,255,0.3)", borderRadius: "8px", padding: "11px", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>💬 Chat with Buyers</button>
 
                   {/* Incoming Offers */}
-                  {(
+                  {isSeller && (
                     <div style={{ marginTop: "8px" }}>
                       <div style={{ fontSize: "12px", color: "#8899bb", marginBottom: "8px", display: "flex", justifyContent: "space-between" }}>
                         <span>🤝 Incoming Offers ({offers.length})</span>
