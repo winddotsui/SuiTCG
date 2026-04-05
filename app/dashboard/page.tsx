@@ -1,11 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 const tabs = ["Overview", "My Listings", "My Alerts", "My Decks", "Tournaments", "Wallet"];
 
-export default function Dashboard() {
+function DashboardContent() {
+  const account = useCurrentAccount();
   const [activeTab, setActiveTab] = useState("Overview");
+  const [chainListings, setChainListings] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
   const [listings, setListings] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
@@ -13,9 +17,7 @@ export default function Dashboard() {
   const [tournaments, setTournaments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const walletAddress = typeof window !== "undefined"
-    ? localStorage.getItem("wavetcg_wallet_address") || null
-    : null;
+  const walletAddress = account?.address || (typeof window !== "undefined" ? localStorage.getItem("wavetcg_wallet_address") || null : null);
 
   const shortAddr = (addr: string) => addr ? addr.slice(0, 6) + "..." + addr.slice(-4) : "—";
 
@@ -27,6 +29,18 @@ export default function Dashboard() {
   async function fetchAll() {
     setLoading(true);
     try {
+      // Fetch on-chain listings
+      const chainRes = await fetch("/api/listings");
+      const chainJson = await chainRes.json();
+      const myChainListings = (chainJson.listings || []).filter((l: any) => l.seller_address === walletAddress);
+      setChainListings(myChainListings);
+
+      // Fetch orders
+      const { data: ordersData } = await supabase.from("transactions").select("*")
+        .or(`seller_address.eq.${walletAddress},buyer_address.eq.${walletAddress}`)
+        .order("created_at", { ascending: false });
+      setOrders(ordersData || []);
+
       const [profileRes, listingsRes, alertsRes, decksRes, tournamentsRes] = await Promise.all([
         supabase.from("profiles").select("*").eq("wallet_address", walletAddress).single(),
         supabase.from("listings").select("*").eq("seller_address", walletAddress).order("created_at", { ascending: false }),
@@ -142,16 +156,31 @@ export default function Dashboard() {
               <a href="/profile" style={{ display: "inline-block", marginTop: "12px", fontSize: "11px", color: "#0099ff", textDecoration: "none" }}>Edit Profile →</a>
             </div>
 
+            {/* Real Stats */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px" }}>
+              {[
+                { label: "Active Listings", value: chainListings.length, icon: "🃏", color: "#0099ff" },
+                { label: "Total Sales", value: orders.filter(o => o.seller_address === walletAddress).length, icon: "💰", color: "#00ff88" },
+                { label: "Purchases Made", value: orders.filter(o => o.buyer_address === walletAddress).length, icon: "🛒", color: "#00d4ff" },
+                { label: "Price Alerts", value: alerts.length, icon: "🔔", color: "#ffcc00" },
+              ].map(({ label, value, icon, color }) => (
+                <div key={label} style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.1)", borderRadius: "12px", padding: "16px", textAlign: "center" }}>
+                  <div style={{ fontSize: "24px", marginBottom: "6px" }}>{icon}</div>
+                  <div style={{ fontSize: "24px", fontWeight: 700, color }}>{value}</div>
+                  <div style={{ fontSize: "11px", color: "#8899bb", marginTop: "4px" }}>{label}</div>
+                </div>
+              ))}
+            </div>
             {/* Recent listings */}
             <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "16px", padding: "16px" }}>
-              <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#ffffff", marginBottom: "14px" }}>Recent Listings</div>
+              <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#ffffff", marginBottom: "14px" }}>My On-Chain Listings</div>
               {loading ? (
                 <div style={{ color: "#0099ff", fontSize: "13px" }}>Loading...</div>
-              ) : listings.length === 0 ? (
+              ) : chainListings.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "24px", color: "#8899bb", fontSize: "13px" }}>
                   No listings yet — <a href="/sell" style={{ color: "#0099ff" }}>list your first card</a>
                 </div>
-              ) : listings.slice(0, 4).map((item, i) => (
+              ) : chainListings.slice(0, 4).map((item, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 0", borderBottom: i < Math.min(listings.length, 4) - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
                   <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: "#0a1628", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", flexShrink: 0, overflow: "hidden" }}>
                     {item.image_url ? <img src={item.image_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : "🃏"}
@@ -341,4 +370,11 @@ export default function Dashboard() {
       </div>
     </div>
   );
+}
+
+export default function Dashboard() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted) return null;
+  return <DashboardContent />;
 }
