@@ -54,33 +54,31 @@ function MarketplaceContent() {
         })
       });
       const json = await res.json();
-      // Fetch listing object IDs from chain
-      const txDigests = (json.result?.data || []).map((e: any) => e.id.txDigest);
-      const objectIds: Record<string, string> = {};
-      for (const digest of txDigests) {
-        try {
-          const txRes = await fetch("https://fullnode.testnet.sui.io:443", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              jsonrpc: "2.0", id: 1, method: "sui_getTransactionBlock",
-              params: [digest, { showObjectChanges: true }]
-            })
-          });
-          const txJson = await txRes.json();
-          const changes = txJson.result?.objectChanges || [];
-          const listingObj = changes.find((c: any) =>
-            c.type === "created" && c.objectType?.includes("::marketplace::Listing")
-          );
-          if (listingObj) objectIds[digest] = listingObj.objectId;
-        } catch {}
-      }
+      // Fetch all listing objects from chain
+      const listingObjectsRes = await fetch("https://fullnode.testnet.sui.io:443", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0", id: 1, method: "suix_queryObjects",
+          params: [
+            { StructType: `${CONTRACT_ID}::marketplace::Listing` },
+            null, 50, true
+          ]
+        })
+      });
+      const listingObjectsJson = await listingObjectsRes.json();
+      const listingObjects = listingObjectsJson.result?.data || [];
 
       const chainListings = (json.result?.data || []).map((e: any) => {
         const p = e.parsedJson;
+        // Match listing object by seller and listing_id
+        const matchedObj = listingObjects.find((o: any) =>
+          o.data?.content?.fields?.seller === p.seller &&
+          String(o.data?.content?.fields?.listing_id) === String(p.listing_id)
+        );
         return {
           id: e.id.txDigest,
-          listing_object_id: objectIds[e.id.txDigest] || null,
+          listing_object_id: matchedObj?.data?.objectId || null,
           name: p.card_name,
           game: p.game,
           condition: p.condition || "NM",
