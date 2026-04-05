@@ -62,7 +62,7 @@ export async function GET() {
       };
     }));
 
-    return NextResponse.json({ listings: listings.filter(Boolean) });
+    return NextResponse.json({ listings: listings.filter(Boolean) }, { headers: { "Cache-Control": "no-store" } });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ listings: [], error: String(err) });
