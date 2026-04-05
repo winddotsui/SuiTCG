@@ -55,6 +55,7 @@ export default function NavClient() {
           
           { href: "/users", label: "👥 Collectors" },
           { href: "/dashboard", label: "Dashboard" },
+          { href: "/analytics", label: "📊 Analytics" },
           { href: "/profile/0x91fa18b29e0603c18005f61479dd47e50cb52c85ede36c6dc44d85bc147c77f5", label: "Profile" },
         ].map(link => (
           <a key={link.href} href={link.href} style={{
