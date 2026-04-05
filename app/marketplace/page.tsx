@@ -34,56 +34,11 @@ function MarketplaceContent() {
   async function fetchListings() {
     setLoading(true);
     try {
-      // Fetch from blockchain
-      const res = await fetch("https://fullnode.testnet.sui.io:443", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jsonrpc: "2.0", id: 1, method: "suix_queryEvents",
-          params: [{ MoveEventType: `${CONTRACT_ID}::marketplace::ListingCreated` }, null, 50, true]
-        })
-      });
-      const json = await res.json();
-      // Fetch listing object IDs from each tx
-      const events = json.result?.data || [];
-      const objectIdMap: Record<string, string> = {};
-      await Promise.all(events.map(async (e: any) => {
-        try {
-          const txRes = await fetch("https://fullnode.testnet.sui.io:443", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              jsonrpc: "2.0", id: 1,
-              method: "sui_getTransactionBlock",
-              params: [e.id.txDigest, { showObjectChanges: true }]
-            })
-          });
-          const txJson = await txRes.json();
-          const changes = txJson.result?.objectChanges || [];
-          console.log("changes:", JSON.stringify(changes));
-          const listing = changes.find((c: any) =>
-            c.type === "created" && c.objectType?.includes("Listing")
-          );
-          console.log("listing found:", listing?.objectId);
-          if (listing) objectIdMap[e.id.txDigest] = listing.objectId;
-        } catch {}
-      }));
 
-      const chainListings = events.map((e: any) => {
-        const p = e.parsedJson;
-        return {
-          id: e.id.txDigest,
-          listing_object_id: objectIdMap[e.id.txDigest] || null,
-          name: p.card_name,
-          game: p.game,
-          condition: p.condition || "NM",
-          price_sui: Number(p.price_mist) / 1_000_000_000,
-          price_usd: (Number(p.price_mist) / 1_000_000_000) * 3.5,
-          seller_address: p.seller,
-          image_url: "",
-          is_chain: true,
-        };
-      });
+      // Fetch listings from our API (server-side, no CORS)
+      const listingsRes = await fetch("/api/listings");
+      const listingsJson = await listingsRes.json();
+      const chainListings = listingsJson.listings || [];
 
       // Also fetch from Supabase
       const { data } = await supabase.from("listings").select("*").eq("status","active").order("created_at",{ascending:false});
