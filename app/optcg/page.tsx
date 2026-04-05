@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
-import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 const PACKAGE_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
 const TOURNAMENT_ID = process.env.NEXT_PUBLIC_TOURNAMENT_ID || "";
@@ -276,6 +276,7 @@ function JoinModal({ onClose, onJoin, pot, prefillDeck }: { onClose: () => void;
 }
 
 export default function OPTCGHub() {
+  const suiClient = useSuiClient();
   const [activeTab, setActiveTab] = useState("tournament");
   const [showSimulator, setShowSimulator] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
@@ -288,9 +289,7 @@ export default function OPTCGHub() {
 
   async function fetchRegistrations() {
     try {
-      const { SuiClient } = await import("@mysten/sui/client");
-      const client = new SuiClient({ url: "https://fullnode.testnet.sui.io:443" });
-      const events = await client.queryEvents({
+      const events = await suiClient.queryEvents({
         query: { MoveEventType: `${process.env.NEXT_PUBLIC_CONTRACT_ID}::marketplace::TournamentJoined` },
         limit: 100,
         order: "descending",
