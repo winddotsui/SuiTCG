@@ -16,7 +16,7 @@ const MOCK_CARDS: Record<string, any> = {
   "m6": { name:"Mewtwo V Alt Art", game:"Pokémon TCG", set_name:"Lost Origin", card_number:"189/196", condition:"NM", price_usd:120, price_sui:16.5, art:"🌌", bg:"#14082a", seller_address:"MetaTrader", description:"Beautiful alternate art Mewtwo V." },
 };
 
-export default function CardDetail({ params }: { params: Promise<{ id: string }> }) {
+function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [card, setCard] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -202,4 +202,11 @@ export default function CardDetail({ params }: { params: Promise<{ id: string }>
       </div>
     </div>
   );
+}
+
+export default function CardDetail({ params }: { params: Promise<{ id: string }> }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted) return null;
+  return <CardDetailContent params={params} />;
 }
