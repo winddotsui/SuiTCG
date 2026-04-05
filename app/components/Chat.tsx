@@ -22,26 +22,17 @@ export default function Chat({ listingId, sellerAddress, cardName, onClose }: Ch
 
   useEffect(() => {
     fetchMessages();
-    // Real-time subscription
-    const channel = supabase
-      .channel(`chat-${listingId}-${Date.now()}`)
-      .on("postgres_changes", {
-        event: "INSERT",
-        schema: "public",
-        table: "messages",
-      }, (payload) => {
-        const msg = payload.new as any;
-        if (msg.listing_id === listingId) {
-          setMessages(prev => {
-            if (prev.find(m => m.id === msg.id)) return prev;
-            return [...prev, msg];
-          });
-          setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
-        }
-      })
-      .subscribe();
+    // Poll every 3 seconds for new messages
+    const interval = setInterval(async () => {
+      const { data } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("listing_id", listingId)
+        .order("created_at", { ascending: true });
+      if (data) setMessages(data);
+    }, 3000);
 
-    return () => { supabase.removeChannel(channel); };
+    return () => clearInterval(interval);
   }, [listingId]);
 
   useEffect(() => {
