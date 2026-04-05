@@ -288,8 +288,8 @@ export default function OPTCGHub() {
 
   async function fetchRegistrations() {
     try {
-      const { createSuiClient } = await import("@mysten/sui/client");
-      const client = createSuiClient({ url: "https://fullnode.testnet.sui.io:443" });
+      const { SuiClient } = await import("@mysten/sui/client");
+      const client = new SuiClient({ url: "https://fullnode.testnet.sui.io:443" });
       const events = await client.queryEvents({
         query: { MoveEventType: `${process.env.NEXT_PUBLIC_CONTRACT_ID}::marketplace::TournamentJoined` },
         limit: 100,
