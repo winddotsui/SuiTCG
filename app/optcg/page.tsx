@@ -182,6 +182,7 @@ function TreasureChest({ pot, players, maxPlayers }: { pot: number; players: num
 function JoinModal({ onClose, onJoin, pot, prefillDeck }: { onClose: () => void; onJoin: (name: string, deck: string, deckName: string, txDigest?: string, walletAddress?: string) => void; pot: number; prefillDeck?: {name: string, decklist: string, leader: string} | null }) {
   const account = useCurrentAccount();
   const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
+  const isAdmin = account?.address === ADMIN_WALLET;
   const [step, setStep] = useState<"form" | "confirm" | "paying" | "success">("confirm");
   const [walletConnected, setWalletConnected] = useState(false);
   const [playerName, setPlayerName] = useState("");
@@ -321,7 +322,6 @@ export default function OPTCGHub() {
   const [showSimulator, setShowSimulator] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
-  const isAdmin = account?.address === ADMIN_WALLET;
   const [players, setPlayers] = useState(0);
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [prefillDeck, setPrefillDeck] = useState<{name: string, decklist: string, leader: string} | null>(null);
