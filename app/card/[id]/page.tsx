@@ -152,6 +152,27 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
         read_by_seller: false,
       });
 
+      // Send email notification to seller
+      try {
+        const sellerProfile = await supabase.from("profiles").select("email").eq("wallet_address", card.seller_address).single();
+        if (sellerProfile.data?.email) {
+          await fetch("/api/email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "sale",
+              to: sellerProfile.data.email,
+              data: {
+                card_name: card.name,
+                price_sui: card.price_sui,
+                tx_digest: result.digest,
+                ...shipping,
+              }
+            })
+          });
+        }
+      } catch {}
+
       setShowShippingForm(false);
       alert("Purchase successful! Shipping details sent to seller.");
       window.location.href = "/orders";

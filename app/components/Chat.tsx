@@ -80,6 +80,28 @@ export default function Chat({ listingId, sellerAddress, cardName, onClose }: Ch
       message: newMessage.trim(),
     });
     setNewMessage("");
+
+    // Notify receiver by email
+    try {
+      const { data: receiverProfile } = await supabase
+        .from("profiles").select("email").eq("wallet_address", receiver).single();
+      if (receiverProfile?.email) {
+        await fetch("/api/email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "message",
+            to: receiverProfile.email,
+            data: {
+              card_name: cardName,
+              sender: myAddress,
+              message: newMessage.trim(),
+            }
+          })
+        });
+      }
+    } catch {}
+
     setSending(false);
   }
 
