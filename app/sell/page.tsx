@@ -28,6 +28,7 @@ function SellContent() {
   const [walletAddress, setWalletAddress] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState("");
+  const [suiPrice, setSuiPrice] = useState(0.87);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [form, setForm] = useState({ game: "One Piece TCG", name: "", set_name: "", card_number: "", condition: "NM", price_usd: "", quantity: "1", description: "", image_url: "" });
   const [cardSuggestions, setCardSuggestions] = useState<any[]>([]);
@@ -402,10 +403,3 @@ function SellContent() {
 export default function Sell() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    fetch("/api/sui-price").then(r => r.json()).then(d => setSuiPrice(d.price || 0.87)).catch(() => {});
-  }, []);
-
-  useEffect(() => { setMounted(true); }, []);
-  if (!mounted) return null;
-  return <SellContent />;
-}
