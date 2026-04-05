@@ -511,8 +511,11 @@ export default function OPTCGHub() {
                 >
                   <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#c8d8f0" }}>#{i + 1}</div>
                   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "rgba(0,85,255,0.15)", border: "1px solid rgba(0,85,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cinzel, serif", fontSize: "16px", color: "#00d4ff", flexShrink: 0 }}>
-                      {reg.player_name[0]?.toUpperCase()}
+                    <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "rgba(0,85,255,0.15)", border: "1px solid rgba(0,85,255,0.3)", overflow: "hidden", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {reg.avatar_url
+                        ? <img src={reg.avatar_url} alt={reg.player_name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        : <span style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#00d4ff" }}>{reg.player_name[0]?.toUpperCase()}</span>
+                      }
                     </div>
                     <span style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff" }}>{reg.player_name}</span>
                   </div>
