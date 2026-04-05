@@ -110,10 +110,10 @@ function DashboardContent() {
         {/* Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px", marginBottom: "24px" }}>
           {[
-            { label: "Active Listings", val: activeListings.length.toString(), sub: `${listings.length} total`, color: "#0099ff" },
-            { label: "Price Alerts", val: activeAlerts.length.toString(), sub: `${alerts.length} total`, color: "#00d4ff" },
-            { label: "Saved Decks", val: decks.length.toString(), sub: "in deck builder", color: "#00ffcc" },
-            { label: "Tournaments", val: tournaments.length.toString(), sub: "registered", color: "#0099ff" },
+            { label: "Active Listings", val: chainListings.length.toString(), sub: `on-chain`, color: "#0099ff" },
+            { label: "Total Sales", val: orders.filter((o: any) => o.seller_address === walletAddress).length.toString(), sub: "completed sales", color: "#00ff88" },
+            { label: "Purchases", val: orders.filter((o: any) => o.buyer_address === walletAddress).length.toString(), sub: "cards bought", color: "#00ffcc" },
+            { label: "Price Alerts", val: alerts.length.toString(), sub: "active alerts", color: "#ffcc00" },
           ].map((s, i) => (
             <div key={i} style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "12px", padding: "14px 16px" }}>
               <div style={{ fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", color: "#8899bb", marginBottom: "6px" }}>{s.label}</div>
