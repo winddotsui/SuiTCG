@@ -303,6 +303,7 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
                   <button onClick={handleCancel} disabled={buying} style={{ background: "rgba(255,50,50,0.1)", color: "#ff6b6b", border: "1px solid rgba(255,50,50,0.3)", borderRadius: "8px", padding: "13px", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>
                     {buying ? "Processing..." : "❌ Cancel Listing"}
                   </button>
+                  <button onClick={() => setShowChat(true)} style={{ background: "transparent", color: "#00d4ff", border: "1px solid rgba(0,212,255,0.3)", borderRadius: "8px", padding: "11px", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>💬 Chat with Buyers</button>
                 </>
               ) : (
                 <>
