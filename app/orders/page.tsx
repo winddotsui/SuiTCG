@@ -1,19 +1,19 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 function OrdersContent() {
+  const account = useCurrentAccount();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [walletAddress, setWalletAddress] = useState("");
   const [activeTab, setActiveTab] = useState<"selling" | "buying">("selling");
+  const walletAddress = account?.address || localStorage.getItem("wavetcg_wallet_address") || "";
 
   useEffect(() => {
-    const addr = localStorage.getItem("wavetcg_wallet_address") || "";
-    setWalletAddress(addr);
-    if (addr) fetchOrders(addr);
+    if (walletAddress) fetchOrders(walletAddress);
     else setLoading(false);
-  }, []);
+  }, [walletAddress]);
 
   async function fetchOrders(addr: string) {
     setLoading(true);

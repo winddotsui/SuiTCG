@@ -102,6 +102,7 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
 
       setShowShippingForm(false);
       alert("Purchase successful! Shipping details sent to seller.");
+      window.location.href = "/orders";
     } catch (e) {
       alert(e instanceof Error ? e.message : "Transaction failed.");
     }
