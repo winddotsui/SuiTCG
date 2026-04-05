@@ -83,9 +83,4 @@ export default function NavClient() {
   );
 }
 
-export default function NavClient() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-  if (!mounted) return <></> ;
-  return <NavClientInner />;
-}
+export default NavClientInner;
