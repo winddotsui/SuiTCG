@@ -31,6 +31,8 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const [showOfferInput, setShowOfferInput] = useState(false);
   const [showShippingForm, setShowShippingForm] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const [offers, setOffers] = useState<any[]>([]);
+  const [offerLoading, setOfferLoading] = useState(false);
   const [shipping, setShipping] = useState({ name: "", email: "", phone: "", address: "", city: "", province: "", country: "Philippines", zip: "", notes: "" });
   const isSeller = account?.address === card?.seller_address;
 
@@ -57,6 +59,54 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
     }
     setBuying(false);
   }
+
+  async function fetchOffers() {
+    if (!card?.id || !isSeller) return;
+    setOfferLoading(true);
+    try {
+      const res = await fetch(`/api/offers?listing_id=${card.listing_object_id}&seller=${card.seller_address}`);
+      const json = await res.json();
+      setOffers(json.offers || []);
+    } catch {}
+    setOfferLoading(false);
+  }
+
+  async function acceptOffer(offerObjectId: string) {
+    if (!account) return;
+    try {
+      const tx = new Transaction();
+      tx.moveCall({
+        target: `${CONTRACT_ID}::marketplace::accept_offer`,
+        arguments: [tx.object(CONTRACT_ID), tx.object(offerObjectId)],
+      });
+      await signAndExecute({ transaction: tx });
+      alert("Offer accepted! SUI transferred to you.");
+      fetchOffers();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Failed to accept offer.");
+    }
+  }
+
+  async function rejectOffer(offerObjectId: string) {
+    if (!account) return;
+    try {
+      const tx = new Transaction();
+      tx.moveCall({
+        target: `${CONTRACT_ID}::marketplace::cancel_offer`,
+        arguments: [tx.object(offerObjectId)],
+      });
+      await signAndExecute({ transaction: tx });
+      alert("Offer rejected. SUI returned to buyer.");
+      fetchOffers();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Failed to reject offer.");
+    }
+  }
+
+  // Load offers when card loads and user is seller
+  useEffect(() => {
+    if (card && isSeller) fetchOffers();
+  }, [card, isSeller]);
 
   async function handleBuy() {
     if (!account) { alert("Connect your Sui wallet first!"); return; }
@@ -304,6 +354,34 @@ function CardDetailContent({ params }: { params: Promise<{ id: string }> }) {
                     {buying ? "Processing..." : "❌ Cancel Listing"}
                   </button>
                   <button onClick={() => setShowChat(true)} style={{ background: "transparent", color: "#00d4ff", border: "1px solid rgba(0,212,255,0.3)", borderRadius: "8px", padding: "11px", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>💬 Chat with Buyers</button>
+
+                  {/* Incoming Offers */}
+                  {isSeller && (
+                    <div style={{ marginTop: "8px" }}>
+                      <div style={{ fontSize: "12px", color: "#8899bb", marginBottom: "8px", display: "flex", justifyContent: "space-between" }}>
+                        <span>🤝 Incoming Offers ({offers.length})</span>
+                        <button onClick={fetchOffers} style={{ background: "transparent", border: "none", color: "#0099ff", fontSize: "11px", cursor: "pointer" }}>Refresh</button>
+                      </div>
+                      {offerLoading ? (
+                        <div style={{ fontSize: "12px", color: "#8899bb" }}>Loading offers...</div>
+                      ) : offers.length === 0 ? (
+                        <div style={{ fontSize: "12px", color: "#444460", padding: "12px", background: "rgba(255,255,255,0.03)", borderRadius: "8px", textAlign: "center" }}>No offers yet</div>
+                      ) : offers.map(offer => (
+                        <div key={offer.id} style={{ background: "rgba(0,153,255,0.05)", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "10px", padding: "12px", marginBottom: "8px" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                            <div>
+                              <div style={{ fontSize: "16px", fontWeight: 700, color: "#00d4ff" }}>{offer.offer_sui} SUI</div>
+                              <div style={{ fontSize: "11px", color: "#8899bb" }}>{offer.buyer.slice(0,8)}...{offer.buyer.slice(-6)}</div>
+                            </div>
+                            <div style={{ display: "flex", gap: "6px" }}>
+                              <button onClick={() => acceptOffer(offer.offer_object_id)} style={{ background: "rgba(0,255,136,0.1)", color: "#00ff88", border: "1px solid rgba(0,255,136,0.3)", borderRadius: "6px", padding: "6px 12px", fontSize: "12px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>✅ Accept</button>
+                              <button onClick={() => rejectOffer(offer.offer_object_id)} style={{ background: "rgba(255,50,50,0.1)", color: "#ff6b6b", border: "1px solid rgba(255,50,50,0.3)", borderRadius: "6px", padding: "6px 12px", fontSize: "12px", cursor: "pointer", fontFamily: "DM Sans, sans-serif" }}>❌ Reject</button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </>
               ) : (
                 <>
