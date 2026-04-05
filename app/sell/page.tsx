@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useCurrentAccount, ConnectButton } from "@mysten/dapp-kit";
 import { supabase } from "../../lib/supabase";
 
 const GAMES = ["One Piece TCG", "Pokémon TCG", "Magic: The Gathering", "Yu-Gi-Oh!", "Flesh & Blood", "Digimon", "Lorcana", "Dragon Ball", "Weiss Schwarz", "Union Arena"];
@@ -11,6 +12,7 @@ const inputStyle = { width: "100%", background: "#0a1628", border: "1px solid rg
 const labelStyle = { display: "block", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "#8899bb", marginBottom: "7px" };
 
 export default function Sell() {
+  const currentAccount = useCurrentAccount();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -104,7 +106,7 @@ export default function Sell() {
   async function handleSubmit() {
     if (!form.name.trim()) { setError("Please enter a card name"); return; }
     if (!form.price_usd || parseFloat(form.price_usd) <= 0) { setError("Please enter a valid price"); return; }
-    if (!walletAddress) { setError("No wallet connected. Please connect your Sui wallet first."); return; }
+    if (!effectiveWallet) { setError("No wallet connected. Please connect your Sui wallet first."); return; }
     setLoading(true); setError("");
     try {
       const imageUrl = await uploadImage();
@@ -119,7 +121,7 @@ export default function Sell() {
         
         description: form.description || null,
         image_url: imageUrl || null,
-        seller_address: walletAddress,
+        seller_address: effectiveWallet,
         status: "active",
       };
       console.log("Submitting listing:", payload);
@@ -147,6 +149,8 @@ export default function Sell() {
     setStep(1);
   }
 
+  const effectiveWallet = currentAccount?.address || walletAddress;
+
   if (checkingProfile) return (
     <div style={{ minHeight: "100vh", background: "#000008", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ color: "#0099ff", fontFamily: "Cinzel, serif" }}>Loading...</div>
@@ -165,9 +169,9 @@ export default function Sell() {
       <div style={{ maxWidth: "640px", margin: "0 auto", padding: "20px clamp(12px, 3vw, 24px)" }}>
 
         {/* wallet debug info */}
-        {walletAddress && (
+        {effectiveWallet && (
           <div style={{ background: "rgba(0,153,255,0.05)", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "8px", padding: "8px 14px", marginBottom: "12px", fontSize: "11px", color: "#8899bb" }}>
-            🔗 Wallet: {walletAddress.slice(0, 10)}...{walletAddress.slice(-6)}
+            🔗 Wallet: {effectiveWallet.slice(0, 10)}...{effectiveWallet.slice(-6)}
           </div>
         )}
 
@@ -176,7 +180,7 @@ export default function Sell() {
           <p style={{ fontSize: "11px", color: "#c8a84b", lineHeight: 1.5, margin: 0 }}><strong>Safety Tip:</strong> Connect at least 2 social accounts to build trust with buyers.</p>
         </div>
 
-        {!walletAddress ? (
+        {!effectiveWallet ? (
           <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "16px", padding: "48px 24px", textAlign: "center" }}>
             <div style={{ fontSize: "40px", marginBottom: "14px" }}>🔌</div>
             <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", color: "#ffffff", marginBottom: "8px" }}>Connect Your Wallet</div>
@@ -197,7 +201,7 @@ export default function Sell() {
               ))}
             </div>
             <div style={{ fontSize: "13px", color: "#8899bb", marginBottom: "16px" }}><strong style={{ color: verifiedCount >= 2 ? "#00ff88" : "#ff9955" }}>{verifiedCount}/2</strong> accounts connected</div>
-            <a href={`/profile/${walletAddress}`} style={{ display: "block", background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", padding: "12px 24px", borderRadius: "10px", fontSize: "13px", fontWeight: 600, textDecoration: "none" }}>Connect Socials on Profile →</a>
+            <a href={`/profile/${effectiveWallet}`} style={{ display: "block", background: "linear-gradient(135deg, #0055ff, #0099ff)", color: "#fff", padding: "12px 24px", borderRadius: "10px", fontSize: "13px", fontWeight: 600, textDecoration: "none" }}>Connect Socials on Profile →</a>
           </div>
         ) : success ? (
           <div style={{ background: "#050515", border: "1px solid rgba(0,255,100,0.2)", borderRadius: "16px", padding: "clamp(32px, 6vw, 60px)", textAlign: "center" }}>
