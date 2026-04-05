@@ -81,7 +81,6 @@ export async function GET(req: NextRequest) {
     });
 
     const tokenData = await tokenRes.json();
-    console.log("Token response:", JSON.stringify(tokenData));
 
     if (!tokenData.access_token) {
       return NextResponse.redirect(BASE_URL + "/auth/twitter/callback?error=no_token&detail=" + encodeURIComponent(JSON.stringify(tokenData)));

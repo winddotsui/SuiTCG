@@ -39,10 +39,10 @@ export default function AlertsPage() {
         .from("price_alerts")
         .select("*")
         .order("created_at", { ascending: false });
-      if (error) showError("Failed to load alerts"); console.error("Supabase error:", error);
+      if (error) { showError("Failed to load alerts"); console.error("Supabase error:", error); }
       if (data) setAlerts(data);
     } catch (e) {
-      showError("Failed to load alerts"); console.error("Fetch error:", e);
+      { showError("Failed to load alerts"); console.error("Fetch error:", e); }
     }
     setLoading(false);
   }

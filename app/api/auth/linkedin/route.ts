@@ -26,7 +26,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(BASE_URL + "/auth/linkedin/callback?error=" + error);
   }
 
-  console.log("LinkedIn REDIRECT_URI:", REDIRECT_URI);
   if (!code) {
     const state = generateState();
     const params = new URLSearchParams({
