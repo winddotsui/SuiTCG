@@ -508,7 +508,7 @@ function OPTCGHubInner({ isAdmin, walletAddress }: { isAdmin: boolean; walletAdd
             { id: "tournament", label: "💰 Weekly Tournament" },
             { id: "participants", label: "👥 Participants" },
             { id: "rankings", label: "🏆 Rankings" },
-            { id: "bracket", label: "⚔️ Bracket" },
+            { id: "bracket", label: "⚔️ Player Pairings" },
             { id: "howtoplay", label: "📖 How to Play" },
           ].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ padding: "12px 24px", background: "transparent", border: "none", borderBottom: activeTab === tab.id ? "2px solid #0099ff" : "2px solid transparent", color: activeTab === tab.id ? "#00d4ff" : "#c8d8f0", fontSize: "13px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", marginBottom: "-1px" }}>{tab.label}</button>
