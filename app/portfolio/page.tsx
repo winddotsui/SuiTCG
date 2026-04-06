@@ -88,8 +88,6 @@ function PortfolioInner() {
         }
       } catch {}
 
-          }
-        }
 
       const withPrices = holdingsRaw.map(h => {
         const price = prices[h.coinType] ?? null;
