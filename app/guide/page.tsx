@@ -26,11 +26,11 @@ const LISTING_STEPS = [
 ];
 
 const PAYMENT_STEPS = [
-  { step: "1", icon: "🛒", title: "Buyer Clicks Buy", desc: "A buyer finds your card and clicks Buy. They enter their shipping details and confirm. Their SUI is immediately locked in a smart contract on Sui blockchain — it cannot be reversed, disputed, or charged back. Zero chargeback risk.", tip: "Smart contract = a self-executing program that holds payment safely until both sides are satisfied. No bank, no PayPal, no middleman." },
+  { step: "1", icon: "🛒", title: "Buyer Clicks Buy", desc: "A buyer finds your card and clicks Buy. They enter their shipping details and confirm. Their SUI is immediately split by the Sui blockchain smart contract: 99% goes straight to your wallet, 1% to WaveTCG. Payment is instant and final — no chargebacks, no disputes, no reversals.", tip: "Smart contract = code on the blockchain that automatically splits and sends the payment the moment the buyer confirms. No bank, no PayPal, no middleman." },
   { step: "2", icon: "📧", title: "You Get an Email Instantly", desc: "The moment your card sells, WaveTCG emails you the buyer shipping details: full name, email, phone, address, city, province, country, zip code, and any special notes from the buyer.", tip: "Save your email in your Profile page so you never miss a sale notification." },
   { step: "3", icon: "📦", title: "Pack and Ship the Card", desc: "Pack your card (penny sleeve + toploader + rigid mailer) and ship to the address in your email. Always use tracked shipping. Share the tracking number with the buyer via WaveTCG chat.", tip: "Ship within 3 business days. Fast shipping builds your reputation and gets you more future sales." },
-  { step: "4", icon: "✅", title: "Buyer Confirms Receipt", desc: "Once the buyer receives the card and is happy, they confirm the order on WaveTCG. This triggers the smart contract to automatically release your payment. 100% automatic — no manual approval from WaveTCG needed.", tip: "Dispute? WaveTCG admin can review. Always keep your tracking number and packing photos as evidence." },
-  { step: "5", icon: "💰", title: "SUI Lands in Your Wallet", desc: "99% of the sale price goes directly to your Sui wallet the moment the buyer confirms. 1% platform fee is taken automatically by the smart contract. No withdrawal, no waiting, no bank transfer. Use our Swap feature to convert SUI to PHP or USD anytime.", tip: "Example: Sell for 10 SUI. You get 9.9 SUI instantly. WaveTCG gets 0.1 SUI. That is it." },
+  { step: "4", icon: "📦", title: "Ship the Card — You Already Got Paid", desc: "At this point, the SUI is already in your wallet. Now just fulfill the order. Pack your card and ship it to the buyer using the address from your email. Use tracked shipping and share the tracking number via WaveTCG chat.", tip: "Ship within 3 business days. The buyer already paid — just deliver." },
+  { step: "5", icon: "💰", title: "You Are Done!", desc: "Once you ship the card, you are done. The SUI was already sent to your wallet the moment the buyer purchased — no waiting, no withdrawal, no manual payout. Use the Swap feature to convert SUI to PHP or USD anytime.", tip: "Example: Sell for 10 SUI. You received 9.9 SUI instantly when the buyer paid. WaveTCG received 0.1 SUI. Done." },
 ];
 
 const SHIPPING_TIPS = [
@@ -63,7 +63,7 @@ const FAQ = [
   { q: "Do I need SUI to list a card?", a: "Yes, a tiny gas fee (~0.01 SUI) is needed to list on-chain. The listing itself is free." },
   { q: "How do I get SUI?", a: "Buy SUI on Binance, Coinbase, or Bybit. Transfer to your Slush wallet using the Sui network." },
   { q: "What wallets work with WaveTCG?", a: "Any Sui wallet works: Slush (recommended for beginners), Sui Wallet, Nightly, and more. You can also use Google login via zkLogin." },
-  { q: "How long until I get paid?", a: "Payment is instant once the buyer confirms receipt. The SUI goes straight to your wallet." },
+  { q: "How long until I get paid?", a: "Instantly. The moment a buyer purchases your card, the SUI goes straight to your wallet automatically via the Sui blockchain smart contract. No waiting, no withdrawal needed." },
   { q: "What is the platform fee?", a: "WaveTCG charges 1% only when your card sells. Listing is completely free." },
   { q: "What if a buyer does not pay?", a: "Payment is locked in the smart contract the moment they click Buy. There is no way to buy without paying." },
   { q: "Can I cancel a listing?", a: "Yes, you can cancel your listing anytime from your dashboard as long as it has not been purchased." },
