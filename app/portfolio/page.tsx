@@ -74,23 +74,74 @@ function PortfolioInner() {
         const balance = Number(b.totalBalance) / 10**decimals;
         return { coinType:b.coinType, symbol, name, iconUrl, balance, decimals, price:null, value:null, pct:0 };
       }));
-      let prices: Record<string,{usd:number}> = {};
-      try { const r = await fetch("/api/sui-price"); const d = await r.json(); if (d.price) prices["sui"]={usd:d.price}; } catch {}
+      let prices: Record<string,number> = {};
+      try {
+        // Fetch SUI price
+        const suiRes = await fetch("/api/sui-price");
+        const suiData = await suiRes.json();
+        if (suiData.price) prices["0x2::sui::SUI"] = suiData.price;
+
+        // Fetch prices for all other tokens via CoinGecko platform API
+        const nonSuiTypes = holdingsRaw
+          .filter(h => h.coinType !== "0x2::sui::SUI")
+          .map(h => h.coinType);
+
+        if (nonSuiTypes.length > 0) {
+          // Try CoinGecko onchain API for Sui network tokens
+          const addresses = nonSuiTypes.map(t => t.split("::")[0]).join(",");
+          try {
+            const cgRes = await fetch(
+              `https://api.coingecko.com/api/v3/simple/token_price/sui-network?contract_addresses=${addresses}&vs_currencies=usd`,
+              { headers: { "Accept": "application/json" } }
+            );
+            if (cgRes.ok) {
+              const cgData = await cgRes.json();
+              // Map back from contract address to full coinType
+              holdingsRaw.forEach(h => {
+                const addr = h.coinType.split("::")[0].toLowerCase();
+                const found = Object.entries(cgData).find(([k]) => k.toLowerCase() === addr);
+                if (found && (found[1] as any).usd) {
+                  prices[h.coinType] = (found[1] as any).usd;
+                }
+              });
+            }
+          } catch {}
+
+          // Fallback: try CoinGecko by known IDs
+          const knownIds = nonSuiTypes
+            .map(t => SUI_COINGECKO_IDS[t])
+            .filter(Boolean)
+            .join(",");
+          if (knownIds) {
+            try {
+              const cgRes2 = await fetch(
+                `https://api.coingecko.com/api/v3/simple/price?ids=${knownIds}&vs_currencies=usd`
+              );
+              if (cgRes2.ok) {
+                const cgData2 = await cgRes2.json();
+                holdingsRaw.forEach(h => {
+                  if (prices[h.coinType]) return; // already have price
+                  const id = SUI_COINGECKO_IDS[h.coinType];
+                  if (id && cgData2[id]?.usd) prices[h.coinType] = cgData2[id].usd;
+                });
+              }
+            } catch {}
+          }
+        }
+      } catch {}
+
       const withPrices = holdingsRaw.map(h => {
-        const cgId = SUI_COINGECKO_IDS[h.coinType];
-        const price = cgId && prices[cgId] ? prices[cgId].usd : null;
+        const price = prices[h.coinType] ?? null;
         return { ...h, price, value: price !== null ? h.balance * price : null };
       });
       const totalValue = withPrices.reduce((sum,h)=>sum+(h.value||0),0);
-      const totalBalance = withPrices.reduce((sum,h)=>sum+h.balance,0);
-      const final = withPrices.map(h=>({
-        ...h,
-        pct: totalValue>0&&h.value
-          ? (h.value/totalValue)*100
-          : totalBalance>0
-          ? (h.balance/totalBalance)*100
-          : 0
-      })).filter(h=>h.balance>0);
+      const final = withPrices
+        .map(h=>({
+          ...h,
+          pct: totalValue>0&&h.value ? (h.value/totalValue)*100 : 0
+        }))
+        .filter(h=>h.balance>0)
+        .sort((a,b)=>(b.value||0)-(a.value||0));
       setHoldings(final); setLastUpdated(new Date());
     } catch { showError("Failed to fetch portfolio"); }
     setLoading(false);
