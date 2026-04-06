@@ -76,59 +76,20 @@ function PortfolioInner() {
       }));
       let prices: Record<string,number> = {};
       try {
-        // Fetch SUI price
-        const suiRes = await fetch("/api/sui-price");
-        const suiData = await suiRes.json();
-        if (suiData.price) prices["0x2::sui::SUI"] = suiData.price;
-
-        // Fetch prices for all other tokens via CoinGecko platform API
-        const nonSuiTypes = holdingsRaw
-          .filter(h => h.coinType !== "0x2::sui::SUI")
-          .map(h => h.coinType);
-
-        if (nonSuiTypes.length > 0) {
-          // Try CoinGecko onchain API for Sui network tokens
-          const addresses = nonSuiTypes.map(t => t.split("::")[0]).join(",");
-          try {
-            const cgRes = await fetch(
-              `https://api.coingecko.com/api/v3/simple/token_price/sui-network?contract_addresses=${addresses}&vs_currencies=usd`,
-              { headers: { "Accept": "application/json" } }
-            );
-            if (cgRes.ok) {
-              const cgData = await cgRes.json();
-              // Map back from contract address to full coinType
-              holdingsRaw.forEach(h => {
-                const addr = h.coinType.split("::")[0].toLowerCase();
-                const found = Object.entries(cgData).find(([k]) => k.toLowerCase() === addr);
-                if (found && (found[1] as any).usd) {
-                  prices[h.coinType] = (found[1] as any).usd;
-                }
-              });
-            }
-          } catch {}
-
-          // Fallback: try CoinGecko by known IDs
-          const knownIds = nonSuiTypes
-            .map(t => SUI_COINGECKO_IDS[t])
-            .filter(Boolean)
-            .join(",");
-          if (knownIds) {
-            try {
-              const cgRes2 = await fetch(
-                `https://api.coingecko.com/api/v3/simple/price?ids=${knownIds}&vs_currencies=usd`
-              );
-              if (cgRes2.ok) {
-                const cgData2 = await cgRes2.json();
-                holdingsRaw.forEach(h => {
-                  if (prices[h.coinType]) return; // already have price
-                  const id = SUI_COINGECKO_IDS[h.coinType];
-                  if (id && cgData2[id]?.usd) prices[h.coinType] = cgData2[id].usd;
-                });
-              }
-            } catch {}
-          }
+        const coinTypes = holdingsRaw.map(h => h.coinType);
+        const res = await fetch("/api/token-prices", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ coinTypes }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          Object.assign(prices, data.prices || {});
         }
       } catch {}
+
+          }
+        }
 
       const withPrices = holdingsRaw.map(h => {
         const price = prices[h.coinType] ?? null;
