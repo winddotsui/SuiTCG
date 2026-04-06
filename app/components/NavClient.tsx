@@ -49,6 +49,7 @@ export default function NavClient() {
           { href: "/optcg", label: "🏴‍☠️ OPTCG" },
           { href: "/deckbuilder", label: "🃏 Deck Builder" },
           { href: "/guide", label: "📖 Guide" },
+          { href: "/portfolio", label: "💼 Portfolio" },
           { href: "/sell", label: "Sell" },
           { href: "/swap", label: "💱 Swap" },
           { href: "/alerts", label: "🔔 Alerts" },
