@@ -7,6 +7,31 @@ const STABLE_COINS: Record<string, number> = {
   "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC": 1,
 };
 
+async function getGeckoTerminalPrices(addresses: string[]): Promise<Record<string, number>> {
+  const prices: Record<string, number> = {};
+  const batches: string[][] = [];
+  for (let i = 0; i < addresses.length; i += 30) {
+    batches.push(addresses.slice(i, i + 30));
+  }
+  for (const batch of batches) {
+    try {
+      const res = await fetch(
+        "https://api.geckoterminal.com/api/v2/networks/sui-network/tokens/multi/" + batch.join(","),
+        { headers: { "Accept": "application/json" }, next: { revalidate: 30 } }
+      );
+      if (!res.ok) continue;
+      const data = await res.json();
+      const tokens = data?.data || [];
+      for (const token of tokens) {
+        const addr = token?.attributes?.address?.toLowerCase();
+        const price = parseFloat(token?.attributes?.price_usd || "0");
+        if (addr && price > 0) prices[addr] = price;
+      }
+    } catch {}
+  }
+  return prices;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { coinTypes } = await req.json();
@@ -14,39 +39,25 @@ export async function POST(req: NextRequest) {
 
     const prices: Record<string, number> = {};
 
-    // Stablecoins
     for (const ct of coinTypes) {
       if (STABLE_COINS[ct]) prices[ct] = STABLE_COINS[ct];
     }
 
-    const nonStable = coinTypes.filter(ct => !prices[ct]);
+    const nonStable = coinTypes.filter((ct: string) => !prices[ct]);
     if (nonStable.length === 0) return NextResponse.json({ prices });
 
-    // Get contract addresses (first part before ::)
-    const addrMap: Record<string, string> = {};
+    const addrToCoinType: Record<string, string> = {};
+    const addresses: string[] = [];
     for (const ct of nonStable) {
       const addr = ct.split("::")[0].toLowerCase();
-      addrMap[addr] = ct;
+      addrToCoinType[addr] = ct;
+      addresses.push(addr);
     }
 
-    const addresses = Object.keys(addrMap).join(",");
-
-    // CoinGecko token price by contract address on Sui network
-    const url = `https://api.coingecko.com/api/v3/simple/token_price/sui-network?contract_addresses=${addresses}&vs_currencies=usd&include_24hr_change=true`;
-
-    const res = await fetch(url, {
-      headers: { "Accept": "application/json" },
-      next: { revalidate: 60 },
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      for (const [addr, price] of Object.entries(data)) {
-        const coinType = addrMap[addr.toLowerCase()];
-        if (coinType && (price as any).usd) {
-          prices[coinType] = (price as any).usd;
-        }
-      }
+    const gtPrices = await getGeckoTerminalPrices(addresses);
+    for (const [addr, price] of Object.entries(gtPrices)) {
+      const coinType = addrToCoinType[addr];
+      if (coinType) prices[coinType] = price;
     }
 
     return NextResponse.json({ prices });
