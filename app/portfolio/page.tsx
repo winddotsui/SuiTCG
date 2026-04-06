@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { showSuccess, showError } from "../../lib/toast";
@@ -32,7 +33,7 @@ function fmt(n: number, decimals = 2) {
   return n.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
 }
 
-export default function PortfolioPage() {
+function PortfolioInner() {
   const account = useCurrentAccount();
   const client = useSuiClient();
   const [holdings, setHoldings] = useState<TokenHolding[]>([]);
@@ -290,3 +291,12 @@ export default function PortfolioPage() {
     </div>
   );
 }
+
+function PortfolioWrapper() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return <PortfolioInner />;
+}
+
+export default dynamic(() => Promise.resolve(PortfolioWrapper), { ssr: false });
