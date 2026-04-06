@@ -48,7 +48,7 @@ export default function NavClient() {
           { href: "/oracle", label: "TCG Agent" },
           { href: "/optcg", label: "🏴‍☠️ OPTCG" },
           { href: "/deckbuilder", label: "🃏 Deck Builder" },
-          { href: "/download", label: "Download" },
+          { href: "/guide", label: "📖 Guide" },
           { href: "/sell", label: "Sell" },
           { href: "/swap", label: "💱 Swap" },
           { href: "/alerts", label: "🔔 Alerts" },
