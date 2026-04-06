@@ -14,31 +14,40 @@ export async function POST(req: NextRequest) {
 
     const prices: Record<string, number> = {};
 
-    // Stablecoins = $1
+    // Stablecoins
     for (const ct of coinTypes) {
       if (STABLE_COINS[ct]) prices[ct] = STABLE_COINS[ct];
     }
 
-    // Fetch ALL token prices from GeckoTerminal in parallel
-    // GeckoTerminal covers every token on Sui with a DEX pool
     const nonStable = coinTypes.filter(ct => !prices[ct]);
+    if (nonStable.length === 0) return NextResponse.json({ prices });
 
-    await Promise.all(nonStable.map(async (ct) => {
-      try {
-        const addr = ct.split("::")[0];
-        const res = await fetch(
-          `https://api.geckoterminal.com/api/v2/networks/sui-network/tokens/${addr}`,
-          {
-            headers: { "Accept": "application/json" },
-            next: { revalidate: 30 }
-          }
-        );
-        if (!res.ok) return;
-        const data = await res.json();
-        const p = parseFloat(data?.data?.attributes?.price_usd || "0");
-        if (p > 0) prices[ct] = p;
-      } catch {}
-    }));
+    // Get contract addresses (first part before ::)
+    const addrMap: Record<string, string> = {};
+    for (const ct of nonStable) {
+      const addr = ct.split("::")[0].toLowerCase();
+      addrMap[addr] = ct;
+    }
+
+    const addresses = Object.keys(addrMap).join(",");
+
+    // CoinGecko token price by contract address on Sui network
+    const url = `https://api.coingecko.com/api/v3/simple/token_price/sui-network?contract_addresses=${addresses}&vs_currencies=usd&include_24hr_change=true`;
+
+    const res = await fetch(url, {
+      headers: { "Accept": "application/json" },
+      next: { revalidate: 60 },
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      for (const [addr, price] of Object.entries(data)) {
+        const coinType = addrMap[addr.toLowerCase()];
+        if (coinType && (price as any).usd) {
+          prices[coinType] = (price as any).usd;
+        }
+      }
+    }
 
     return NextResponse.json({ prices });
   } catch (e: any) {
