@@ -10,6 +10,14 @@ const SUI_COINGECKO_IDS: Record<string, string> = {
   "0x2::sui::SUI": "sui",
   "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN": "usd-coin",
   "0xc060006111016b8a020ad5b33834984a437aaa7d3c74c18e09a95d48aceab08c::coin::COIN": "tether",
+  "0x960b531667636f39e85867775f52f6b1f220a058c4de786905bdf761e06a56bb::usdc::USDC": "usd-coin",
+  "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC": "usd-coin",
+  "0x6864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS": "cetus-protocol",
+  "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT": "volo-staked-sui",
+  "0xf325ce1300e8dac124071d3152c5c5ee6174914f8bc2161e88329cf579246efc::afsui::AFSUI": "aftermath-staked-sui",
+  "0x027792d9fed7f9844eb4839566001bb6f6cb4804f66aa2da6fe1ee242d896881::coin::COIN": "wbtc",
+  "0x9b5a3db572955df65f071e09f29b8b8f0db952c5ae0ffc2d4f8a24d5882c81d1::wal::WAL": "walrus-2",
+  "0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946ea44::deep::DEEP": "deepbook",
 };
 
 interface TokenHolding {
@@ -236,7 +244,7 @@ function PortfolioInner() {
                 )}
               </div>
 
-              {pieData.length>1&&(
+              {pieData.length>0&&(
                 <div style={{background:"#050515",border:"1px solid rgba(255,255,255,0.06)",borderRadius:"16px",padding:"24px",position:"sticky",top:"80px"}}>
                   <div style={{fontFamily:"Cinzel, serif",fontSize:"15px",color:"#fff",marginBottom:"4px"}}>Allocation</div>
                   <div style={{fontSize:"11px",color:"#444460",marginBottom:"20px"}}>Portfolio breakdown</div>
