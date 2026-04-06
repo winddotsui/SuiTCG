@@ -17,28 +17,28 @@ const WALLET_STEPS = [
 ];
 
 const LISTING_STEPS = [
-  { step: "1", icon: "🔗", title: "Connect Your Wallet", desc: "Click Connect in the top right. You need a Sui wallet connected to list cards." },
-  { step: "2", icon: "✅", title: "Verify Your Socials", desc: "Go to your Profile and connect at least 2 of: Twitter, Discord, or Telegram. This is required to sell cards and prevents scams." },
-  { step: "3", icon: "🃏", title: "Go to Sell Page", desc: "Click Sell in the navbar. Select your game, enter the card name, condition, and set your price in USD (we convert to SUI automatically)." },
-  { step: "4", icon: "📸", title: "Upload a Card Photo", desc: "Take a clear photo of your card. Upload it on the sell page. Good photos get more buyers." },
-  { step: "5", icon: "⛓️", title: "List On-Chain", desc: "Click List Card. Your wallet will ask you to confirm the transaction. A small gas fee (~0.01 SUI) is charged. Your card is now live!" },
-  { step: "6", icon: "📦", title: "Wait for a Buyer", desc: "When someone buys your card, you get an email with their shipping details. Pack the card and ship it to them." },
+  { step: "1", icon: "🔗", title: "Connect Your Wallet", desc: "Click Connect in the top right. A popup shows your Sui wallets (Slush, Sui Wallet, Nightly) or Google Login. Select your wallet and approve. No account or password needed — your wallet is your identity.", tip: "New to crypto? Use Google Login — no wallet required." },
+  { step: "2", icon: "✅", title: "Verify 2 Social Accounts", desc: "Go to your Profile and connect at least 2 of: Twitter, Discord, or Telegram. One-time step required before selling. Proves you are a real person and protects buyers from scammers.", tip: "WaveTCG is peer-to-peer. Social verification builds trust between buyers and sellers." },
+  { step: "3", icon: "🃏", title: "Fill In Card Details", desc: "Click Sell in the navbar. Select your game, enter the card name and edition, and pick the condition: NM = Near Mint (like new), LP = Lightly Played (minor wear), MP = Moderately Played (visible wear).", tip: "When in doubt on condition, grade one level lower. Honest grading = happy buyers = good reputation." },
+  { step: "4", icon: "💵", title: "Set Your Price in USD", desc: "Enter your price in USD. WaveTCG converts it to SUI automatically using the live exchange rate. Buyers see both USD and SUI price so there is no confusion.", tip: "Check TCGPlayer or CardMarket for current market prices. Competitive pricing = faster sales." },
+  { step: "5", icon: "📸", title: "Upload a Clear Card Photo", desc: "Take a photo of your actual card — good lighting, flat surface, no blur. Upload it. The photo is stored on Walrus decentralized storage so it never disappears. Great photos build trust and get cards sold faster.", tip: "Natural daylight photos look best. Be honest about any defects in the description." },
+  { step: "6", icon: "⛓️", title: "Confirm the Listing On-Chain", desc: "Click List Card. Your wallet asks you to approve a transaction. This puts your listing on the Sui blockchain permanently. A tiny gas fee of 0.01 SUI (less than $0.03 USD) is charged by the Sui network — not WaveTCG. Once confirmed your card is instantly live.", tip: "Gas fee = a small processing fee paid to Sui network validators. Like a stamp for sending mail." },
 ];
 
 const PAYMENT_STEPS = [
-  { step: "1", icon: "🛒", title: "Buyer Purchases Your Card", desc: "When a buyer clicks Buy, the SUI is locked in a smart contract instantly. You get notified by email." },
-  { step: "2", icon: "📧", title: "Check Your Email", desc: "You'll receive an email with the buyer's full shipping details: name, address, phone, and any notes." },
-  { step: "3", icon: "📦", title: "Ship the Card", desc: "Pack your card securely in a sleeve and toploader. Ship to the buyer's address. Use a tracked shipping method." },
-  { step: "4", icon: "✅", title: "Buyer Confirms Receipt", desc: "Once the buyer confirms they received the card, the SUI is released to your wallet automatically." },
-  { step: "5", icon: "💰", title: "Receive Your SUI", desc: "99% of the sale goes to you. 1% platform fee is taken automatically by the smart contract. No waiting, no manual payout." },
+  { step: "1", icon: "🛒", title: "Buyer Clicks Buy", desc: "A buyer finds your card and clicks Buy. They enter their shipping details and confirm. Their SUI is immediately locked in a smart contract on Sui blockchain — it cannot be reversed, disputed, or charged back. Zero chargeback risk.", tip: "Smart contract = a self-executing program that holds payment safely until both sides are satisfied. No bank, no PayPal, no middleman." },
+  { step: "2", icon: "📧", title: "You Get an Email Instantly", desc: "The moment your card sells, WaveTCG emails you the buyer shipping details: full name, email, phone, address, city, province, country, zip code, and any special notes from the buyer.", tip: "Save your email in your Profile page so you never miss a sale notification." },
+  { step: "3", icon: "📦", title: "Pack and Ship the Card", desc: "Pack your card (penny sleeve + toploader + rigid mailer) and ship to the address in your email. Always use tracked shipping. Share the tracking number with the buyer via WaveTCG chat.", tip: "Ship within 3 business days. Fast shipping builds your reputation and gets you more future sales." },
+  { step: "4", icon: "✅", title: "Buyer Confirms Receipt", desc: "Once the buyer receives the card and is happy, they confirm the order on WaveTCG. This triggers the smart contract to automatically release your payment. 100% automatic — no manual approval from WaveTCG needed.", tip: "Dispute? WaveTCG admin can review. Always keep your tracking number and packing photos as evidence." },
+  { step: "5", icon: "💰", title: "SUI Lands in Your Wallet", desc: "99% of the sale price goes directly to your Sui wallet the moment the buyer confirms. 1% platform fee is taken automatically by the smart contract. No withdrawal, no waiting, no bank transfer. Use our Swap feature to convert SUI to PHP or USD anytime.", tip: "Example: Sell for 10 SUI. You get 9.9 SUI instantly. WaveTCG gets 0.1 SUI. That is it." },
 ];
 
 const SHIPPING_TIPS = [
-  { icon: "🛡️", title: "Always Use a Sleeve + Toploader", desc: "Put the card in a penny sleeve first, then a toploader. This protects it from bending and moisture." },
-  { icon: "✉️", title: "Use a Rigid Mailer or Box", desc: "Never send cards in a regular envelope. Use a rigid bubble mailer or small box so it does not bend in transit." },
-  { icon: "📮", title: "Use Tracked Shipping", desc: "Always use a shipping method with tracking. If the buyer claims non-delivery, you need proof of shipment." },
-  { icon: "📸", title: "Photo Before Shipping", desc: "Take a photo of the packed card before sealing. This protects you if the buyer claims the card was damaged." },
-  { icon: "⏱️", title: "Ship Within 3 Days", desc: "Ship within 3 business days of receiving the order. Fast shipping = good reputation = more sales." },
+  { icon: "🛡️", title: "Step 1 — Sleeve and Toploader", desc: "Put the card in a penny sleeve (soft clear plastic) first. Then slide it into a toploader (rigid hard plastic holder). This protects against bending, scratching, and moisture. Never skip this step even for low-value cards." },
+  { icon: "✉️", title: "Step 2 — Rigid Mailer or Box", desc: "Never use a regular paper envelope — cards bend easily. Use a rigid bubble mailer or small cardboard box. Available at National Bookstore, Lazada, or shipping supply stores. For cards worth $50 or more, always use a box." },
+  { icon: "📸", title: "Step 3 — Photo Before Sealing", desc: "Before sealing the package, take a photo of the card in the toploader and the sealed package with the buyer address visible. This is your evidence if the buyer claims the card arrived damaged. Send it to the buyer via WaveTCG chat." },
+  { icon: "📮", title: "Step 4 — Tracked Shipping Only", desc: "Always use a service with tracking. Philippines: LBC, J&T Express, Grab Express, Lalamove. International: DHL, FedEx, or PhilPost with tracking. Share the tracking number with the buyer immediately after dropping it off." },
+  { icon: "⏱️", title: "Step 5 — Ship Within 3 Days", desc: "Ship within 3 business days of the order. If you need more time, message the buyer on WaveTCG chat. Fast honest communication builds your reputation and leads to more sales." },
 ];
 
 const PLAY_STEPS_MAC = [
