@@ -82,7 +82,15 @@ function PortfolioInner() {
         return { ...h, price, value: price !== null ? h.balance * price : null };
       });
       const totalValue = withPrices.reduce((sum,h)=>sum+(h.value||0),0);
-      const final = withPrices.map(h=>({...h, pct: totalValue>0&&h.value?(h.value/totalValue)*100:0})).filter(h=>h.balance>0);
+      const totalBalance = withPrices.reduce((sum,h)=>sum+h.balance,0);
+      const final = withPrices.map(h=>({
+        ...h,
+        pct: totalValue>0&&h.value
+          ? (h.value/totalValue)*100
+          : totalBalance>0
+          ? (h.balance/totalBalance)*100
+          : 0
+      })).filter(h=>h.balance>0);
       setHoldings(final); setLastUpdated(new Date());
     } catch { showError("Failed to fetch portfolio"); }
     setLoading(false);
