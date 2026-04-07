@@ -95,9 +95,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             backdropFilter: "blur(32px)",
           }}>
             <a href="/" style={{
-              fontFamily: "Cinzel, serif", fontSize: "18px",
-              fontWeight: 600, textDecoration: "none",
-              color: "#ffffff", flexShrink: 0, position: "relative", zIndex: 101, fontFamily: "Syne, sans-serif", fontWeight: 800, letterSpacing: "0.04em",
+              fontFamily: "Syne, sans-serif", fontSize: "18px",
+              fontWeight: 800, textDecoration: "none",
+              color: "#ffffff", flexShrink: 0, position: "relative", zIndex: 101, letterSpacing: "0.04em",
             }}>WaveTCG</a>
             <NavClient />
           </nav>
