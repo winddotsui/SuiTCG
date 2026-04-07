@@ -70,7 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=Cinzel:wght@400;600;900&display=swap" rel="stylesheet" />
         <style>{`
           @media (max-width: 768px) {
             .desktop-nav { display: none !important; }
@@ -84,24 +84,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }
         `}</style>
       </head>
-      <body style={{ position: "relative", background: "#f9fafb", margin: 0, padding: 0 }}>
+      <body style={{ position: "relative", background: "#080810", margin: 0, padding: 0 }}>
         <Providers>
           <nav style={{
             position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
             display: "flex", alignItems: "center", justifyContent: "space-between",
             padding: "0 20px", height: "56px",
-            borderBottom: "1px solid rgba(255,255,255,0.07)",
-            background: "rgba(255,255,255,0.98)",
-            backdropFilter: "blur(20px)",
+            borderBottom: "1px solid rgba(255,255,255,0.06)",
+            background: "rgba(8,8,16,0.92)",
+            backdropFilter: "blur(32px)",
           }}>
             <a href="/" style={{
               fontFamily: "Cinzel, serif", fontSize: "18px",
               fontWeight: 600, textDecoration: "none",
-              color: "#111827", flexShrink: 0, position: "relative", zIndex: 101,
+              color: "#ffffff", flexShrink: 0, position: "relative", zIndex: 101, fontFamily: "Syne, sans-serif", fontWeight: 800, letterSpacing: "0.04em",
             }}>WaveTCG</a>
             <NavClient />
           </nav>
-          <main style={{ paddingTop: "56px", position: "relative", zIndex: 1, minHeight: "100vh", background: "#f9fafb" }}>
+          <main style={{ paddingTop: "56px", position: "relative", zIndex: 1, minHeight: "100vh", background: "#080810" }}>
             {children}
           </main>
           <Toaster position="bottom-right" toastOptions={{ style: { background: "#0a1628", color: "#ffffff", border: "1px solid rgba(0,153,255,0.2)", fontFamily: "DM Sans, sans-serif", fontSize: "14px" }, success: { iconTheme: { primary: "#00ff88", secondary: "#000008" } }, error: { iconTheme: { primary: "#ff6b6b", secondary: "#000008" } } }} />

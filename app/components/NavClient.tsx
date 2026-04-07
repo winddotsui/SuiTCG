@@ -28,13 +28,6 @@ export default function NavClient() {
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [unreadOrders, setUnreadOrders] = useState(0);
   const [showMore, setShowMore] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     const addr = typeof window !== "undefined" ? localStorage.getItem("wavetcg_wallet_address") || "" : "";
@@ -51,27 +44,30 @@ export default function NavClient() {
   return (
     <>
       <style>{`
-        .nav-link { color: #6b7280; font-size: 14px; text-decoration: none; font-weight: 500; transition: color 0.15s; padding: 6px 0; }
-        .nav-link:hover { color: #111827; }
-        .nav-cta { background: #111827; color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; text-decoration: none; }
-        .nav-cta:hover { background: #1f2937; }
-        .more-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 8px; min-width: 200px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 200; }
-        .more-link { display: block; padding: 8px 12px; border-radius: 8px; color: #374151; font-size: 14px; text-decoration: none; font-weight: 500; transition: background 0.1s; }
-        .more-link:hover { background: #f3f4f6; color: #111827; }
-        .more-btn { display: flex; align-items: center; gap: 4px; color: #6b7280; font-size: 14px; background: none; border: none; cursor: pointer; font-weight: 500; padding: 6px 0; transition: color 0.15s; }
-        .more-btn:hover { color: #111827; }
+        .nl { color: rgba(255,255,255,0.4); font-size: 13.5px; font-weight: 500; padding: 7px 14px; border-radius: 8px; text-decoration: none; transition: all 0.15s; letter-spacing: 0.01em; }
+        .nl:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        .more-btn { display: flex; align-items: center; gap: 4px; color: rgba(255,255,255,0.25); font-size: 13.5px; background: none; border: none; cursor: pointer; font-weight: 500; padding: 7px 14px; border-radius: 8px; font-family: inherit; transition: all 0.15s; }
+        .more-btn:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.05); }
+        .more-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: #13131f; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 6px; min-width: 200px; box-shadow: 0 16px 48px rgba(0,0,0,0.5); z-index: 200; }
+        .more-link { display: block; padding: 9px 12px; border-radius: 8px; color: rgba(255,255,255,0.55); font-size: 13.5px; text-decoration: none; font-weight: 500; transition: all 0.12s; }
+        .more-link:hover { background: rgba(255,255,255,0.06); color: #fff; }
+        .nav-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; text-decoration: none; font-family: inherit; }
+        .nav-btn:hover { border-color: rgba(255,255,255,0.2); color: #fff; }
+        .nav-cta { background: #2563eb; border: none; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; font-family: inherit; transition: all 0.15s; }
+        .nav-cta:hover { background: #1d4ed8; }
       `}</style>
+
       <div className="desktop-nav" style={{ gap: "0", alignItems: "center", flex: 1, justifyContent: "space-between" }}>
-        {/* Primary nav links */}
-        <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
+        {/* Primary nav */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0" }}>
           {NAV_LINKS.map(link => (
-            <a key={link.href} href={link.href} className="nav-link">{link.label}</a>
+            <a key={link.href} href={link.href} className="nl">{link.label}</a>
           ))}
           {/* More dropdown */}
           <div style={{ position: "relative" }} onMouseEnter={() => setShowMore(true)} onMouseLeave={() => setShowMore(false)}>
             <button className="more-btn">
               More
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
             </button>
             {showMore && (
               <div className="more-dropdown">
@@ -84,15 +80,15 @@ export default function NavClient() {
         </div>
 
         {/* Right side */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <a href="/orders" style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: "6px", color: "#6b7280", fontSize: "14px", textDecoration: "none", fontWeight: 500, padding: "6px 0" }} className="nav-link">
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <a href="/orders" style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: "6px" }} className="nl">
             Orders
             {(unreadOrders > 0 || unreadMessages > 0) && (
-              <span style={{ width: "7px", height: "7px", background: "#ef4444", borderRadius: "50%", flexShrink: 0 }} />
+              <span style={{ width: "6px", height: "6px", background: "#ef4444", borderRadius: "50%", flexShrink: 0 }} />
             )}
           </a>
-          <a href="/dashboard" className="nav-link">Dashboard</a>
-          <div style={{ width: "1px", height: "20px", background: "#e5e7eb" }} />
+          <a href="/dashboard" className="nl">Dashboard</a>
+          <div style={{ width: "1px", height: "18px", background: "rgba(255,255,255,0.08)" }} />
           <ZkLogin />
           <WalletButton />
           <a href="/sell" className="nav-cta">+ List Card</a>
