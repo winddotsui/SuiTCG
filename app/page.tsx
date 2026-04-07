@@ -86,7 +86,7 @@ export default function Home() {
           </div>
 
           {/* Title */}
-          <h1 className="fu fu2 syne" style={{ fontSize: "clamp(40px,5vw,62px)", fontWeight: 800, lineHeight: 1.04, color: "#fff", marginBottom: "22px", letterSpacing: "-0.02em" }}>
+          <h1 className="fu fu2 syne" style={{ fontSize: "clamp(32px,4vw,52px)", fontWeight: 800, lineHeight: 1.04, color: "#fff", marginBottom: "22px", letterSpacing: "-0.02em" }}>
             The TCG Market<br />
             That Pays You{" "}
             <span style={{ color: "rgba(255,255,255,0.25)" }}>Instantly.</span>
@@ -105,7 +105,7 @@ export default function Home() {
           {/* Metrics */}
           <div className="fu fu5" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", overflow: "hidden" }}>
             {[
-              { val: stats.listings > 0 ? stats.listings.toLocaleString() : "0", label: "Active Listings", sub: "Growing daily" },
+              { val: stats.listings.toLocaleString(), label: "Active Listings", sub: "Growing daily" },
               { val: "1%", label: "Platform Fee", sub: "Lowest in market" },
               { val: suiPrice > 0 ? "$" + suiPrice.toFixed(3) : "—", label: "SUI Price", sub: "Live" },
             ].map((m, i) => (
@@ -148,7 +148,7 @@ export default function Home() {
               { icon: "⚡", name: "Charizard ex", set: "SV3 · Pokémon", price: "45 SUI", badge: "SR", bc: "rgba(59,130,246,0.15)", bt: "#60a5fa", href: "/marketplace?game=pokemon" },
               { icon: "✨", name: "Black Lotus", set: "Alpha · Magic", price: "320 SUI", badge: "P9", bc: "rgba(139,92,246,0.15)", bt: "#a78bfa", href: "/marketplace?game=magic" },
               { icon: "👁️", name: "Blue-Eyes Dragon", set: "LOB · Yu-Gi-Oh", price: "6.8 SUI", badge: "UR", bc: "rgba(16,185,129,0.15)", bt: "#34d399", href: "/marketplace?game=yugioh" },
-              { icon: "🏴‍☠️", name: "Roronoa Zoro", set: "OP01 · One Piece", price: "8.2 SUI", badge: "SR", bc: "rgba(59,130,246,0.15)", bt: "#60a5fa", href: "/marketplace?game=onepiece" },
+              { icon: "☠️", name: "Roronoa Zoro", set: "OP01 · One Piece", price: "8.2 SUI", badge: "SR", bc: "rgba(59,130,246,0.15)", bt: "#60a5fa", href: "/marketplace?game=onepiece" },
             ].map((c, i) => (
               <a key={i} href={c.href} style={{ background: "#0e0e1a", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "14px", cursor: "pointer", textDecoration: "none", transition: "all 0.18s", display: "block" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
@@ -189,10 +189,10 @@ export default function Home() {
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: "10px" }}>
           {[
-            { icon: "🏴‍☠️", name: "Monkey D. Luffy", game: "One Piece TCG", price: "12.4 SUI", r: "SEC", rc: "rgba(245,158,11,0.12)", rt: "#f59e0b", bg: "linear-gradient(160deg,#1a0a28,#080810)", href: "/marketplace?game=onepiece" },
+            { icon: "☠️", name: "Monkey D. Luffy", game: "One Piece TCG", price: "12.4 SUI", r: "SEC", rc: "rgba(245,158,11,0.12)", rt: "#f59e0b", bg: "linear-gradient(160deg,#1a0a28,#080810)", href: "/marketplace?game=onepiece" },
             { icon: "⚡", name: "Charizard ex", game: "Pokémon TCG", price: "45.0 SUI", r: "SR", rc: "rgba(59,130,246,0.12)", rt: "#60a5fa", bg: "linear-gradient(160deg,#1a1008,#080810)", href: "/marketplace?game=pokemon" },
             { icon: "✨", name: "Black Lotus", game: "Magic: TG", price: "320 SUI", r: "P9", rc: "rgba(139,92,246,0.12)", rt: "#a78bfa", bg: "linear-gradient(160deg,#0a0818,#080810)", href: "/marketplace?game=magic" },
-            { icon: "🏴‍☠️", name: "Roronoa Zoro", game: "One Piece TCG", price: "8.2 SUI", r: "SR", rc: "rgba(59,130,246,0.12)", rt: "#60a5fa", bg: "linear-gradient(160deg,#081808,#080810)", href: "/marketplace?game=onepiece" },
+            { icon: "☠️", name: "Roronoa Zoro", game: "One Piece TCG", price: "8.2 SUI", r: "SR", rc: "rgba(59,130,246,0.12)", rt: "#60a5fa", bg: "linear-gradient(160deg,#081808,#080810)", href: "/marketplace?game=onepiece" },
             { icon: "👁️", name: "Blue-Eyes Dragon", game: "Yu-Gi-Oh!", price: "6.8 SUI", r: "UR", rc: "rgba(16,185,129,0.12)", rt: "#34d399", bg: "linear-gradient(160deg,#080f18,#080810)", href: "/marketplace?game=yugioh" },
           ].map((c, i) => (
             <a key={i} href={c.href} className="mcard" style={{ textDecoration: "none" }}>
