@@ -68,6 +68,12 @@ function CardGallery({ cards }: { cards: CardData[] }) {
             <div style={{ fontSize: "11px", color: "#8899bb", marginBottom: "2px" }}>{selected.set}</div>
             {selected.rarity && <div style={{ fontSize: "10px", color: "#00d4ff", marginBottom: "8px" }}>⭐ {selected.rarity}</div>}
             <PriceDisplay card={selected} />
+            <div style={{ display: "flex", gap: "6px", marginTop: "10px", flexWrap: "wrap" }}>
+              <a href={"https://www.tcgplayer.com/search/" + (selected.game === "magic" ? "magic" : selected.game === "yugioh" ? "yugioh" : selected.game === "onepiece" ? "one-piece-card-game" : "pokemon") + "/product?q=" + encodeURIComponent(selected.name)} target="_blank" rel="noopener noreferrer" style={{ fontSize: "10px", padding: "4px 10px", background: "rgba(0,153,255,0.1)", border: "1px solid rgba(0,153,255,0.25)", borderRadius: "6px", color: "#0099ff", textDecoration: "none" }}>TCGPlayer</a>
+              <a href={"https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(selected.name + " " + selected.set + " TCG")} target="_blank" rel="noopener noreferrer" style={{ fontSize: "10px", padding: "4px 10px", background: "rgba(255,204,0,0.1)", border: "1px solid rgba(255,204,0,0.25)", borderRadius: "6px", color: "#ffcc00", textDecoration: "none" }}>eBay</a>
+              <a href={"https://www.cardmarket.com/en/" + (selected.game === "magic" ? "Magic" : "Pokemon") + "/Products/Search?searchString=" + encodeURIComponent(selected.name)} target="_blank" rel="noopener noreferrer" style={{ fontSize: "10px", padding: "4px 10px", background: "rgba(0,212,255,0.1)", border: "1px solid rgba(0,212,255,0.25)", borderRadius: "6px", color: "#00d4ff", textDecoration: "none" }}>CardMarket</a>
+              <a href={"/marketplace"} style={{ fontSize: "10px", padding: "4px 10px", background: "rgba(0,255,136,0.1)", border: "1px solid rgba(0,255,136,0.25)", borderRadius: "6px", color: "#00ff88", textDecoration: "none" }}>WaveTCG 🌊</a>
+            </div>
           </div>
         </div>
       )}
