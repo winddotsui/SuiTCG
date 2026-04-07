@@ -34,12 +34,33 @@ const TICKER_CARDS = [
 export default function Home() {
   const [stats, setStats] = useState({ listings: 0, users: 0 });
   const [suiPrice, setSuiPrice] = useState(0);
+  const [featuredListing, setFeaturedListing] = useState<any>(null);
+  const [recentListings, setRecentListings] = useState<any[]>([]);
 
   useEffect(() => {
+    // Stats
     supabase.from("listings").select("id", { count: "exact", head: true }).eq("status", "active").then(({ count }) => setStats(s => ({ ...s, listings: count || 0 })));
     supabase.from("profiles").select("id", { count: "exact", head: true }).then(({ count }) => setStats(s => ({ ...s, users: count || 0 })));
     fetch("/api/sui-price").then(r => r.json()).then(d => setSuiPrice(d.price || 0));
+
+    // Real listings for hero
+    supabase.from("listings")
+      .select("*")
+      .eq("status", "active")
+      .order("created_at", { ascending: false })
+      .limit(5)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setFeaturedListing(data[0]);
+          setRecentListings(data.slice(1, 5));
+        }
+      });
   }, []);
+
+  const GAME_ICONS: Record<string, string> = {
+    onepiece: "☠️", pokemon: "⚡", magic: "✨", yugioh: "👁️",
+    dragonball: "🐉", lorcana: "🌟", fab: "⚔️", digimon: "🎭",
+  };
 
   return (
     <div style={{ minHeight: "100vh", background: "#080810", fontFamily: "'DM Sans', sans-serif" }}>
