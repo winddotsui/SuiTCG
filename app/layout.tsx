@@ -93,7 +93,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             borderBottom: "1px solid rgba(255,255,255,0.07)",
             background: "rgba(255,255,255,0.98)",
             backdropFilter: "blur(20px)",
-            borderBottom: "1px solid #f3f4f6",
           }}>
             <a href="/" style={{
               fontFamily: "Cinzel, serif", fontSize: "18px",
