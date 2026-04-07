@@ -3,14 +3,14 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
 const GAMES = [
-  { name: "One Piece TCG", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/90/One_Piece_Card_Game_logo.png/220px-One_Piece_Card_Game_logo.png", href: "/marketplace?game=onepiece", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.15)" },
-  { name: "Pokémon TCG", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Pok%C3%A9mon_Trading_Card_Game_logo.svg/320px-Pok%C3%A9mon_Trading_Card_Game_logo.svg.png", href: "/marketplace?game=pokemon", bg: "rgba(234,179,8,0.08)", border: "rgba(234,179,8,0.15)" },
-  { name: "Magic: The Gathering", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/a/aa/Magic_the_gathering-card_back.jpg/220px-Magic_the_gathering-card_back.jpg", href: "/marketplace?game=magic", bg: "rgba(139,92,246,0.08)", border: "rgba(139,92,246,0.15)" },
-  { name: "Yu-Gi-Oh!", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/Yu-Gi-Oh%21_Logo.png/250px-Yu-Gi-Oh%21_Logo.png", href: "/marketplace?game=yugioh", bg: "rgba(59,130,246,0.08)", border: "rgba(59,130,246,0.15)" },
-  { name: "Dragon Ball Super", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Dragon_Ball_Super_Logo.png/320px-Dragon_Ball_Super_Logo.png", href: "/marketplace?game=dragonball", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.15)" },
-  { name: "Disney Lorcana", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Disney_Lorcana_logo.svg/320px-Disney_Lorcana_logo.svg.png", href: "/marketplace?game=lorcana", bg: "rgba(16,185,129,0.08)", border: "rgba(16,185,129,0.15)" },
-  { name: "Flesh & Blood", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Flesh_and_Blood_TCG_Logo.png/320px-Flesh_and_Blood_TCG_Logo.png", href: "/marketplace?game=fab", bg: "rgba(220,38,38,0.08)", border: "rgba(220,38,38,0.15)" },
-  { name: "Digimon TCG", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Digimon_Logo.png/320px-Digimon_Logo.png", href: "/marketplace?game=digimon", bg: "rgba(99,102,241,0.08)", border: "rgba(99,102,241,0.15)" },
+  { name: "One Piece TCG", icon: "☠️", href: "/marketplace?game=onepiece", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.2)" },
+  { name: "Pokémon TCG", icon: "⚡", href: "/marketplace?game=pokemon", bg: "rgba(234,179,8,0.08)", border: "rgba(234,179,8,0.2)" },
+  { name: "Magic: TG", icon: "✨", href: "/marketplace?game=magic", bg: "rgba(139,92,246,0.08)", border: "rgba(139,92,246,0.2)" },
+  { name: "Yu-Gi-Oh!", icon: "👁️", href: "/marketplace?game=yugioh", bg: "rgba(59,130,246,0.08)", border: "rgba(59,130,246,0.2)" },
+  { name: "Dragon Ball", icon: "🐉", href: "/marketplace?game=dragonball", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.2)" },
+  { name: "Disney Lorcana", icon: "🌟", href: "/marketplace?game=lorcana", bg: "rgba(16,185,129,0.08)", border: "rgba(16,185,129,0.2)" },
+  { name: "Flesh & Blood", icon: "⚔️", href: "/marketplace?game=fab", bg: "rgba(220,38,38,0.08)", border: "rgba(220,38,38,0.2)" },
+  { name: "Digimon TCG", icon: "🎭", href: "/marketplace?game=digimon", bg: "rgba(99,102,241,0.08)", border: "rgba(99,102,241,0.2)" },
 ];
 
 const FEATURES = [
@@ -137,9 +137,9 @@ export default function Home() {
           {GAMES.map((g, i) => (
             <a key={i} href={g.href} className="game-card">
               <div style={{ width: "48px", height: "48px", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: g.bg, border: `1px solid ${g.border}`, overflow: "hidden", padding: "6px" }}>
-                <img src={g.logo} alt={g.name} style={{ width: "100%", height: "100%", objectFit: "contain", filter: "brightness(1.1)" }} onError={(e) => { (e.target as HTMLImageElement).style.display="none"; }} />
+              <div style={{ width: "48px", height: "48px", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: g.bg, border: `1px solid ${g.border}` }}>
+                <span style={{ fontSize: "24px", lineHeight: "1" }}>{g.icon}</span>
               </div>
-              <div>
                 <div className="syne" style={{ fontSize: "13px", fontWeight: 700, color: "#fff", marginBottom: "3px" }}>{g.name}</div>
                 <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.3)" }}>Browse listings ›</div>
               </div>
