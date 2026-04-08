@@ -1,62 +1,67 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const ALL_SETS = [
-  "OP01","OP02","OP03","OP04","OP05","OP06","OP07","OP08","OP09","OP10",
-  "ST01","ST02","ST03","ST04","ST05","ST06","ST07","ST08","ST09","ST10",
-  "ST11","ST12","ST13","ST14","ST15","ST16","ST17","ST18","ST19","ST20",
-  "EB01","EB02",
-];
+const BASE = "https://optcgapi.com/api";
 
-async function searchOPTCG(query: string): Promise<any[]> {
+async function searchAllCards(query: string): Promise<any[]> {
+  const results: any[] = [];
+  
+  // Search set cards
   try {
-    // Use the official One Piece TCG card list API
     const res = await fetch(
-      `https://en.onepiece-cardgame.com/cardlist/?series=&keyword=${encodeURIComponent(query)}&category=&attribute=&power=&counter=&color=&type=&rarity=&cost=&life=&trigger=`,
-      {
-        headers: {
-          "Accept": "application/json, text/javascript, */*",
-          "X-Requested-With": "XMLHttpRequest",
-        },
-        next: { revalidate: 3600 }
-      }
+      `${BASE}/sets/filtered/?name=${encodeURIComponent(query)}&limit=100`,
+      { next: { revalidate: 3600 } }
     );
     if (res.ok) {
-      const text = await res.text();
-      try {
-        const data = JSON.parse(text);
-        if (Array.isArray(data)) return data;
-      } catch {}
+      const data = await res.json();
+      const cards = data.results || data || [];
+      results.push(...cards.map((c: any) => ({ ...c, _source: "set" })));
     }
   } catch {}
-  return [];
+
+  // Search starter deck cards
+  try {
+    const res = await fetch(
+      `${BASE}/decks/filtered/?name=${encodeURIComponent(query)}&limit=100`,
+      { next: { revalidate: 3600 } }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      const cards = data.results || data || [];
+      results.push(...cards.map((c: any) => ({ ...c, _source: "deck" })));
+    }
+  } catch {}
+
+  // Search promo cards
+  try {
+    const res = await fetch(
+      `${BASE}/promos/filtered/?name=${encodeURIComponent(query)}&limit=100`,
+      { next: { revalidate: 3600 } }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      const cards = data.results || data || [];
+      results.push(...cards.map((c: any) => ({ ...c, _source: "promo" })));
+    }
+  } catch {}
+
+  return results;
 }
 
-async function fetchFromAPI(search: string): Promise<any[]> {
-  try {
-    const params = new URLSearchParams({ per_page: "30" });
-    if (search) params.set("search", search);
-    const res = await fetch(
-      `https://optcg-api.ryanmichaelhirst.us/api/v1/cards?${params}`,
-      { headers: { "Accept": "application/json" }, next: { revalidate: 3600 } }
-    );
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.data || [];
-  } catch { return []; }
-}
-
-async function fetchSet(setCode: string, search: string) {
-  try {
-    const params = new URLSearchParams({ per_page: "100", set: setCode });
-    if (search) params.set("q", search);
-    const res = await fetch(
-      `https://optcg-api.ryanmichaelhirst.us/api/v1/cards?${params}`,
-      { headers: { "Accept": "application/json" }, next: { revalidate: 3600 } }
-    );
-    if (!res.ok) return [];
-    const data = await res.json();
-    return (data.data || []).map((c: any) => ({ ...c, setCode }));
-  } catch { return []; }
+function normalizeCard(c: any): any {
+  const code = c.card_id || c.card_number || c.id || "";
+  const set = c.set_id || c.deck_id || c.promo_id || c.set_name || c.deck_name || "";
+  return {
+    id: code,
+    name: c.name || c.card_name || "",
+    code,
+    set,
+    rarity: c.rarity || "",
+    color: c.color || "",
+    type: c.card_type || c.type || "",
+    image: c.card_image || c.image_url || `https://en.onepiece-cardgame.com/images/cardlist/card/${code}.png`,
+    price: c.market_price || null,
+    source: c._source || "set",
+  };
 }
 
 export async function GET(req: NextRequest) {
@@ -68,32 +73,47 @@ export async function GET(req: NextRequest) {
     let cards: any[] = [];
 
     if (!search && set) {
-      cards = await fetchSet(set, "");
+      // Browse specific set
+      const endpoint = set.startsWith("ST") ? `${BASE}/decks/${set}/` : `${BASE}/sets/${set}/`;
+      try {
+        const res = await fetch(endpoint, { next: { revalidate: 3600 } });
+        if (res.ok) {
+          const data = await res.json();
+          cards = (data.cards || data.results || []).map(normalizeCard);
+        }
+      } catch {}
     } else if (search) {
-      // Search all sets in parallel for accuracy
-      const results = await Promise.all(ALL_SETS.map(s => fetchSet(s, search)));
-      cards = results.flat();
-
-      // Sort by relevance - exact matches first
+      const raw = await searchAllCards(search);
+      
+      // Sort by relevance
       const q = search.toLowerCase();
-      cards.sort((a, b) => {
-        const an = (a.name || "").toLowerCase();
-        const bn = (b.name || "").toLowerCase();
-        const aExact = an === q ? 0 : an.startsWith(q) ? 1 : an.includes(q) ? 2 : 3;
-        const bExact = bn === q ? 0 : bn.startsWith(q) ? 1 : bn.includes(q) ? 2 : 3;
-        return aExact - bExact;
+      raw.sort((a, b) => {
+        const an = (a.name || a.card_name || "").toLowerCase();
+        const bn = (b.name || b.card_name || "").toLowerCase();
+        const aScore = an === q ? 0 : an.startsWith(q) ? 1 : an.includes(q) ? 2 : 3;
+        const bScore = bn === q ? 0 : bn.startsWith(q) ? 1 : bn.includes(q) ? 2 : 3;
+        return aScore - bScore;
       });
 
       // Deduplicate by card code
       const seen = new Set();
-      cards = cards.filter(c => {
-        const key = c.code || c.id || (c.name + c.setCode);
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
+      cards = raw
+        .filter(c => {
+          const key = c.card_id || c.card_number || c.id || (c.name + c.set_id);
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        })
+        .map(normalizeCard);
     } else {
-      cards = await fetchSet("OP01", "");
+      // Default: OP01
+      try {
+        const res = await fetch(`${BASE}/sets/OP01/`, { next: { revalidate: 3600 } });
+        if (res.ok) {
+          const data = await res.json();
+          cards = (data.cards || data.results || []).map(normalizeCard);
+        }
+      } catch {}
     }
 
     return NextResponse.json({ cards });
