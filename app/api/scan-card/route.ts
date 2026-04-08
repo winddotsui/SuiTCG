@@ -5,7 +5,17 @@ export async function POST(req: NextRequest) {
     const { image } = await req.json();
     if (!image) return NextResponse.json({ error: "No image provided" }, { status: 400 });
 
-    const base64 = image.includes(",") ? image.split(",")[1] : image;
+    // Detect actual image type from data URL
+    let mediaType = "image/jpeg";
+    let base64 = image;
+    if (image.includes(",")) {
+      const header = image.split(",")[0];
+      base64 = image.split(",")[1];
+      if (header.includes("webp")) mediaType = "image/webp";
+      else if (header.includes("png")) mediaType = "image/png";
+      else if (header.includes("gif")) mediaType = "image/gif";
+      else if (header.includes("jpeg") || header.includes("jpg")) mediaType = "image/jpeg";
+    }
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
