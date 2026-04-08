@@ -84,11 +84,11 @@ export default function ScanPage() {
     setLoading(true);
     setError("");
     try {
-      const base64 = dataUrl.split(",")[1];
+      // Send full data URL so server can detect media type (jpeg/webp/png)
       const res = await fetch("/api/scan-card", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64 }),
+        body: JSON.stringify({ image: dataUrl }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
