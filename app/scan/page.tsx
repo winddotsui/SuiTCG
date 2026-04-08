@@ -18,23 +18,38 @@ export default function ScanPage() {
   const isMobile = typeof window !== "undefined" && /iPhone|iPad|Android/i.test(navigator.userAgent);
 
   const startCamera = async () => {
-    if (isMobile) {
-      // On mobile use native camera input — much more reliable
-      cameraInputRef.current?.click();
-      return;
-    }
     try {
       setError("");
-      const s = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } }
-      });
+      const constraints = {
+        video: {
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      };
+      const s = await navigator.mediaDevices.getUserMedia(constraints);
       setStream(s);
       setMode("camera");
-      setTimeout(() => {
-        if (videoRef.current) { videoRef.current.srcObject = s; videoRef.current.play(); }
-      }, 100);
-    } catch {
-      setError("Camera access denied. Please upload a photo instead.");
+      // Try multiple times to attach stream to video
+      let attempts = 0;
+      const attach = () => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = s;
+          videoRef.current.play().catch(() => {});
+        } else if (attempts < 10) {
+          attempts++;
+          setTimeout(attach, 100);
+        }
+      };
+      setTimeout(attach, 50);
+    } catch (err: any) {
+      if (err.name === "NotAllowedError") {
+        setError("Camera access denied. Please allow camera access in your browser settings.");
+      } else if (err.name === "NotFoundError") {
+        setError("No camera found. Please upload a photo instead.");
+      } else {
+        setError("Camera error. Please upload a photo instead.");
+      }
     }
   };
 
@@ -193,8 +208,13 @@ export default function ScanPage() {
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-              <button className="btn-blue" onClick={startCamera}>📷 {isMobile ? "Take Photo" : "Open Camera"}</button>
-              <button className="btn-ghost" onClick={() => fileInputRef.current?.click()}>🖼️ Upload Photo</button>
+              <button className="btn-blue" onClick={startCamera}>📷 Open Camera</button>
+              <button className="btn-ghost" onClick={() => fileInputRef.current?.click()}>🖼️ Upload</button>
+            </div>
+            <button className="btn-ghost" onClick={() => cameraInputRef.current?.click()} style={{marginTop:"0"}}>
+              📸 Take Photo (Native Camera)
+            </button>
+            <div style={{display:"none"}}>
             </div>
 
             {/* Supported games */}
