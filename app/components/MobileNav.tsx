@@ -10,6 +10,7 @@ const links = [
   { href: "/deckbuilder", label: "Deck Builder", icon: "🎴" },
   { href: "/download", label: "Download", icon: "⬇️" },
   { href: "/sell", label: "Sell", icon: "💰" },
+  { href: "/scan", label: "Card Scanner", icon: "📷" },
   { href: "/swap", label: "Swap", icon: "💱" },
   { href: "/alerts", label: "Alerts", icon: "🔔" },
   { href: "/users", label: "Collectors", icon: "👥" },

@@ -23,6 +23,7 @@ const MORE_LINKS = [
   { href: "/analytics", label: "📊 Analytics" },
   { href: "/guide", label: "📖 Guide" },
   { href: "/orders", label: "📦 Orders" },
+  { href: "/scan", label: "📷 Card Scanner" },
 ];
 
 export default function NavClient() {
