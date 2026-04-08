@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { supabase } from "../../lib/supabase";
@@ -46,7 +47,12 @@ function DashboardInner() {
   const [form, setForm] = useState({ username:"", bio:"", twitter:"", discord:"", telegram:"", avatar_url:"", email:"" });
   const [sortBy, setSortBy] = useState<"value"|"balance"|"symbol">("value");
 
-  const walletAddress = account?.address || (typeof window !== "undefined" ? localStorage.getItem("wavetcg_wallet_address") || "" : "");
+  const [walletAddress, setWalletAddress] = useState("");
+
+  useEffect(() => {
+    const addr = account?.address || (typeof window !== "undefined" ? localStorage.getItem("wavetcg_wallet_address") || "" : "");
+    setWalletAddress(addr);
+  }, [account?.address]);
 
   useEffect(() => { if (walletAddress) { fetchAll(); fetchPortfolio(); } else setLoading(false); }, [walletAddress]);
 
