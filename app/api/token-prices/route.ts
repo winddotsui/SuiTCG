@@ -7,30 +7,19 @@ const STABLE_COINS: Record<string, number> = {
   "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC": 1,
 };
 
-async function getGeckoTerminalPrices(addresses: string[]): Promise<Record<string, number>> {
-  const prices: Record<string, number> = {};
-  const batches: string[][] = [];
-  for (let i = 0; i < addresses.length; i += 30) {
-    batches.push(addresses.slice(i, i + 30));
-  }
-  for (const batch of batches) {
-    try {
-      const res = await fetch(
-        "https://api.geckoterminal.com/api/v2/networks/sui-network/tokens/multi/" + batch.join(","),
-        { headers: { "Accept": "application/json" }, next: { revalidate: 30 } }
-      );
-      if (!res.ok) continue;
-      const data = await res.json();
-      const tokens = data?.data || [];
-      for (const token of tokens) {
-        const addr = token?.attributes?.address?.toLowerCase();
-        const price = parseFloat(token?.attributes?.price_usd || "0");
-        if (addr && price > 0) prices[addr] = price;
-      }
-    } catch {}
-  }
-  return prices;
-}
+// CoinGecko IDs for major Sui tokens
+const CG_IDS: Record<string, string> = {
+  "0x2::sui::SUI": "sui",
+  "0x9b5a3db572955df65f071e09f29b8b8f0db952c5ae0ffc2d4f8a24d5882c81d1::wal::WAL": "walrus-2",
+  "0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946ea44::deep::DEEP": "deepbook",
+  "0x6864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS": "cetus-protocol",
+  "0x5145494a5f5100e645e4b0aa950fa6b68f614e8c59e17bc5ded3495123a79178::ns::NS": "suins-token",
+  "0x5145494a5f5100e645e4b0aa950fa6b68f614e8c59e17bc5ded3ef087e3e09b1::suins_token::SUINS_TOKEN": "suins-token",
+  "0xa99b8952d4f7d947ea77fe0ecdcc9e5fc0bcab2841d6e2a5aa00c3044ef5cb90::navx::NAVX": "navi-protocol",
+  "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI": "haedal-staked-sui",
+  "0xf325ce1300e8dac124071d3152c5c5ee6174914f8bc2161e88329cf579246efc::afsui::AFSUI": "aftermath-staked-sui",
+  "0x027792d9fed7f9844eb4839566001bb6f6cb4804f66aa2da6fe1ee242d896881::coin::COIN": "wrapped-bitcoin",
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -39,25 +28,58 @@ export async function POST(req: NextRequest) {
 
     const prices: Record<string, number> = {};
 
+    // 1. Stablecoins
     for (const ct of coinTypes) {
       if (STABLE_COINS[ct]) prices[ct] = STABLE_COINS[ct];
     }
 
-    const nonStable = coinTypes.filter((ct: string) => !prices[ct]);
-    if (nonStable.length === 0) return NextResponse.json({ prices });
+    const needed = coinTypes.filter((ct: string) => !prices[ct]);
+    if (needed.length === 0) return NextResponse.json({ prices });
 
-    const addrToCoinType: Record<string, string> = {};
-    const addresses: string[] = [];
-    for (const ct of nonStable) {
-      const addr = ct.split("::")[0].toLowerCase();
-      addrToCoinType[addr] = ct;
-      addresses.push(addr);
+    // 2. CoinGecko batch for known tokens
+    const cgMap: Record<string, string[]> = {};
+    for (const ct of needed) {
+      const id = CG_IDS[ct];
+      if (id) {
+        if (!cgMap[id]) cgMap[id] = [];
+        cgMap[id].push(ct);
+      }
     }
 
-    const gtPrices = await getGeckoTerminalPrices(addresses);
-    for (const [addr, price] of Object.entries(gtPrices)) {
-      const coinType = addrToCoinType[addr];
-      if (coinType) prices[coinType] = price;
+    const ids = Object.keys(cgMap);
+    if (ids.length > 0) {
+      try {
+        const res = await fetch(
+          `https://api.coingecko.com/api/v3/simple/price?ids=${ids.join(",")}&vs_currencies=usd`,
+          { next: { revalidate: 60 } }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          for (const [id, cts] of Object.entries(cgMap)) {
+            if (data[id]?.usd) {
+              for (const ct of cts as string[]) prices[ct] = data[id].usd;
+            }
+          }
+        }
+      } catch {}
+    }
+
+    // 3. GeckoTerminal individual calls for remaining unknowns
+    const stillNeeded = needed.filter((ct: string) => !prices[ct]);
+    if (stillNeeded.length > 0) {
+      await Promise.all(stillNeeded.map(async (ct: string) => {
+        try {
+          const addr = ct.split("::")[0];
+          const res = await fetch(
+            `https://api.geckoterminal.com/api/v2/networks/sui-network/tokens/${addr}`,
+            { next: { revalidate: 60 } }
+          );
+          if (!res.ok) return;
+          const data = await res.json();
+          const price = parseFloat(data?.data?.attributes?.price_usd || "0");
+          if (price > 0) prices[ct] = price;
+        } catch {}
+      }));
     }
 
     return NextResponse.json({ prices });
