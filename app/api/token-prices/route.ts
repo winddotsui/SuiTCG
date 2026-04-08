@@ -7,7 +7,7 @@ const STABLE_COINS: Record<string, number> = {
   "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC": 1,
 };
 
-// CoinGecko IDs for major Sui tokens
+// All known Sui tokens mapped to CoinGecko IDs
 const CG_IDS: Record<string, string> = {
   "0x2::sui::SUI": "sui",
   "0x9b5a3db572955df65f071e09f29b8b8f0db952c5ae0ffc2d4f8a24d5882c81d1::wal::WAL": "walrus-2",
@@ -19,7 +19,24 @@ const CG_IDS: Record<string, string> = {
   "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI": "haedal-staked-sui",
   "0xf325ce1300e8dac124071d3152c5c5ee6174914f8bc2161e88329cf579246efc::afsui::AFSUI": "aftermath-staked-sui",
   "0x027792d9fed7f9844eb4839566001bb6f6cb4804f66aa2da6fe1ee242d896881::coin::COIN": "wrapped-bitcoin",
+  "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT": "volo-staked-sui",
+  "0xd0e89b2af5e4910726fbcd8b8dd37bb79b29e5f83f7491bca830e48f9571920::eth::ETH": "ethereum",
+  "0xb848cce11ef3a8f62eccea6eb5b35a12c4c2b1ee1af7755d02d7bd6218e8226::coin::COIN": "ethereum",
 };
+
+async function getGeckoTerminalPrice(coinType: string): Promise<number | null> {
+  try {
+    const addr = coinType.split("::")[0];
+    const res = await fetch(
+      `https://api.geckoterminal.com/api/v2/networks/sui-network/tokens/${addr}`,
+      { next: { revalidate: 60 } }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const price = parseFloat(data?.data?.attributes?.price_usd || "0");
+    return price > 0 ? price : null;
+  } catch { return null; }
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,7 +45,7 @@ export async function POST(req: NextRequest) {
 
     const prices: Record<string, number> = {};
 
-    // 1. Stablecoins
+    // 1. Stablecoins — hardcoded $1
     for (const ct of coinTypes) {
       if (STABLE_COINS[ct]) prices[ct] = STABLE_COINS[ct];
     }
@@ -64,21 +81,12 @@ export async function POST(req: NextRequest) {
       } catch {}
     }
 
-    // 3. GeckoTerminal individual calls for remaining unknowns
+    // 3. GeckoTerminal fallback for ALL remaining tokens (including unknown ones)
     const stillNeeded = needed.filter((ct: string) => !prices[ct]);
     if (stillNeeded.length > 0) {
       await Promise.all(stillNeeded.map(async (ct: string) => {
-        try {
-          const addr = ct.split("::")[0];
-          const res = await fetch(
-            `https://api.geckoterminal.com/api/v2/networks/sui-network/tokens/${addr}`,
-            { next: { revalidate: 60 } }
-          );
-          if (!res.ok) return;
-          const data = await res.json();
-          const price = parseFloat(data?.data?.attributes?.price_usd || "0");
-          if (price > 0) prices[ct] = price;
-        } catch {}
+        const price = await getGeckoTerminalPrice(ct);
+        if (price !== null) prices[ct] = price;
       }));
     }
 
