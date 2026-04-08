@@ -117,9 +117,24 @@ function SellContent() {
     const results: any[] = [];
     try {
       if (form.game === "Magic: The Gathering") {
-        const res = await fetch(`https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(q)}`);
-        const data = await res.json();
-        if (data.data) data.data.slice(0, 6).forEach((name: string) => results.push({ name }));
+        // Try Scryfall first, fallback to search endpoint
+        try {
+          const res = await fetch(`https://api.scryfall.com/cards/search?q=name%3A${encodeURIComponent(q)}&order=released&unique=cards&limit=8`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.data) data.data.slice(0, 8).forEach((c: any) => results.push({ name: c.name, set: c.set_name, number: c.collector_number }));
+          }
+        } catch {}
+        if (results.length === 0) {
+          // Fallback: autocomplete
+          try {
+            const res2 = await fetch(`https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(q)}`);
+            if (res2.ok) {
+              const data2 = await res2.json();
+              if (data2.data) data2.data.slice(0, 8).forEach((name: string) => results.push({ name }));
+            }
+          } catch {}
+        }
       } else if (form.game === "Pokémon TCG") {
         const res = await fetch(`https://api.pokemontcg.io/v2/cards?q=name:${encodeURIComponent(q)}*&pageSize=6`);
         const data = await res.json();
@@ -131,7 +146,14 @@ function SellContent() {
       } else if (form.game === "One Piece TCG") {
         const res = await fetch(`/api/optcg-cards?search=${encodeURIComponent(q)}`);
         const data = await res.json();
-        if (data.cards) data.cards.slice(0, 6).forEach((c: any) => results.push({ name: c.name, set: c.code }));
+        if (data.cards) data.cards.slice(0, 12).forEach((c: any) => results.push({
+          name: c.name,
+          set: c.set || c.code,
+          number: c.code,
+          image: c.image || "",
+          price: c.price ? `$${Number(c.price).toFixed(2)}` : "",
+          rarity: c.rarity || "",
+        }));
       }
     } catch {}
     setCardSuggestions(results);
@@ -307,11 +329,18 @@ function SellContent() {
                   </div>
                   <input value={form.name} onChange={e => { setForm(p => ({ ...p, name: e.target.value })); searchCards(e.target.value); }} onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} placeholder={`Search ${form.game} cards...`} style={inputStyle} />
                   {showSuggestions && cardSuggestions.length > 0 && (
-                    <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#050515", border: "1px solid rgba(0,153,255,0.2)", borderRadius: "10px", zIndex: 100, marginTop: "4px", boxShadow: "0 8px 32px rgba(0,0,0,0.6)", overflow: "hidden" }}>
+                    <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#050515", border: "1px solid rgba(0,153,255,0.2)", borderRadius: "10px", zIndex: 100, marginTop: "4px", boxShadow: "0 8px 32px rgba(0,0,0,0.6)", overflow: "hidden", maxHeight: "320px", overflowY: "auto" }}>
                       {cardSuggestions.map((card, i) => (
-                        <div key={i} onClick={() => { setForm(p => ({ ...p, name: card.name, set_name: card.set || p.set_name, card_number: card.number || p.card_number })); setShowSuggestions(false); }} style={{ padding: "10px 14px", cursor: "pointer", borderBottom: i < cardSuggestions.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }} onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#0a1628"} onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = "transparent"}>
-                          <div style={{ fontSize: "13px", fontWeight: 600, color: "#ffffff" }}>{card.name}</div>
-                          {card.set && <div style={{ fontSize: "10px", color: "#8899bb" }}>{card.set}</div>}
+                        <div key={i} onClick={() => { setForm(p => ({ ...p, name: card.name, set_name: card.set || p.set_name, card_number: card.number || p.card_number, price_usd: card.price ? card.price.replace("$","") : p.price_usd })); setShowSuggestions(false); }} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", cursor: "pointer", borderBottom: i < cardSuggestions.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }} onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#0a1628"} onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = "transparent"}>
+                          {card.image && <img src={card.image} alt={card.name} style={{ width: "32px", height: "44px", objectFit: "cover", borderRadius: "4px", flexShrink: 0 }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: "13px", fontWeight: 600, color: "#ffffff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.name}</div>
+                            <div style={{ display: "flex", gap: "8px", alignItems: "center", marginTop: "2px" }}>
+                              {card.set && <span style={{ fontSize: "10px", color: "#8899bb" }}>{card.set}</span>}
+                              {card.rarity && <span style={{ fontSize: "9px", color: "#0099ff", background: "rgba(0,153,255,0.1)", padding: "1px 5px", borderRadius: "3px" }}>{card.rarity}</span>}
+                            </div>
+                          </div>
+                          {card.price && <span style={{ fontSize: "12px", fontWeight: 700, color: "#0099ff", flexShrink: 0 }}>{card.price}</span>}
                         </div>
                       ))}
                     </div>
