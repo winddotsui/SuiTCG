@@ -1,366 +1,493 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { supabase } from "../../lib/supabase";
-import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { showSuccess, showError } from "../../lib/toast";
 
-const tabs = ["Overview", "My Listings", "My Alerts", "My Decks", "Tournaments", "Wallet"];
+const COLORS = ["#0099ff","#00d4ff","#00ff88","#a78bfa","#ffcc00","#ff6b6b","#f472b6","#34d399","#fb923c","#60a5fa"];
+const TABS = ["Overview","Portfolio","Listings","Orders","Alerts","Decks","Tournaments"];
 
-function DashboardContent() {
+interface TokenHolding {
+  coinType: string; symbol: string; name: string; iconUrl: string | null;
+  balance: number; decimals: number; price: number | null; value: number | null; pct: number;
+}
+
+function fmt(n: number, d = 2) { return n.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function shortAddr(addr: string) { return addr ? addr.slice(0,6)+"..."+addr.slice(-4) : "—"; }
+
+const CustomTooltip = ({ active, payload }: any) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div style={{background:"#0a1628",border:"1px solid rgba(0,153,255,0.25)",borderRadius:"10px",padding:"10px 16px"}}>
+      <div style={{fontSize:"13px",fontWeight:700,color:"#fff",marginBottom:"4px"}}>{payload[0].name}</div>
+      <div style={{fontSize:"12px",color:"#00d4ff"}}>${fmt(payload[0].value)}</div>
+      <div style={{fontSize:"11px",color:"#8899bb"}}>{fmt(payload[0].payload.pct)}% of portfolio</div>
+    </div>
+  );
+};
+
+function DashboardInner() {
   const account = useCurrentAccount();
-  const [activeTab, setActiveTab] = useState("Overview");
-  const [chainListings, setChainListings] = useState<any[]>([]);
-  const [orders, setOrders] = useState<any[]>([]);
+  const client = useSuiClient();
+  const [tab, setTab] = useState("Overview");
   const [profile, setProfile] = useState<any>(null);
   const [listings, setListings] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [decks, setDecks] = useState<any[]>([]);
   const [tournaments, setTournaments] = useState<any[]>([]);
+  const [holdings, setHoldings] = useState<TokenHolding[]>([]);
+  const [portfolioLoading, setPortfolioLoading] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({ username:"", bio:"", twitter:"", discord:"", telegram:"", avatar_url:"", email:"" });
+  const [sortBy, setSortBy] = useState<"value"|"balance"|"symbol">("value");
 
-  const walletAddress = account?.address || (typeof window !== "undefined" ? localStorage.getItem("wavetcg_wallet_address") || null : null);
+  const walletAddress = account?.address || (typeof window !== "undefined" ? localStorage.getItem("wavetcg_wallet_address") || "" : "");
 
-  const shortAddr = (addr: string) => addr ? addr.slice(0, 6) + "..." + addr.slice(-4) : "—";
-
-  useEffect(() => {
-    if (walletAddress) fetchAll();
-    else setLoading(false);
-  }, []);
+  useEffect(() => { if (walletAddress) { fetchAll(); fetchPortfolio(); } else setLoading(false); }, [walletAddress]);
 
   async function fetchAll() {
     setLoading(true);
     try {
-      // Fetch on-chain listings
-      const chainRes = await fetch("/api/listings");
-      const chainJson = await chainRes.json();
-      const myChainListings = (chainJson.listings || []).filter((l: any) => l.seller_address === walletAddress);
-      setChainListings(myChainListings);
-
-      // Fetch orders
-      const { data: ordersData } = await supabase.from("transactions").select("*")
-        .or(`seller_address.eq.${walletAddress},buyer_address.eq.${walletAddress}`)
-        .order("created_at", { ascending: false });
-      setOrders(ordersData || []);
-
-      const [profileRes, listingsRes, alertsRes, decksRes, tournamentsRes] = await Promise.all([
+      const [profileRes, listingsRes, ordersRes, alertsRes, decksRes, tournamentsRes] = await Promise.all([
         supabase.from("profiles").select("*").eq("wallet_address", walletAddress).single(),
         supabase.from("listings").select("*").eq("seller_address", walletAddress).order("created_at", { ascending: false }),
+        supabase.from("transactions").select("*").or(`seller_address.eq.${walletAddress},buyer_address.eq.${walletAddress}`).order("created_at", { ascending: false }),
         supabase.from("price_alerts").select("*").eq("user_wallet", walletAddress).order("created_at", { ascending: false }),
         supabase.from("saved_decks").select("*").eq("wallet_address", walletAddress).order("created_at", { ascending: false }),
         supabase.from("tournament_registrations").select("*").eq("wallet_address", walletAddress).order("created_at", { ascending: false }),
       ]);
-      if (profileRes.data) setProfile(profileRes.data);
+      if (profileRes.data) { setProfile(profileRes.data); setForm({ username: profileRes.data.username||"", bio: profileRes.data.bio||"", twitter: profileRes.data.twitter||"", discord: profileRes.data.discord||"", telegram: profileRes.data.telegram||"", avatar_url: profileRes.data.avatar_url||"", email: profileRes.data.email||"" }); }
       if (listingsRes.data) setListings(listingsRes.data);
+      if (ordersRes.data) setOrders(ordersRes.data);
       if (alertsRes.data) setAlerts(alertsRes.data);
       if (decksRes.data) setDecks(decksRes.data);
       if (tournamentsRes.data) setTournaments(tournamentsRes.data);
-    } catch (e) { console.error(e); }
+    } catch(e) { console.error(e); }
     setLoading(false);
+  }
+
+  const fetchPortfolio = useCallback(async () => {
+    if (!walletAddress) return;
+    setPortfolioLoading(true);
+    try {
+      const balances = await client.getAllBalances({ owner: walletAddress });
+      const holdingsRaw: TokenHolding[] = await Promise.all(balances.map(async (b) => {
+        let symbol = b.coinType.split("::").pop() || "?";
+        let name = symbol, decimals = 9, iconUrl = null;
+        try {
+          const meta = await client.getCoinMetadata({ coinType: b.coinType });
+          if (meta) { symbol = meta.symbol||symbol; name = meta.name||name; decimals = meta.decimals??9; iconUrl = meta.iconUrl||null; }
+        } catch {}
+        const balance = Number(b.totalBalance) / 10**decimals;
+        return { coinType:b.coinType, symbol, name, iconUrl, balance, decimals, price:null, value:null, pct:0 };
+      }));
+      let prices: Record<string,number> = {};
+      try {
+        const res = await fetch("/api/token-prices", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ coinTypes: holdingsRaw.map(h => h.coinType) }) });
+        if (res.ok) { const data = await res.json(); Object.assign(prices, data.prices||{}); }
+      } catch {}
+      const withPrices = holdingsRaw.map(h => {
+        const price = prices[h.coinType] ?? null;
+        return { ...h, price, value: price !== null ? h.balance * price : null };
+      });
+      const totalValue = withPrices.reduce((s,h) => s + (h.value||0), 0);
+      const final = withPrices.map(h => ({ ...h, pct: totalValue > 0 && h.value ? (h.value/totalValue)*100 : 0 }))
+        .sort((a,b) => (b.value||0) - (a.value||0));
+      setHoldings(final);
+    } catch(e) { console.error(e); }
+    setPortfolioLoading(false);
+  }, [walletAddress, client]);
+
+  async function saveProfile() {
+    setSaving(true);
+    try {
+      await supabase.from("profiles").upsert({ wallet_address: walletAddress, ...form }, { onConflict: "wallet_address" });
+      await fetchAll();
+      setEditing(false);
+      showSuccess("Profile saved!");
+    } catch { showError("Failed to save"); }
+    setSaving(false);
   }
 
   async function deleteListing(id: string) {
     await supabase.from("listings").delete().eq("id", id);
     setListings(prev => prev.filter(l => l.id !== id));
-  }
-
-  async function toggleListing(id: string, status: string) {
-    const newStatus = status === "active" ? "paused" : "active";
-    await supabase.from("listings").update({ status: newStatus }).eq("id", id);
-    setListings(prev => prev.map(l => l.id === id ? { ...l, status: newStatus } : l));
+    showSuccess("Listing deleted");
   }
 
   async function deleteAlert(id: string) {
     await supabase.from("price_alerts").delete().eq("id", id);
     setAlerts(prev => prev.filter(a => a.id !== id));
+    showSuccess("Alert deleted");
   }
 
-  const activeListings = listings.filter(l => l.status === "active");
-  const totalValue = listings.reduce((sum, l) => sum + (l.price_usd || 0), 0);
-  const activeAlerts = alerts.filter(a => a.status === "active");
+  const totalValue = holdings.reduce((s,h) => s + (h.value||0), 0);
+  const pieData = holdings.filter(h => h.value && h.value > 0).map(h => ({ name: h.symbol, value: h.value!, pct: h.pct }));
+  const sorted = [...holdings].sort((a,b) => sortBy==="value"?(b.value||0)-(a.value||0):sortBy==="balance"?b.balance-a.balance:a.symbol.localeCompare(b.symbol));
+
+  const inp = { width:"100%", background:"#0a1628", border:"1px solid rgba(0,153,255,0.15)", borderRadius:"8px", padding:"10px 14px", fontSize:"13px", color:"#fff", fontFamily:"DM Sans, sans-serif", outline:"none", boxSizing:"border-box" as const };
+  const lbl = { display:"block", fontSize:"11px", letterSpacing:"0.08em", textTransform:"uppercase" as const, color:"#8899bb", marginBottom:"6px" };
 
   if (!walletAddress) return (
-    <div style={{ minHeight: "100vh", background: "#000008", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "16px" }}>
-      <div style={{ fontSize: "48px" }}>🔒</div>
-      <div style={{ fontFamily: "Cinzel, serif", fontSize: "20px", color: "#ffffff" }}>Connect Your Wallet</div>
-      <p style={{ fontSize: "13px", color: "#8899bb" }}>Connect your Sui wallet to view your dashboard</p>
+    <div style={{minHeight:"60vh",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:"16px"}}>
+      <div style={{fontSize:"48px"}}>🔐</div>
+      <div style={{fontFamily:"Cinzel, serif",fontSize:"20px",color:"#fff"}}>Connect your wallet</div>
+      <p style={{color:"#8899bb",fontSize:"14px"}}>Connect your Sui wallet to view your dashboard</p>
+    </div>
+  );
+
+  if (loading) return (
+    <div style={{minHeight:"60vh",display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{width:"40px",height:"40px",border:"3px solid rgba(0,153,255,0.2)",borderTopColor:"#0099ff",borderRadius:"50%",animation:"spin 0.8s linear infinite"}}/>
     </div>
   );
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000008", padding: "20px 12px" }}>
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+    <div style={{minHeight:"100vh",background:"#000008",color:"#fff",fontFamily:"DM Sans, sans-serif",padding:"32px clamp(16px,4vw,48px) 80px"}}>
+      <style>{`
+        @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+        .tab-btn{background:none;border:none;cursor:pointer;padding:10px 18px;font-size:13px;font-weight:500;border-radius:8px;transition:all 0.15s;font-family:DM Sans,sans-serif;white-space:nowrap}
+        .tab-btn:hover{background:rgba(255,255,255,0.05);color:#fff}
+        .tab-btn.active{background:rgba(0,153,255,0.12);color:#0099ff;border:1px solid rgba(0,153,255,0.2)}
+        .tok-row:hover{background:rgba(255,255,255,0.02)}
+        .action-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);padding:8px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit;transition:all 0.15s}
+        .action-btn:hover{border-color:rgba(255,255,255,0.2);color:#fff}
+        .del-btn{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#ef4444;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit}
+        .del-btn:hover{background:rgba(239,68,68,0.15)}
+        .card{background:#050515;border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:24px}
+        .stat-card{background:#050515;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px 24px}
+      `}</style>
 
-        {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
-          <div>
-            <div style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "6px" }}>My Account</div>
-            <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(24px, 5vw, 36px)", fontWeight: 700, background: "linear-gradient(135deg, #0030cc, #0099ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", marginBottom: "8px" }}>
-              {profile?.username || "Dashboard"}
-            </h1>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-              <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#00ff88", flexShrink: 0 }} />
-              <span style={{ fontSize: "12px", color: "#c8d8f0", fontFamily: "monospace" }}>{shortAddr(walletAddress)}</span>
-              {profile?.twitter && <span style={{ fontSize: "11px", color: "#1da1f2" }}>𝕏 @{profile.twitter}</span>}
-            </div>
+      <div style={{maxWidth:"1200px",margin:"0 auto"}}>
+
+        {/* HEADER — Profile summary */}
+        <div style={{display:"flex",alignItems:"center",gap:"20px",marginBottom:"32px",flexWrap:"wrap"}}>
+          <div style={{width:"64px",height:"64px",borderRadius:"50%",background:"linear-gradient(135deg,#0055ff,#00d4ff)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"24px",flexShrink:0,overflow:"hidden"}}>
+            {profile?.avatar_url ? <img src={profile.avatar_url} style={{width:"100%",height:"100%",objectFit:"cover"}} /> : "👤"}
           </div>
-          <a href="/sell" style={{ background: "#0099ff", color: "#000008", padding: "10px 20px", borderRadius: "8px", fontSize: "12px", fontWeight: 600, textDecoration: "none", display: "inline-block", letterSpacing: "0.05em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
-            + List a Card
-          </a>
+          <div style={{flex:1}}>
+            <div style={{fontFamily:"Cinzel, serif",fontSize:"22px",fontWeight:700,color:"#fff"}}>{profile?.username || shortAddr(walletAddress)}</div>
+            <div style={{fontSize:"12px",color:"#444460",marginTop:"4px"}}>{shortAddr(walletAddress)}</div>
+            {profile?.bio && <div style={{fontSize:"13px",color:"#8899bb",marginTop:"4px"}}>{profile.bio}</div>}
+          </div>
+          <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
+            <a href="/sell" style={{textDecoration:"none"}}><button className="action-btn">+ List Card</button></a>
+            <a href="/marketplace" style={{textDecoration:"none"}}><button className="action-btn">Browse</button></a>
+            <button className="action-btn" onClick={() => setEditing(true)}>✏️ Edit Profile</button>
+          </div>
         </div>
 
-        {/* Stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px", marginBottom: "24px" }}>
-          {[
-            { label: "Active Listings", val: chainListings.length.toString(), sub: `on-chain`, color: "#0099ff" },
-            { label: "Total Sales", val: orders.filter((o: any) => o.seller_address === walletAddress).length.toString(), sub: "completed sales", color: "#00ff88" },
-            { label: "Purchases", val: orders.filter((o: any) => o.buyer_address === walletAddress).length.toString(), sub: "cards bought", color: "#00ffcc" },
-            { label: "Price Alerts", val: alerts.length.toString(), sub: "active alerts", color: "#ffcc00" },
-          ].map((s, i) => (
-            <div key={i} style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "12px", padding: "14px 16px" }}>
-              <div style={{ fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", color: "#8899bb", marginBottom: "6px" }}>{s.label}</div>
-              <div style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(18px, 4vw, 28px)", fontWeight: 600, color: s.color, marginBottom: "2px" }}>
-                {loading ? "..." : s.val}
-              </div>
-              <div style={{ fontSize: "11px", color: "#444460" }}>{s.sub}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Tabs */}
-        <div style={{ display: "flex", gap: "4px", marginBottom: "20px", overflowX: "auto", paddingBottom: "4px" }}>
-          {tabs.map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} style={{ padding: "8px 14px", borderRadius: "8px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontSize: "12px", fontWeight: 500, border: activeTab === tab ? "1px solid #0099ff" : "1px solid rgba(255,255,255,0.08)", background: activeTab === tab ? "rgba(0,153,255,0.12)" : "transparent", color: activeTab === tab ? "#0099ff" : "#8899bb", whiteSpace: "nowrap", flexShrink: 0 }}>
-              {tab}
+        {/* TABS */}
+        <div style={{display:"flex",gap:"4px",marginBottom:"28px",overflowX:"auto",paddingBottom:"4px",borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+          {TABS.map(t => (
+            <button key={t} className={`tab-btn${tab===t?" active":""}`} style={{color:tab===t?"#0099ff":"rgba(255,255,255,0.4)"}} onClick={() => setTab(t)}>
+              {t}
+              {t==="Listings" && listings.length > 0 && <span style={{marginLeft:"6px",fontSize:"10px",background:"rgba(0,153,255,0.15)",padding:"1px 6px",borderRadius:"10px",color:"#0099ff"}}>{listings.length}</span>}
+              {t==="Orders" && orders.length > 0 && <span style={{marginLeft:"6px",fontSize:"10px",background:"rgba(0,153,255,0.15)",padding:"1px 6px",borderRadius:"10px",color:"#0099ff"}}>{orders.length}</span>}
+              {t==="Alerts" && alerts.length > 0 && <span style={{marginLeft:"6px",fontSize:"10px",background:"rgba(0,153,255,0.15)",padding:"1px 6px",borderRadius:"10px",color:"#0099ff"}}>{alerts.length}</span>}
             </button>
           ))}
         </div>
 
-        {/* ── OVERVIEW ── */}
-        {activeTab === "Overview" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            {/* Profile card */}
-            <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "16px", padding: "16px" }}>
-              <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#ffffff", marginBottom: "14px" }}>Profile</div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "10px" }}>
-                {[
-                  ["Username", profile?.username || "—"],
-                  ["Twitter", profile?.twitter ? "@" + profile.twitter : "—"],
-                  ["Discord", profile?.discord || "—"],
-                  ["Telegram", profile?.telegram || "—"],
-                ].map(([label, val]) => (
-                  <div key={label} style={{ background: "#0a1628", borderRadius: "8px", padding: "10px 12px" }}>
-                    <div style={{ fontSize: "10px", color: "#8899bb", marginBottom: "3px" }}>{label}</div>
-                    <div style={{ fontSize: "12px", color: "#ffffff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{val}</div>
+        {/* OVERVIEW TAB */}
+        {tab==="Overview" && (
+          <div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:"12px",marginBottom:"28px"}}>
+              {[
+                { label:"Portfolio Value", value: totalValue > 0 ? `$${fmt(totalValue)}` : "—", color:"#0099ff" },
+                { label:"Active Listings", value: listings.filter(l=>l.status==="active").length, color:"#00ff88" },
+                { label:"Total Orders", value: orders.length, color:"#00d4ff" },
+                { label:"Price Alerts", value: alerts.length, color:"#a78bfa" },
+                { label:"Saved Decks", value: decks.length, color:"#ffcc00" },
+                { label:"Tournaments", value: tournaments.length, color:"#ff6b6b" },
+              ].map((s,i) => (
+                <div key={i} className="stat-card">
+                  <div style={{fontSize:"11px",color:"#444460",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"8px"}}>{s.label}</div>
+                  <div style={{fontFamily:"Cinzel, serif",fontSize:"24px",fontWeight:700,color:s.color}}>{s.value}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Recent orders */}
+            {orders.length > 0 && (
+              <div className="card" style={{marginBottom:"16px"}}>
+                <div style={{fontFamily:"Cinzel, serif",fontSize:"15px",fontWeight:600,color:"#fff",marginBottom:"16px"}}>Recent Orders</div>
+                {orders.slice(0,5).map((o,i) => (
+                  <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:i<4?"1px solid rgba(255,255,255,0.04)":"none"}}>
+                    <div>
+                      <div style={{fontSize:"13px",fontWeight:600,color:"#fff"}}>{o.card_name}</div>
+                      <div style={{fontSize:"11px",color:"#444460"}}>{o.buyer_address===walletAddress?"Bought":"Sold"} · {new Date(o.created_at).toLocaleDateString()}</div>
+                    </div>
+                    <div style={{fontSize:"13px",fontWeight:700,color:o.buyer_address===walletAddress?"#ff6b6b":"#00ff88"}}>{o.buyer_address===walletAddress?"-":"+"}${fmt(parseFloat(o.price_usd||"0"))}</div>
                   </div>
                 ))}
               </div>
-              <a href="/profile" style={{ display: "inline-block", marginTop: "12px", fontSize: "11px", color: "#0099ff", textDecoration: "none" }}>Edit Profile →</a>
+            )}
+
+            {/* Social links */}
+            {(profile?.twitter || profile?.discord || profile?.telegram) && (
+              <div className="card">
+                <div style={{fontFamily:"Cinzel, serif",fontSize:"15px",fontWeight:600,color:"#fff",marginBottom:"16px"}}>Social Links</div>
+                <div style={{display:"flex",gap:"12px",flexWrap:"wrap"}}>
+                  {profile?.twitter && <a href={`https://twitter.com/${profile.twitter}`} target="_blank" style={{textDecoration:"none",color:"#0099ff",fontSize:"13px"}}>🐦 @{profile.twitter}</a>}
+                  {profile?.discord && <span style={{color:"#a78bfa",fontSize:"13px"}}>💬 {profile.discord}</span>}
+                  {profile?.telegram && <a href={`https://t.me/${profile.telegram}`} target="_blank" style={{textDecoration:"none",color:"#0099ff",fontSize:"13px"}}>✈️ @{profile.telegram}</a>}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* PORTFOLIO TAB */}
+        {tab==="Portfolio" && (
+          <div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",marginBottom:"24px"}}>
+              <div className="stat-card"><div style={{fontSize:"11px",color:"#444460",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"8px"}}>Total Value</div><div style={{fontFamily:"Cinzel, serif",fontSize:"28px",fontWeight:700,color:"#0099ff"}}>${fmt(totalValue)}</div></div>
+              <div className="stat-card"><div style={{fontSize:"11px",color:"#444460",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"8px"}}>Tokens Held</div><div style={{fontFamily:"Cinzel, serif",fontSize:"28px",fontWeight:700,color:"#00d4ff"}}>{holdings.length}</div></div>
+              <div className="stat-card" style={{cursor:"pointer"}} onClick={fetchPortfolio}><div style={{fontSize:"11px",color:"#444460",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"8px"}}>Refresh</div><div style={{fontFamily:"Cinzel, serif",fontSize:"14px",fontWeight:600,color:"#fff"}}>{portfolioLoading ? "Updating..." : "🔄 Click to refresh"}</div></div>
             </div>
 
-
-            {/* Recent listings */}
-            <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "16px", padding: "16px" }}>
-              <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#ffffff", marginBottom: "14px" }}>My On-Chain Listings</div>
-              {loading ? (
-                <div style={{ color: "#0099ff", fontSize: "13px" }}>Loading...</div>
-              ) : chainListings.length === 0 ? (
-                <div style={{ textAlign: "center", padding: "24px", color: "#8899bb", fontSize: "13px" }}>
-                  No listings yet — <a href="/sell" style={{ color: "#0099ff" }}>list your first card</a>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 340px",gap:"20px",alignItems:"start"}}>
+              {/* Holdings table */}
+              <div className="card" style={{padding:0,overflow:"hidden"}}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"20px 24px",borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+                  <div style={{fontFamily:"Cinzel, serif",fontSize:"15px",fontWeight:600,color:"#fff"}}>Holdings</div>
+                  <div style={{display:"flex",gap:"6px"}}>
+                    {(["value","balance","symbol"] as const).map(s => (
+                      <button key={s} onClick={()=>setSortBy(s)} style={{background:sortBy===s?"rgba(0,153,255,0.12)":"none",border:sortBy===s?"1px solid rgba(0,153,255,0.2)":"1px solid transparent",color:sortBy===s?"#0099ff":"rgba(255,255,255,0.4)",padding:"5px 12px",borderRadius:"6px",fontSize:"11px",cursor:"pointer",fontFamily:"inherit",textTransform:"capitalize"}}>{s}</button>
+                    ))}
+                  </div>
                 </div>
-              ) : chainListings.slice(0, 4).map((item, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 0", borderBottom: i < Math.min(listings.length, 4) - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
-                  <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: "#0a1628", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", flexShrink: 0, overflow: "hidden" }}>
-                    {item.image_url ? <img src={item.image_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : "🃏"}
+                <table style={{width:"100%",borderCollapse:"collapse"}}>
+                  <thead><tr style={{borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+                    {["Token","Balance","Price","Value","Allocation"].map(h => <th key={h} style={{padding:"12px 24px",textAlign:h==="Token"?"left":"right",fontSize:"10px",color:"#444460",letterSpacing:"0.1em",textTransform:"uppercase",fontWeight:400}}>{h}</th>)}
+                  </tr></thead>
+                  <tbody>
+                    {portfolioLoading ? Array(4).fill(0).map((_,i) => <tr key={i}>{[1,2,3,4,5].map(j=><td key={j} style={{padding:"16px 24px"}}><div style={{height:"14px",background:"rgba(255,255,255,0.04)",borderRadius:"4px",animation:"pulse 1.5s infinite"}}/></td>)}</tr>) :
+                    sorted.map((h,i) => (
+                      <tr key={h.coinType} className="tok-row" style={{borderBottom:"1px solid rgba(255,255,255,0.03)",transition:"background 0.15s"}}>
+                        <td style={{padding:"14px 24px"}}>
+                          <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+                            <div style={{width:"32px",height:"32px",borderRadius:"50%",background:"linear-gradient(135deg,#0055ff,#00d4ff)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"11px",fontWeight:700,color:"#fff",flexShrink:0,overflow:"hidden"}}>
+                              {h.iconUrl ? <img src={h.iconUrl} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{(e.currentTarget as HTMLImageElement).style.display="none"}} /> : h.symbol.slice(0,2)}
+                            </div>
+                            <div><div style={{fontWeight:700,fontSize:"13px",color:"#fff"}}>{h.symbol}</div><div style={{fontSize:"11px",color:"#444460"}}>{h.name}</div></div>
+                          </div>
+                        </td>
+                        <td style={{padding:"14px 24px",textAlign:"right",fontSize:"13px",color:"#8899bb"}}>{fmt(h.balance,4)}</td>
+                        <td style={{padding:"14px 24px",textAlign:"right",fontSize:"13px",color:h.price?"#8899bb":"#333350"}}>{h.price?`$${fmt(h.price,4)}`:"—"}</td>
+                        <td style={{padding:"14px 24px",textAlign:"right",fontSize:"13px",fontWeight:700,color:h.value?"#fff":"#333350"}}>{h.value?`$${fmt(h.value)}`:"—"}</td>
+                        <td style={{padding:"14px 24px",textAlign:"right"}}>
+                          <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end",gap:"8px"}}>
+                            <div style={{width:"60px",height:"4px",background:"rgba(255,255,255,0.05)",borderRadius:"2px",overflow:"hidden"}}>
+                              <div style={{height:"100%",width:`${Math.min(h.pct,100)}%`,background:COLORS[i%COLORS.length],borderRadius:"2px"}}/>
+                            </div>
+                            <span style={{fontSize:"12px",fontWeight:600,color:h.pct>0?COLORS[i%COLORS.length]:"#333350",minWidth:"44px",textAlign:"right"}}>{fmt(h.pct)}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pie chart */}
+              <div className="card">
+                <div style={{fontFamily:"Cinzel, serif",fontSize:"15px",fontWeight:600,color:"#fff",marginBottom:"16px"}}>Allocation</div>
+                <div style={{position:"relative",height:"200px"}}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={2} dataKey="value">
+                        {pieData.map((_,i) => <Cell key={i} fill={COLORS[i%COLORS.length]} stroke="transparent"/>)}
+                      </Pie>
+                      <Tooltip content={<CustomTooltip/>}/>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",textAlign:"center",pointerEvents:"none"}}>
+                    <div style={{fontSize:"10px",color:"#444460",textTransform:"uppercase",letterSpacing:"0.1em"}}>Total</div>
+                    <div style={{fontFamily:"Cinzel, serif",fontSize:"16px",fontWeight:700,color:"#fff"}}>${fmt(totalValue)}</div>
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: "13px", fontWeight: 600, color: "#ffffff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name}</div>
-                    <div style={{ fontSize: "11px", color: "#8899bb" }}>{item.game}</div>
-                  </div>
-                  <div style={{ textAlign: "right", flexShrink: 0 }}>
-                    <div style={{ fontSize: "13px", fontWeight: 600, color: "#0099ff" }}>${item.price_usd}</div>
-                    <div style={{ fontSize: "10px", color: item.status === "active" ? "#00ff88" : "#8899bb" }}>{item.status}</div>
-                  </div>
+                </div>
+                <div style={{marginTop:"16px",display:"flex",flexDirection:"column",gap:"8px"}}>
+                  {pieData.slice(0,6).map((d,i) => (
+                    <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                      <div style={{display:"flex",alignItems:"center",gap:"8px"}}><div style={{width:"8px",height:"8px",borderRadius:"50%",background:COLORS[i%COLORS.length],flexShrink:0}}/><span style={{fontSize:"12px",color:"#8899bb"}}>{d.name}</span></div>
+                      <div style={{textAlign:"right"}}><div style={{fontSize:"12px",fontWeight:600,color:"#fff"}}>${fmt(d.value)}</div><div style={{fontSize:"10px",color:"#444460"}}>{fmt(d.pct)}%</div></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* LISTINGS TAB */}
+        {tab==="Listings" && (
+          <div className="card" style={{padding:0,overflow:"hidden"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"20px 24px",borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+              <div style={{fontFamily:"Cinzel, serif",fontSize:"15px",fontWeight:600,color:"#fff"}}>My Listings</div>
+              <a href="/sell" style={{textDecoration:"none"}}><button className="action-btn">+ New Listing</button></a>
+            </div>
+            {listings.length === 0 ? <div style={{padding:"48px",textAlign:"center",color:"#444460"}}>No listings yet. <a href="/sell" style={{color:"#0099ff"}}>List a card →</a></div> :
+            <table style={{width:"100%",borderCollapse:"collapse"}}>
+              <thead><tr style={{borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+                {["Card","Game","Condition","Price","Status",""].map(h => <th key={h} style={{padding:"12px 20px",textAlign:"left",fontSize:"10px",color:"#444460",letterSpacing:"0.1em",textTransform:"uppercase",fontWeight:400}}>{h}</th>)}
+              </tr></thead>
+              <tbody>
+                {listings.map((l,i) => (
+                  <tr key={l.id} style={{borderBottom:"1px solid rgba(255,255,255,0.03)"}}>
+                    <td style={{padding:"14px 20px"}}><div style={{fontSize:"13px",fontWeight:600,color:"#fff"}}>{l.card_name}</div></td>
+                    <td style={{padding:"14px 20px",fontSize:"12px",color:"#8899bb"}}>{l.game}</td>
+                    <td style={{padding:"14px 20px",fontSize:"12px",color:"#8899bb"}}>{l.condition}</td>
+                    <td style={{padding:"14px 20px",fontSize:"13px",fontWeight:700,color:"#0099ff"}}>${fmt(parseFloat(l.price_usd||"0"))}</td>
+                    <td style={{padding:"14px 20px"}}><span style={{fontSize:"10px",padding:"3px 8px",borderRadius:"4px",background:l.status==="active"?"rgba(0,255,136,0.1)":"rgba(255,255,255,0.05)",color:l.status==="active"?"#00ff88":"#8899bb",border:`1px solid ${l.status==="active"?"rgba(0,255,136,0.2)":"rgba(255,255,255,0.08)"}`}}>{l.status}</span></td>
+                    <td style={{padding:"14px 20px"}}><button className="del-btn" onClick={()=>deleteListing(l.id)}>Delete</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>}
+          </div>
+        )}
+
+        {/* ORDERS TAB */}
+        {tab==="Orders" && (
+          <div className="card" style={{padding:0,overflow:"hidden"}}>
+            <div style={{padding:"20px 24px",borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+              <div style={{fontFamily:"Cinzel, serif",fontSize:"15px",fontWeight:600,color:"#fff"}}>Order History</div>
+            </div>
+            {orders.length === 0 ? <div style={{padding:"48px",textAlign:"center",color:"#444460"}}>No orders yet.</div> :
+            <table style={{width:"100%",borderCollapse:"collapse"}}>
+              <thead><tr style={{borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+                {["Card","Type","Price","Date","Status"].map(h => <th key={h} style={{padding:"12px 20px",textAlign:"left",fontSize:"10px",color:"#444460",letterSpacing:"0.1em",textTransform:"uppercase",fontWeight:400}}>{h}</th>)}
+              </tr></thead>
+              <tbody>
+                {orders.map((o,i) => (
+                  <tr key={o.id} style={{borderBottom:"1px solid rgba(255,255,255,0.03)"}}>
+                    <td style={{padding:"14px 20px"}}><div style={{fontSize:"13px",fontWeight:600,color:"#fff"}}>{o.card_name}</div></td>
+                    <td style={{padding:"14px 20px"}}><span style={{fontSize:"11px",padding:"3px 8px",borderRadius:"4px",background:o.buyer_address===walletAddress?"rgba(239,68,68,0.08)":"rgba(0,255,136,0.08)",color:o.buyer_address===walletAddress?"#ff6b6b":"#00ff88"}}>{o.buyer_address===walletAddress?"Bought":"Sold"}</span></td>
+                    <td style={{padding:"14px 20px",fontSize:"13px",fontWeight:700,color:o.buyer_address===walletAddress?"#ff6b6b":"#00ff88"}}>{o.buyer_address===walletAddress?"-":"+"}${fmt(parseFloat(o.price_usd||"0"))}</td>
+                    <td style={{padding:"14px 20px",fontSize:"12px",color:"#8899bb"}}>{new Date(o.created_at).toLocaleDateString()}</td>
+                    <td style={{padding:"14px 20px"}}><span style={{fontSize:"10px",color:"#00ff88"}}>✓ Complete</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>}
+          </div>
+        )}
+
+        {/* ALERTS TAB */}
+        {tab==="Alerts" && (
+          <div className="card" style={{padding:0,overflow:"hidden"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"20px 24px",borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+              <div style={{fontFamily:"Cinzel, serif",fontSize:"15px",fontWeight:600,color:"#fff"}}>Price Alerts</div>
+              <a href="/alerts" style={{textDecoration:"none"}}><button className="action-btn">+ New Alert</button></a>
+            </div>
+            {alerts.length === 0 ? <div style={{padding:"48px",textAlign:"center",color:"#444460"}}>No alerts yet. <a href="/alerts" style={{color:"#0099ff"}}>Create one →</a></div> :
+            <table style={{width:"100%",borderCollapse:"collapse"}}>
+              <thead><tr style={{borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+                {["Card","Target Price","Status",""].map(h => <th key={h} style={{padding:"12px 20px",textAlign:"left",fontSize:"10px",color:"#444460",letterSpacing:"0.1em",textTransform:"uppercase",fontWeight:400}}>{h}</th>)}
+              </tr></thead>
+              <tbody>
+                {alerts.map((a,i) => (
+                  <tr key={a.id} style={{borderBottom:"1px solid rgba(255,255,255,0.03)"}}>
+                    <td style={{padding:"14px 20px",fontSize:"13px",fontWeight:600,color:"#fff"}}>{a.card_name}</td>
+                    <td style={{padding:"14px 20px",fontSize:"13px",fontWeight:700,color:"#0099ff"}}>${fmt(parseFloat(a.target_price||"0"))}</td>
+                    <td style={{padding:"14px 20px"}}><span style={{fontSize:"10px",padding:"3px 8px",borderRadius:"4px",background:"rgba(0,255,136,0.08)",color:"#00ff88"}}>Active</span></td>
+                    <td style={{padding:"14px 20px"}}><button className="del-btn" onClick={()=>deleteAlert(a.id)}>Delete</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>}
+          </div>
+        )}
+
+        {/* DECKS TAB */}
+        {tab==="Decks" && (
+          <div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"16px"}}>
+              <div style={{fontFamily:"Cinzel, serif",fontSize:"18px",fontWeight:700,color:"#fff"}}>Saved Decks</div>
+              <a href="/deckbuilder" style={{textDecoration:"none"}}><button className="action-btn">+ Build Deck</button></a>
+            </div>
+            {decks.length === 0 ? <div className="card" style={{textAlign:"center",color:"#444460",padding:"48px"}}>No decks saved. <a href="/deckbuilder" style={{color:"#0099ff"}}>Build one →</a></div> :
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:"12px"}}>
+              {decks.map((d,i) => (
+                <div key={i} className="card">
+                  <div style={{fontFamily:"Cinzel, serif",fontSize:"14px",fontWeight:600,color:"#fff",marginBottom:"6px"}}>{d.deck_name||"Untitled Deck"}</div>
+                  <div style={{fontSize:"12px",color:"#444460",marginBottom:"12px"}}>{d.card_count||0} cards · {new Date(d.created_at).toLocaleDateString()}</div>
+                  <a href="/deckbuilder" style={{textDecoration:"none"}}><button className="action-btn" style={{width:"100%",textAlign:"center"}}>View Deck →</button></a>
                 </div>
               ))}
+            </div>}
+          </div>
+        )}
+
+        {/* TOURNAMENTS TAB */}
+        {tab==="Tournaments" && (
+          <div className="card" style={{padding:0,overflow:"hidden"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"20px 24px",borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+              <div style={{fontFamily:"Cinzel, serif",fontSize:"15px",fontWeight:600,color:"#fff"}}>Tournament History</div>
+              <a href="/optcg" style={{textDecoration:"none"}}><button className="action-btn">Join Tournament →</button></a>
             </div>
-
-            {/* Recent alerts */}
-            <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "16px", padding: "16px" }}>
-              <div style={{ fontFamily: "Cinzel, serif", fontSize: "14px", color: "#ffffff", marginBottom: "14px" }}>Active Price Alerts</div>
-              {loading ? (
-                <div style={{ color: "#0099ff", fontSize: "13px" }}>Loading...</div>
-              ) : activeAlerts.length === 0 ? (
-                <div style={{ textAlign: "center", padding: "24px", color: "#8899bb", fontSize: "13px" }}>
-                  No alerts — <a href="/alerts" style={{ color: "#0099ff" }}>create one</a>
-                </div>
-              ) : activeAlerts.slice(0, 3).map((alert, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 0", borderBottom: i < Math.min(activeAlerts.length, 3) - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: "13px", fontWeight: 600, color: "#ffffff" }}>{alert.card_name}</div>
-                    <div style={{ fontSize: "11px", color: "#8899bb" }}>{alert.game} · {alert.condition} ${alert.target_price}</div>
-                  </div>
-                  <div style={{ fontSize: "10px", color: "#00ff88" }}>🟢 Active</div>
-                </div>
-              ))}
-            </div>
+            {tournaments.length === 0 ? <div style={{padding:"48px",textAlign:"center",color:"#444460"}}>No tournaments joined yet. <a href="/optcg" style={{color:"#0099ff"}}>Join one →</a></div> :
+            <table style={{width:"100%",borderCollapse:"collapse"}}>
+              <thead><tr style={{borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+                {["Week","Points","Wins","Losses","Placement"].map(h => <th key={h} style={{padding:"12px 20px",textAlign:"left",fontSize:"10px",color:"#444460",letterSpacing:"0.1em",textTransform:"uppercase",fontWeight:400}}>{h}</th>)}
+              </tr></thead>
+              <tbody>
+                {tournaments.map((t,i) => (
+                  <tr key={i} style={{borderBottom:"1px solid rgba(255,255,255,0.03)"}}>
+                    <td style={{padding:"14px 20px",fontSize:"13px",color:"#fff"}}>Week {t.tournament_week}</td>
+                    <td style={{padding:"14px 20px",fontSize:"13px",fontWeight:700,color:"#0099ff"}}>{t.points||0}</td>
+                    <td style={{padding:"14px 20px",fontSize:"13px",color:"#00ff88"}}>{t.wins||0}</td>
+                    <td style={{padding:"14px 20px",fontSize:"13px",color:"#ff6b6b"}}>{t.losses||0}</td>
+                    <td style={{padding:"14px 20px",fontSize:"13px",color:t.placement===1?"#ffcc00":"#8899bb"}}>{t.placement ? `#${t.placement}` : "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>}
           </div>
         )}
-
-        {/* ── MY LISTINGS ── */}
-        {activeTab === "My Listings" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {loading ? (
-              <div style={{ textAlign: "center", padding: "40px", color: "#0099ff" }}>Loading...</div>
-            ) : listings.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "60px", background: "#050515", borderRadius: "16px", border: "1px solid rgba(0,153,255,0.15)" }}>
-                <div style={{ fontSize: "40px", marginBottom: "12px" }}>🃏</div>
-                <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff", marginBottom: "8px" }}>No listings yet</div>
-                <a href="/sell" style={{ color: "#0099ff", fontSize: "13px" }}>+ List your first card</a>
-              </div>
-            ) : listings.map((item, i) => (
-              <div key={i} style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "12px", padding: "14px", display: "flex", alignItems: "center", gap: "12px" }}>
-                <div style={{ width: "44px", height: "44px", borderRadius: "8px", background: "#0a1628", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px", flexShrink: 0, overflow: "hidden" }}>
-                  {item.image_url ? <img src={item.image_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : "🃏"}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: "14px", fontWeight: 600, color: "#ffffff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name}</div>
-                  <div style={{ fontSize: "11px", color: "#8899bb" }}>{item.game} · {item.condition} · {item.set_name}</div>
-                </div>
-                <div style={{ textAlign: "right", flexShrink: 0 }}>
-                  <div style={{ fontSize: "14px", fontWeight: 700, color: "#0099ff" }}>${item.price_usd}</div>
-                  <div style={{ fontSize: "10px", color: "#8899bb" }}>{item.price_sui} SUI</div>
-                  <div style={{ fontSize: "10px", padding: "2px 8px", borderRadius: "6px", background: item.status === "active" ? "rgba(0,255,136,0.1)" : "rgba(255,255,255,0.05)", color: item.status === "active" ? "#00ff88" : "#8899bb", marginTop: "3px", display: "inline-block" }}>{item.status}</div>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "4px", flexShrink: 0 }}>
-                  <button onClick={() => toggleListing(item.id, item.status)} style={{ padding: "4px 10px", background: "transparent", border: "1px solid rgba(0,153,255,0.3)", borderRadius: "6px", fontSize: "10px", color: "#0099ff", cursor: "pointer" }}>
-                    {item.status === "active" ? "Pause" : "Resume"}
-                  </button>
-                  <button onClick={() => deleteListing(item.id)} style={{ padding: "4px 10px", background: "transparent", border: "1px solid rgba(255,50,50,0.3)", borderRadius: "6px", fontSize: "10px", color: "#ff6b6b", cursor: "pointer" }}>
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ── MY ALERTS ── */}
-        {activeTab === "My Alerts" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {loading ? (
-              <div style={{ textAlign: "center", padding: "40px", color: "#0099ff" }}>Loading...</div>
-            ) : alerts.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "60px", background: "#050515", borderRadius: "16px", border: "1px solid rgba(0,153,255,0.15)" }}>
-                <div style={{ fontSize: "40px", marginBottom: "12px" }}>🔔</div>
-                <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff", marginBottom: "8px" }}>No alerts yet</div>
-                <a href="/alerts" style={{ color: "#0099ff", fontSize: "13px" }}>+ Create your first alert</a>
-              </div>
-            ) : alerts.map((alert, i) => (
-              <div key={i} style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "12px", padding: "14px", display: "flex", alignItems: "center", gap: "12px" }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: "14px", fontWeight: 600, color: "#ffffff" }}>{alert.card_name}</div>
-                  <div style={{ fontSize: "11px", color: "#8899bb" }}>{alert.game} · alert when {alert.condition} <span style={{ color: "#0099ff" }}>${alert.target_price}</span></div>
-                  {alert.email && <div style={{ fontSize: "10px", color: "#444460", marginTop: "2px" }}>📧 {alert.email}</div>}
-                </div>
-                <div style={{ textAlign: "right", flexShrink: 0 }}>
-                  <div style={{ fontSize: "10px", padding: "2px 8px", borderRadius: "6px", background: alert.status === "active" ? "rgba(0,255,136,0.1)" : "rgba(255,255,255,0.05)", color: alert.status === "active" ? "#00ff88" : "#8899bb", marginBottom: "6px", display: "inline-block" }}>
-                    {alert.status === "active" ? "🟢 Active" : "⏸ Paused"}
-                  </div>
-                </div>
-                <button onClick={() => deleteAlert(alert.id)} style={{ padding: "4px 10px", background: "transparent", border: "1px solid rgba(255,50,50,0.3)", borderRadius: "6px", fontSize: "10px", color: "#ff6b6b", cursor: "pointer", flexShrink: 0 }}>
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ── MY DECKS ── */}
-        {activeTab === "My Decks" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {loading ? (
-              <div style={{ textAlign: "center", padding: "40px", color: "#0099ff" }}>Loading...</div>
-            ) : decks.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "60px", background: "#050515", borderRadius: "16px", border: "1px solid rgba(0,153,255,0.15)" }}>
-                <div style={{ fontSize: "40px", marginBottom: "12px" }}>🎴</div>
-                <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff", marginBottom: "8px" }}>No decks saved</div>
-                <a href="/deckbuilder" style={{ color: "#0099ff", fontSize: "13px" }}>+ Build your first deck</a>
-              </div>
-            ) : decks.map((deck, i) => (
-              <div key={i} style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "12px", padding: "14px", display: "flex", alignItems: "center", gap: "12px" }}>
-                <div style={{ fontSize: "28px" }}>🎴</div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: "14px", fontWeight: 600, color: "#ffffff" }}>{deck.name || "Unnamed Deck"}</div>
-                  <div style={{ fontSize: "11px", color: "#8899bb" }}>{deck.game || "TCG"} · {new Date(deck.created_at).toLocaleDateString()}</div>
-                </div>
-                <a href="/deckbuilder" style={{ padding: "6px 12px", background: "transparent", border: "1px solid rgba(0,153,255,0.3)", borderRadius: "6px", fontSize: "11px", color: "#0099ff", textDecoration: "none" }}>
-                  Edit →
-                </a>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ── TOURNAMENTS ── */}
-        {activeTab === "Tournaments" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {loading ? (
-              <div style={{ textAlign: "center", padding: "40px", color: "#0099ff" }}>Loading...</div>
-            ) : tournaments.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "60px", background: "#050515", borderRadius: "16px", border: "1px solid rgba(0,153,255,0.15)" }}>
-                <div style={{ fontSize: "40px", marginBottom: "12px" }}>🏆</div>
-                <div style={{ fontFamily: "Cinzel, serif", fontSize: "16px", color: "#ffffff", marginBottom: "8px" }}>No tournaments yet</div>
-                <a href="/optcg" style={{ color: "#0099ff", fontSize: "13px" }}>+ Join a tournament</a>
-              </div>
-            ) : tournaments.map((t, i) => (
-              <div key={i} style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "12px", padding: "14px", display: "flex", alignItems: "center", gap: "12px" }}>
-                <div style={{ fontSize: "28px" }}>🏆</div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: "14px", fontWeight: 600, color: "#ffffff" }}>{t.tournament_name || "Tournament"}</div>
-                  <div style={{ fontSize: "11px", color: "#8899bb" }}>{t.game || "TCG"} · {new Date(t.created_at).toLocaleDateString()}</div>
-                </div>
-                <div style={{ fontSize: "11px", padding: "3px 10px", borderRadius: "8px", background: "rgba(0,153,255,0.1)", color: "#0099ff", flexShrink: 0 }}>
-                  {t.status || "Registered"}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ── WALLET ── */}
-        {activeTab === "Wallet" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.2)", borderRadius: "16px", padding: "20px" }}>
-              <div style={{ fontFamily: "Cinzel, serif", fontSize: "15px", color: "#ffffff", marginBottom: "16px" }}>Sui Wallet</div>
-              <div style={{ background: "#0a1628", borderRadius: "10px", padding: "14px", marginBottom: "14px" }}>
-                <div style={{ fontSize: "11px", color: "#8899bb", marginBottom: "4px" }}>Address</div>
-                <div style={{ fontSize: "12px", color: "#0099ff", fontFamily: "monospace", wordBreak: "break-all" }}>{walletAddress}</div>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "14px" }}>
-                <div style={{ background: "#0a1628", borderRadius: "10px", padding: "14px" }}>
-                  <div style={{ fontSize: "11px", color: "#8899bb", marginBottom: "4px" }}>Active Listings</div>
-                  <div style={{ fontSize: "20px", fontWeight: 700, color: "#0099ff" }}>{activeListings.length}</div>
-                </div>
-                <div style={{ background: "#0a1628", borderRadius: "10px", padding: "14px" }}>
-                  <div style={{ fontSize: "11px", color: "#8899bb", marginBottom: "4px" }}>Price Alerts</div>
-                  <div style={{ fontSize: "20px", fontWeight: 700, color: "#00ffcc" }}>{activeAlerts.length}</div>
-                </div>
-              </div>
-              <a href={`https://suiscan.xyz/mainnet/account/${walletAddress}`} target="_blank" rel="noopener noreferrer"
-                style={{ display: "block", textAlign: "center", padding: "10px", background: "rgba(0,153,255,0.1)", border: "1px solid rgba(0,153,255,0.2)", borderRadius: "8px", color: "#0099ff", fontSize: "12px", textDecoration: "none" }}>
-                View on SuiScan ↗
-              </a>
-            </div>
-          </div>
-        )}
-
       </div>
+
+      {/* EDIT PROFILE MODAL */}
+      {editing && (
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}} onClick={e=>{if(e.target===e.currentTarget)setEditing(false)}}>
+          <div style={{background:"#050515",border:"1px solid rgba(0,153,255,0.2)",borderRadius:"16px",padding:"32px",width:"100%",maxWidth:"480px",maxHeight:"90vh",overflowY:"auto"}}>
+            <div style={{fontFamily:"Cinzel, serif",fontSize:"18px",fontWeight:700,color:"#fff",marginBottom:"24px"}}>Edit Profile</div>
+            {[
+              {label:"Username",key:"username",placeholder:"Your username"},
+              {label:"Email",key:"email",placeholder:"your@email.com"},
+              {label:"Twitter",key:"twitter",placeholder:"@handle"},
+              {label:"Discord",key:"discord",placeholder:"user#1234"},
+              {label:"Telegram",key:"telegram",placeholder:"@username"},
+            ].map(f => (
+              <div key={f.key} style={{marginBottom:"16px"}}>
+                <label style={lbl}>{f.label}</label>
+                <input value={(form as any)[f.key]} onChange={e=>setForm(p=>({...p,[f.key]:e.target.value}))} placeholder={f.placeholder} style={inp}/>
+              </div>
+            ))}
+            <div style={{marginBottom:"24px"}}>
+              <label style={lbl}>Bio</label>
+              <textarea value={form.bio} onChange={e=>setForm(p=>({...p,bio:e.target.value}))} placeholder="Tell collectors about yourself..." style={{...inp,minHeight:"80px",resize:"vertical"}}/>
+            </div>
+            <div style={{display:"flex",gap:"10px"}}>
+              <button onClick={saveProfile} disabled={saving} style={{flex:1,background:"linear-gradient(135deg,#0055ff,#0099ff)",color:"#fff",border:"none",borderRadius:"8px",padding:"12px",fontSize:"13px",fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{saving?"Saving...":"Save Profile"}</button>
+              <button onClick={()=>setEditing(false)} style={{background:"rgba(255,255,255,0.05)",color:"rgba(255,255,255,0.6)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"8px",padding:"12px 20px",fontSize:"13px",cursor:"pointer",fontFamily:"inherit"}}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-export default function Dashboard() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-  if (!mounted) return null;
-  return <DashboardContent />;
+export default function DashboardPage() {
+  const WalletWrapper = dynamic(() => import("../components/WalletWrapper"), { ssr: false });
+  return <WalletWrapper><DashboardInner/></WalletWrapper>;
 }
