@@ -488,6 +488,5 @@ function DashboardInner() {
 }
 
 export default function DashboardPage() {
-  const WalletWrapper = dynamic(() => import("../components/WalletWrapper"), { ssr: false });
-  return <WalletWrapper><DashboardInner/></WalletWrapper>;
+  return <DashboardInner/>;
 }
