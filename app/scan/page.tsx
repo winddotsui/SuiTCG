@@ -13,6 +13,7 @@ export default function ScanPage() {
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [dragging, setDragging] = useState(false);
 
   const startCamera = async () => {
     try {
@@ -55,6 +56,20 @@ export default function ScanPage() {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      setPreview(dataUrl);
+      analyzeImage(dataUrl);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (!file || !file.type.startsWith("image/")) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
       const dataUrl = ev.target?.result as string;
@@ -151,20 +166,41 @@ export default function ScanPage() {
         {/* IDLE STATE */}
         {mode === "idle" && !preview && (
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            <div style={{ background: "#050515", border: "1px solid rgba(0,153,255,0.15)", borderRadius: "16px", padding: "40px 24px", textAlign: "center", marginBottom: "8px" }}>
-              <div style={{ fontSize: "64px", marginBottom: "16px" }}>📷</div>
-              <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", fontWeight: 600, color: "#fff", marginBottom: "8px" }}>Scan a Card</div>
-              <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.35)", lineHeight: 1.7 }}>
-                Supports One Piece, Pokémon, Magic,<br />Yu-Gi-Oh!, and all major TCGs
+            {/* Drag & Drop Zone */}
+            <div
+              onDragOver={e => { e.preventDefault(); setDragging(true); }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              style={{
+                background: dragging ? "rgba(0,153,255,0.08)" : "#050515",
+                border: dragging ? "2px dashed #0099ff" : "2px dashed rgba(0,153,255,0.2)",
+                borderRadius: "16px",
+                padding: "48px 24px",
+                textAlign: "center",
+                marginBottom: "12px",
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+            >
+              <div style={{ fontSize: "56px", marginBottom: "16px" }}>{dragging ? "⬇️" : "📷"}</div>
+              <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", fontWeight: 600, color: "#fff", marginBottom: "8px" }}>
+                {dragging ? "Drop your card image here" : "Drag & Drop or Click to Upload"}
+              </div>
+              <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.35)", lineHeight: 1.7, margin: 0 }}>
+                Supports One Piece, Pokémon, Magic, Yu-Gi-Oh! and all major TCGs<br />
+                <span style={{ color: "rgba(0,153,255,0.6)" }}>PNG, JPG, WEBP accepted</span>
               </p>
             </div>
-            <button className="btn-primary" onClick={startCamera}>
-              📷 Open Camera
-            </button>
-            <button className="btn-secondary" onClick={() => fileInputRef.current?.click()}>
-              🖼️ Upload Photo
-            </button>
             <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} style={{ display: "none" }} />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+              <button className="btn-primary" onClick={startCamera}>
+                📷 Camera
+              </button>
+              <button className="btn-secondary" onClick={() => fileInputRef.current?.click()}>
+                🖼️ Upload
+              </button>
+            </div>
 
             {/* How it works */}
             <div style={{ background: "#050515", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "20px", marginTop: "8px" }}>
