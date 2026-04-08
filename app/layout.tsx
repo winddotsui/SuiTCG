@@ -95,10 +95,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             backdropFilter: "blur(32px)",
           }}>
             <a href="/" style={{
-              fontFamily: "Syne, sans-serif", fontSize: "18px",
-              fontWeight: 800, textDecoration: "none",
-              color: "#ffffff", flexShrink: 0, position: "relative", zIndex: 101, letterSpacing: "0.04em",
-            }}>WaveTCG</a>
+              fontFamily: "Cinzel, serif", fontSize: "20px",
+              fontWeight: 900, textDecoration: "none",
+              background: "linear-gradient(135deg, #0055ff, #0099ff, #00d4ff)",
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              flexShrink: 0, position: "relative", zIndex: 101, letterSpacing: "0.08em",
+            }}>WAVE</a>
             <NavClient />
           </nav>
           <main style={{ paddingTop: "56px", position: "relative", zIndex: 1, minHeight: "100vh", background: "#000008" }}>
