@@ -1,218 +1,297 @@
 "use client";
+import dynamic from "next/dynamic";
+const FloatingCharacters = dynamic(() => import("./components/FloatingCharacters"), { ssr: false });
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
-const GAMES = [
-  { name: "One Piece TCG", icon: "☠️", href: "/marketplace?game=onepiece", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.2)" },
-  { name: "Pokémon TCG", icon: "⚡", href: "/marketplace?game=pokemon", bg: "rgba(234,179,8,0.08)", border: "rgba(234,179,8,0.2)" },
-  { name: "Magic: TG", icon: "✨", href: "/marketplace?game=magic", bg: "rgba(139,92,246,0.08)", border: "rgba(139,92,246,0.2)" },
-  { name: "Yu-Gi-Oh!", icon: "👁️", href: "/marketplace?game=yugioh", bg: "rgba(59,130,246,0.08)", border: "rgba(59,130,246,0.2)" },
-  { name: "Dragon Ball", icon: "🐉", href: "/marketplace?game=dragonball", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.2)" },
-  { name: "Disney Lorcana", icon: "🌟", href: "/marketplace?game=lorcana", bg: "rgba(16,185,129,0.08)", border: "rgba(16,185,129,0.2)" },
-  { name: "Flesh & Blood", icon: "⚔️", href: "/marketplace?game=fab", bg: "rgba(220,38,38,0.08)", border: "rgba(220,38,38,0.2)" },
-  { name: "Digimon TCG", icon: "🎭", href: "/marketplace?game=digimon", bg: "rgba(99,102,241,0.08)", border: "rgba(99,102,241,0.2)" },
+const OPTCG_FLAGSHIP = [
+  { code: "OP01-001", name: "Roronoa Zoro" },
+  { code: "OP01-003", name: "Monkey D. Luffy" },
+  { code: "OP01-031", name: "Kouzuki Oden" },
+  { code: "OP01-060", name: "Donquixote Doflamingo" },
+  { code: "OP02-001", name: "Edward Newgate" },
+  { code: "OP03-001", name: "Monkey D. Luffy" },
 ];
 
 const FEATURES = [
-  { n: "01", t: "Zero Chargebacks", d: "Payment locked in a Sui smart contract. Mathematically impossible to reverse. Your SUI arrives the same second the buyer pays." },
-  { n: "02", t: "Only 1% Fee", d: "List for free forever. Pay exactly 1% only when your card sells — auto-deducted on-chain. No hidden fees, no monthly costs." },
-  { n: "03", t: "Instant Settlement", d: "No 7-14 day holds. SUI is in your wallet the moment the buyer pays. Convert to cash via our Swap page anytime." },
-  { n: "04", t: "Borderless by Default", d: "Sell to any buyer on the planet. No geographic restrictions, no currency friction, no regional payment blocks." },
-  { n: "05", t: "AI Card Oracle", d: "The world's most knowledgeable TCG AI. Prices, rulings, deck advice for every card in every TCG ever made." },
-  { n: "06", t: "On-Chain Tournaments", d: "Weekly OPTCG Swiss tournaments. Prize pools locked in smart contracts, paid automatically to winners." },
+  { icon: "🃏", title: "Free Listings", desc: "List any card for free. Only 1% when it sells — paid on-chain automatically." },
+  { icon: "⛓️", title: "Sui Blockchain", desc: "Trade on Sui — fast, cheap, secure. Sub-second settlement, fees under $0.01." },
+  { icon: "🤖", title: "AI Oracle", desc: "Ask anything about any TCG card. Prices, rulings, market trends, deck advice." },
+  { icon: "🏴‍☠️", title: "OPTCG Tournaments", desc: "Compete in weekly One Piece TCG tournaments. Win SUI prizes on-chain." },
+  { icon: "📈", title: "Price Checker", desc: "Compare prices across TCGPlayer, CardKingdom, and WaveTCG in one place." },
+  { icon: "🎴", title: "Deck Builder", desc: "Build and save your OPTCG decks. Register directly for tournaments." },
 ];
 
-const TICKER_CARDS = [
-  { game: "One Piece", name: "Monkey D. Luffy SEC", price: "12.4 SUI", change: "+8.2%" },
-  { game: "Pokémon", name: "Charizard ex SV3", price: "45.0 SUI", change: "+3.1%" },
-  { game: "Magic", name: "Black Lotus Alpha", price: "320 SUI", change: "+1.4%" },
-  { game: "Yu-Gi-Oh", name: "Blue-Eyes White Dragon", price: "6.8 SUI", change: "+12%" },
-  { game: "One Piece", name: "Shanks OP06-001", price: "18.5 SUI", change: "+6.4%" },
-  { game: "Pokémon", name: "Pikachu Illustrator", price: "890 SUI", change: "+0.8%" },
+const GAMES = [
+  { icon: "☠️", name: "One Piece TCG", href: "/marketplace?game=onepiece" },
+  { icon: "⚡", name: "Pokémon TCG", href: "/marketplace?game=pokemon" },
+  { icon: "✨", name: "Magic: The Gathering", href: "/marketplace?game=magic" },
+  { icon: "👁️", name: "Yu-Gi-Oh!", href: "/marketplace?game=yugioh" },
+  { icon: "🐉", name: "Dragon Ball", href: "/marketplace?game=dragonball" },
+  { icon: "🌟", name: "Lorcana", href: "/marketplace?game=lorcana" },
+  { icon: "⚔️", name: "Flesh & Blood", href: "/marketplace?game=fab" },
+  { icon: "🎭", name: "Digimon", href: "/marketplace?game=digimon" },
+];
+
+const HOT_CARDS = [
+  { code: "OP05-119", name: "Monkey D. Luffy", info: "Gear 5 · SEC", price: "$380", game: "One Piece TCG" },
+  { code: "OP02-013", name: "Monkey D. Luffy", info: "Purple · SEC", price: "$290", game: "One Piece TCG" },
+  { code: "OP01-025", name: "Roronoa Zoro", info: "SR Red", price: "$120", game: "One Piece TCG" },
+  { code: "OP06-001", name: "Shanks", info: "Leader OP06", price: "$75", game: "One Piece TCG" },
 ];
 
 export default function Home() {
-  const [stats, setStats] = useState({ listings: 0, users: 0 });
+  const [mounted, setMounted] = useState(false);
+  const [floatingCards, setFloatingCards] = useState<any[]>([]);
+  const [stats, setStats] = useState({ listings: 0, users: 0, alerts: 0 });
+  const [hotCards, setHotCards] = useState<any[]>([]);
+  const [pkCards, setPkCards] = useState<any[]>([]);
   const [suiPrice, setSuiPrice] = useState(0);
 
   useEffect(() => {
-    supabase.from("listings").select("id", { count: "exact", head: true }).eq("status", "active").then(({ count }) => setStats(s => ({ ...s, listings: count || 0 })));
-    supabase.from("profiles").select("id", { count: "exact", head: true }).then(({ count }) => setStats(s => ({ ...s, users: count || 0 })));
+    setMounted(true);
+    const positions = [
+      { x: "2%", y: "18%", size: 130, delay: 0, rotate: -8 },
+      { x: "80%", y: "12%", size: 120, delay: 0.5, rotate: 6 },
+      { x: "88%", y: "52%", size: 115, delay: 1, rotate: -4 },
+      { x: "0%", y: "62%", size: 120, delay: 1.5, rotate: 5 },
+      { x: "76%", y: "75%", size: 110, delay: 0.8, rotate: -6 },
+      { x: "5%", y: "80%", size: 115, delay: 1.2, rotate: 4 },
+    ];
+    setFloatingCards(OPTCG_FLAGSHIP.map((card, i) => ({
+      ...card, ...positions[i],
+      imageUrl: `https://en.onepiece-cardgame.com/images/cardlist/card/${card.code}.png`,
+    })));
+    fetchStats();
+    fetchHotCards();
     fetch("/api/sui-price").then(r => r.json()).then(d => setSuiPrice(d.price || 0));
   }, []);
 
+  async function fetchStats() {
+    try {
+      const [listingsRes, usersRes, alertsRes] = await Promise.all([
+        supabase.from("listings").select("id", { count: "exact", head: true }).eq("status", "active"),
+        supabase.from("profiles").select("id", { count: "exact", head: true }),
+        supabase.from("price_alerts").select("id", { count: "exact", head: true }).eq("status", "active"),
+      ]);
+      setStats({ listings: listingsRes.count || 0, users: usersRes.count || 0, alerts: alertsRes.count || 0 });
+    } catch {}
+  }
+
+  async function fetchHotCards() {
+    try {
+      const pkRes = await fetch("https://api.pokemontcg.io/v2/cards?q=name:charizard&pageSize=4&orderBy=-cardmarket.prices.averageSellPrice");
+      const pkData = await pkRes.json();
+      if (pkData.data) setPkCards(pkData.data.slice(0, 4).map((c: any) => ({
+        name: c.name, image: c.images?.large, info: c.set?.name,
+        price: c.cardmarket?.prices?.averageSellPrice ? `$${c.cardmarket.prices.averageSellPrice.toFixed(0)}` : "—",
+        game: "Pokémon TCG",
+      })));
+    } catch {}
+    setHotCards(HOT_CARDS.map(c => ({ ...c, image: `https://en.onepiece-cardgame.com/images/cardlist/card/${c.code}.png` })));
+  }
+
+  const allHotCards = [...hotCards, ...pkCards].slice(0, 8);
+
   return (
-    <div style={{ minHeight: "100vh", background: "#080810" }}>
+    <div style={{ minHeight: "100vh", background: "#000008", fontFamily: "DM Sans, sans-serif" }}>
+      <FloatingCharacters />
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
-        * { box-sizing: border-box; }
-        @keyframes fadeUp { from { opacity:0;transform:translateY(20px) } to { opacity:1;transform:translateY(0) } }
-        @keyframes ticker { 0% { transform:translateX(0) } 100% { transform:translateX(-50%) } }
-        @keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
-        .fu { animation: fadeUp 0.65s ease forwards; opacity:0; }
-        .fu1{animation-delay:0.05s}.fu2{animation-delay:0.15s}.fu3{animation-delay:0.25s}.fu4{animation-delay:0.35s}.fu5{animation-delay:0.45s}
-        .syne { font-family:'Syne',sans-serif; }
-        .hb1 { background:#2563eb;color:#fff;padding:13px 28px;border-radius:9px;font-size:14px;font-weight:600;text-decoration:none;display:inline-block;transition:all 0.18s; }
-        .hb1:hover { background:#1d4ed8;transform:translateY(-1px); }
-        .hb2 { background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.65);padding:13px 22px;border-radius:9px;font-size:14px;font-weight:500;text-decoration:none;display:inline-block;transition:all 0.18s; }
-        .hb2:hover { border-color:rgba(255,255,255,0.2);color:#fff; }
-        .game-card { background:#0e0e1a;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.18s;text-decoration:none; }
-        .game-card:hover { border-color:rgba(255,255,255,0.14);background:#13131f;transform:translateY(-1px); }
-        .feat-card { background:#080810;padding:32px;transition:background 0.2s; }
-        .feat-card:hover { background:#0e0e1a; }
-        .flink { display:block;font-size:13px;color:rgba(255,255,255,0.3);text-decoration:none;margin-bottom:10px;font-weight:400;transition:color 0.15s; }
-        .flink:hover { color:#fff; }
-        .stat-box { background:#0e0e1a;padding:24px 32px;border-right:1px solid rgba(255,255,255,0.06); }
-        .stat-box:last-child { border-right:none; }
+        html,body{background:#000008;margin:0;padding:0}
+        @keyframes floatCard{0%,100%{transform:translateY(0px) rotate(var(--rotate))}50%{transform:translateY(-18px) rotate(calc(var(--rotate)*-0.5))}}
+        @keyframes pulse{0%,100%{opacity:0.06}50%{opacity:0.15}}
+        @keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
+        .card-float{animation:floatCard 6s ease-in-out infinite}
+        .card-float:hover{opacity:1!important;transform:scale(1.05)!important;z-index:50!important}
+        .hot-card:hover{transform:translateY(-6px)!important;border-color:rgba(0,153,255,0.4)!important;box-shadow:0 20px 40px rgba(0,0,0,0.6)!important}
+        .game-pill:hover{border-color:rgba(0,153,255,0.4)!important;background:rgba(0,153,255,0.06)!important;transform:translateY(-1px)}
+        .feature-card:hover{background:#060618!important;border-color:rgba(0,153,255,0.1)!important}
+        .cta-primary:hover{box-shadow:0 8px 40px rgba(0,120,255,0.55)!important;transform:translateY(-2px)}
+        .cta-secondary:hover{border-color:rgba(255,255,255,0.25)!important;color:#fff!important}
+        .stat-card{position:relative;overflow:hidden}
+        .stat-card::after{content:\'\';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,153,255,0.05),transparent);animation:shimmer 3s infinite}
       `}</style>
 
       {/* HERO */}
-      <section style={{ maxWidth: "900px", margin: "0 auto", padding: "100px 48px 0", textAlign: "center" }}>
-        {/* Live badge */}
-        <div className="fu fu1" style={{ display: "inline-flex", alignItems: "center", gap: "8px", marginBottom: "32px" }}>
-          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10b981", display: "inline-block", animation: "blink 2s infinite" }} />
-          <span style={{ fontSize: "11px", fontWeight: 600, color: "#10b981", textTransform: "uppercase", letterSpacing: "0.14em" }}>Live on Sui Mainnet</span>
-          <span style={{ width: "1px", height: "12px", background: "rgba(255,255,255,0.1)", display: "inline-block" }} />
-          <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.3)", fontWeight: 500, letterSpacing: "0.06em" }}>Week 1 · Apr 2026</span>
+      <section style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "clamp(80px,15vw,120px) clamp(16px,5vw,48px) clamp(40px,8vw,80px)", position: "relative", overflow: "hidden" }}>
+        {/* Glows */}
+        <div style={{ position: "absolute", width: "1000px", height: "1000px", top: "50%", left: "50%", transform: "translate(-50%,-50%)", background: "radial-gradient(circle, rgba(0,80,255,0.06) 0%, transparent 60%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", width: "500px", height: "500px", top: "5%", left: "5%", background: "radial-gradient(circle, rgba(0,60,255,0.04) 0%, transparent 70%)", pointerEvents: "none", animation: "pulse 4s ease-in-out infinite" }} />
+        <div style={{ position: "absolute", width: "500px", height: "500px", top: "5%", right: "5%", background: "radial-gradient(circle, rgba(0,60,255,0.04) 0%, transparent 70%)", pointerEvents: "none", animation: "pulse 4s ease-in-out infinite 2s" }} />
+
+        {/* Floating cards */}
+        {mounted && floatingCards.map((card, i) => (
+          <div key={i} className="card-float" style={{ position: "absolute", left: card.x, top: card.y, width: `${card.size}px`, opacity: 0.15, animationDelay: `${card.delay}s`, animationDuration: `${5 + i * 0.7}s`, ["--rotate" as any]: `${card.rotate}deg`, pointerEvents: "none", zIndex: 1 }}>
+            <img src={card.imageUrl} alt={card.name} style={{ width: "100%", borderRadius: "10px", boxShadow: "0 8px 32px rgba(0,0,0,0.9)" }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+          </div>
+        ))}
+
+        {/* Hero content */}
+        <div style={{ position: "relative", zIndex: 10, animation: "slideUp 0.8s ease both", maxWidth: "800px" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 16px", background: "rgba(0,153,255,0.07)", border: "1px solid rgba(0,153,255,0.18)", borderRadius: "20px", marginBottom: "32px" }}>
+            <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#00ff88", display: "inline-block", animation: "blink 2s infinite" }} />
+            <span style={{ fontSize: "11px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#0099ff", fontWeight: 500 }}>Web3 TCG Marketplace · Live on Sui Mainnet</span>
+          </div>
+
+          <h1 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(38px,8vw,96px)", fontWeight: 900, lineHeight: 1.02, marginBottom: "24px", letterSpacing: "-0.02em" }}>
+            <span style={{ color: "#ffffff", display: "block" }}>Ride the Wave.</span>
+            <span style={{ display: "block", background: "linear-gradient(135deg,#0055ff 0%,#0099ff 40%,#00d4ff 80%,#00ffcc 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Trade Any Card.</span>
+          </h1>
+
+          <p style={{ fontSize: "clamp(14px,2.5vw,18px)", fontWeight: 300, color: "#6677aa", lineHeight: 1.8, margin: "0 auto 40px", maxWidth: "560px" }}>
+            Buy, sell, and list <strong style={{ color: "#c8d8f0", fontWeight: 500 }}>One Piece TCG, Pokémon, Magic, Yu-Gi-Oh!</strong> and more — on Sui blockchain. Zero chargebacks. Instant payment.
+          </p>
+
+          <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap", marginBottom: "48px" }}>
+            <a href="/marketplace" className="cta-primary" style={{ background: "linear-gradient(135deg,#0055ff,#0099ff)", color: "#fff", fontSize: "13px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", padding: "14px 36px", borderRadius: "8px", textDecoration: "none", display: "inline-block", boxShadow: "0 4px 28px rgba(0,120,255,0.4)", transition: "all 0.2s" }}>Browse Marketplace</a>
+            <a href="/sell" className="cta-secondary" style={{ background: "transparent", color: "#8899bb", fontSize: "13px", fontWeight: 500, padding: "14px 28px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", textDecoration: "none", display: "inline-block", transition: "all 0.2s" }}>+ List a Card</a>
+            <a href="/optcg" className="cta-secondary" style={{ background: "transparent", color: "#8899bb", fontSize: "13px", fontWeight: 500, padding: "14px 28px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", textDecoration: "none", display: "inline-block", transition: "all 0.2s" }}>☠️ Tournaments</a>
+          </div>
+
+          <div style={{ display: "flex", gap: "28px", justifyContent: "center", flexWrap: "wrap" }}>
+            {["✓ Free to list", "✓ 1% fee only on sale", "✓ Sui blockchain", "✓ 8 TCG games supported"].map(badge => (
+              <span key={badge} style={{ fontSize: "12px", color: "#333355", letterSpacing: "0.04em" }}>{badge}</span>
+            ))}
+          </div>
         </div>
+      </section>
 
-        {/* Title */}
-        <h1 className="fu fu2 syne" style={{ fontSize: "clamp(40px,6vw,72px)", fontWeight: 800, lineHeight: 1.04, color: "#fff", marginBottom: "24px", letterSpacing: "-0.025em" }}>
-          The TCG Marketplace<br />
-          That Pays You{" "}
-          <span style={{ color: "rgba(255,255,255,0.2)" }}>Instantly.</span>
-        </h1>
-
-        {/* Subtitle */}
-        <p className="fu fu3" style={{ fontSize: "17px", color: "rgba(255,255,255,0.45)", lineHeight: 1.8, marginBottom: "40px", fontWeight: 300, maxWidth: "560px", margin: "0 auto 40px" }}>
-          Trade One Piece, Pokémon, Magic, Yu-Gi-Oh! and more on Sui blockchain.<br />
-          Free to list. 1% only when sold. Zero chargebacks. Money in seconds.
-        </p>
-
-        {/* CTAs */}
-        <div className="fu fu4" style={{ display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap", marginBottom: "64px" }}>
-          <a href="/marketplace" className="hb1">Browse Marketplace</a>
-          <a href="/sell" className="hb2">+ List a Card</a>
-          <a href="/optcg" className="hb2">☠️ Tournaments</a>
-          <a href="/oracle" className="hb2">🤖 AI Oracle</a>
-        </div>
-
-        {/* Stats bar */}
-        <div className="fu fu5" style={{ display: "inline-flex", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "14px", overflow: "hidden", background: "#0e0e1a" }}>
+      {/* STATS */}
+      <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)", background: "#030312" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: "1px", background: "rgba(255,255,255,0.04)" }}>
           {[
-            { val: stats.listings > 0 ? stats.listings.toLocaleString() : "0", label: "Active Listings" },
-            { val: stats.users > 0 ? stats.users.toLocaleString() : "0", label: "Collectors" },
-            { val: "1%", label: "Platform Fee" },
-            { val: suiPrice > 0 ? "$" + suiPrice.toFixed(3) : "—", label: "SUI Price" },
+            { num: stats.listings > 0 ? stats.listings.toLocaleString() : "0", label: "Active Listings", color: "#0099ff" },
+            { num: stats.users > 0 ? stats.users.toLocaleString() : "0", label: "Collectors", color: "#00d4ff" },
+            { num: stats.alerts > 0 ? stats.alerts.toLocaleString() : "0", label: "Price Alerts", color: "#00ffcc" },
+            { num: "1%", label: "Platform Fee", color: "#0099ff" },
+            { num: suiPrice > 0 ? "$" + suiPrice.toFixed(3) : "—", label: "SUI Price", color: "#00d4ff" },
           ].map((s, i) => (
-            <div key={i} className="stat-box">
-              <div className="syne" style={{ fontSize: "24px", fontWeight: 700, color: "#fff", marginBottom: "4px" }}>{s.val}</div>
-              <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{s.label}</div>
+            <div key={i} className="stat-card" style={{ textAlign: "center", padding: "28px 16px", background: "#030312" }}>
+              <div style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(20px,3vw,34px)", fontWeight: 700, color: s.color, marginBottom: "6px" }}>{s.num}</div>
+              <div style={{ fontSize: "10px", letterSpacing: "0.14em", textTransform: "uppercase", color: "#333355" }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* HOT CARDS */}
+      <section style={{ padding: "clamp(40px,6vw,80px) clamp(12px,4vw,48px)", maxWidth: "1200px", margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "32px", flexWrap: "wrap", gap: "12px" }}>
+          <div>
+            <div style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "10px" }}>🔥 Trending Now</div>
+            <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(20px,4vw,38px)", fontWeight: 700, color: "#fff", margin: 0 }}>Hot Cards Today</h2>
+          </div>
+          <a href="/marketplace" style={{ fontSize: "11px", color: "#0099ff", textDecoration: "none", letterSpacing: "0.08em", textTransform: "uppercase", border: "1px solid rgba(0,153,255,0.2)", padding: "8px 18px", borderRadius: "6px" }}>View All →</a>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))", gap: "12px" }}>
+          {(allHotCards.length > 0 ? allHotCards : HOT_CARDS.map(c => ({ ...c, image: `https://en.onepiece-cardgame.com/images/cardlist/card/${c.code}.png` }))).map((card: any, i) => (
+            <a key={i} href="/marketplace" style={{ textDecoration: "none" }}>
+              <div className="hot-card" style={{ background: "#030312", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "12px", overflow: "hidden", cursor: "pointer", transition: "all 0.25s" }}>
+                <div style={{ width: "100%", aspectRatio: "3/4", overflow: "hidden", background: "#080820" }}>
+                  <img src={card.image} alt={card.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+                </div>
+                <div style={{ padding: "10px 12px" }}>
+                  <div style={{ fontFamily: "Cinzel, serif", fontSize: "11px", fontWeight: 600, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: "2px" }}>{card.name}</div>
+                  <div style={{ fontSize: "10px", color: "#333355", marginBottom: "8px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.info || card.game}</div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "13px", fontWeight: 700, color: "#0099ff" }}>{card.price}</span>
+                    <span style={{ fontSize: "9px", color: "#0099ff", padding: "2px 7px", background: "rgba(0,153,255,0.08)", borderRadius: "4px", border: "1px solid rgba(0,153,255,0.15)" }}>Buy</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {/* GAMES */}
+      <section style={{ padding: "clamp(32px,5vw,60px) clamp(12px,4vw,48px)", background: "#030312", borderTop: "1px solid rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          <div style={{ marginBottom: "28px" }}>
+            <div style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "8px" }}>Supported Games</div>
+            <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(18px,3vw,32px)", fontWeight: 700, color: "#fff", margin: 0 }}>All your favorite TCGs</h2>
+          </div>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            {GAMES.map((g, i) => (
+              <a key={i} href={g.href} style={{ textDecoration: "none" }}>
+                <div className="game-pill" style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 20px", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "60px", background: "rgba(255,255,255,0.02)", cursor: "pointer", transition: "all 0.2s" }}>
+                  <span style={{ fontSize: "18px" }}>{g.icon}</span>
+                  <span style={{ fontFamily: "Cinzel, serif", fontSize: "12px", fontWeight: 600, color: "#fff" }}>{g.name}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section style={{ padding: "clamp(40px,6vw,80px) clamp(12px,4vw,48px)", maxWidth: "1200px", margin: "0 auto" }}>
+        <div style={{ marginBottom: "40px" }}>
+          <div style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#0099ff", marginBottom: "10px" }}>Why WaveTCG</div>
+          <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(22px,4vw,44px)", fontWeight: 700, color: "#fff" }}>Built for collectors</h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "1px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "16px", overflow: "hidden" }}>
+          {FEATURES.map((f, i) => (
+            <div key={i} className="feature-card" style={{ background: "#030312", padding: "36px 32px", transition: "all 0.2s", cursor: "default", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+              <div style={{ fontSize: "28px", marginBottom: "16px" }}>{f.icon}</div>
+              <div style={{ fontFamily: "Cinzel, serif", fontSize: "15px", fontWeight: 600, color: "#fff", marginBottom: "10px" }}>{f.title}</div>
+              <p style={{ fontSize: "13px", color: "#333355", lineHeight: 1.8, margin: 0 }}>{f.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* TICKER */}
-      <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)", background: "#0e0e1a", padding: "13px 0", marginTop: "80px", overflow: "hidden" }}>
-        <div style={{ display: "flex", animation: "ticker 32s linear infinite", width: "max-content" }}>
-          {[...TICKER_CARDS, ...TICKER_CARDS].map((t, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: "20px", padding: "0 40px", borderRight: "1px solid rgba(255,255,255,0.05)", flexShrink: 0 }}>
-              <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.2)", textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 600 }}>{t.game}</div>
-              <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.55)", fontWeight: 500 }}>{t.name}</div>
-              <div style={{ fontSize: "12px", fontWeight: 700, color: "#fff" }}>{t.price}</div>
-              <div style={{ fontSize: "10px", fontWeight: 700, color: "#10b981" }}>{t.change}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* GAMES */}
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "80px 48px 0" }}>
-        <div style={{ textAlign: "center", marginBottom: "40px" }}>
-          <div style={{ fontSize: "10px", color: "#3b82f6", textTransform: "uppercase", letterSpacing: "0.15em", fontWeight: 700, marginBottom: "10px" }}>Supported Games</div>
-          <div className="syne" style={{ fontSize: "32px", fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>Trade Any TCG</div>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "10px" }}>
-          {GAMES.map((g, i) => (
-            <a key={i} href={g.href} className="game-card">
-              <div style={{ width: "48px", height: "48px", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: g.bg, border: `1px solid ${g.border}`, overflow: "hidden", padding: "6px" }}>
-              <div style={{ width: "48px", height: "48px", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: g.bg, border: `1px solid ${g.border}` }}>
-                <span style={{ fontSize: "24px", lineHeight: "1" }}>{g.icon}</span>
-              </div>
-                <div className="syne" style={{ fontSize: "13px", fontWeight: 700, color: "#fff", marginBottom: "3px" }}>{g.name}</div>
-                <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.3)" }}>Browse listings ›</div>
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
-
-      {/* WHY WAVETCG */}
-      <div style={{ background: "#0d0d18", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)", padding: "80px 48px", marginTop: "80px" }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: "48px" }}>
-            <div style={{ fontSize: "10px", color: "#3b82f6", textTransform: "uppercase", letterSpacing: "0.15em", fontWeight: 700, marginBottom: "10px" }}>Why WaveTCG</div>
-            <div className="syne" style={{ fontSize: "32px", fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>Infrastructure built for sellers</div>
+      {/* FOOTER CTA */}
+      <section style={{ padding: "clamp(60px,8vw,120px) clamp(16px,4vw,48px)", textAlign: "center", borderTop: "1px solid rgba(255,255,255,0.04)", position: "relative", overflow: "hidden", background: "#030312" }}>
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center,rgba(0,80,255,0.05) 0%,transparent 65%)", pointerEvents: "none" }} />
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 16px", background: "rgba(0,255,136,0.07)", border: "1px solid rgba(0,255,136,0.18)", borderRadius: "20px", marginBottom: "24px" }}>
+            <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#00ff88", display: "inline-block", animation: "blink 2s infinite" }} />
+            <span style={{ fontSize: "11px", color: "#00ff88", letterSpacing: "0.12em", textTransform: "uppercase" }}>Live on Sui Mainnet</span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "16px", overflow: "hidden" }}>
-            {FEATURES.map((f, i) => (
-              <div key={i} className="feat-card">
-                <div className="syne" style={{ fontSize: "10px", color: "rgba(255,255,255,0.15)", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "20px" }}>{f.n}</div>
-                <div className="syne" style={{ fontSize: "16px", fontWeight: 700, color: "#fff", marginBottom: "10px" }}>{f.t}</div>
-                <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.4)", lineHeight: 1.8, fontWeight: 300, margin: 0 }}>{f.d}</p>
-              </div>
-            ))}
+          <h2 style={{ fontFamily: "Cinzel, serif", fontSize: "clamp(28px,5vw,56px)", fontWeight: 900, color: "#fff", marginBottom: "14px", lineHeight: 1.1 }}>Ready to ride the wave?</h2>
+          <p style={{ fontSize: "clamp(14px,2vw,17px)", color: "#444466", marginBottom: "40px", fontWeight: 300 }}>Join collectors trading on WaveTCG today.</p>
+          <div style={{ display: "flex", gap: "14px", justifyContent: "center", flexWrap: "wrap" }}>
+            <a href="/marketplace" className="cta-primary" style={{ background: "linear-gradient(135deg,#0055ff,#0099ff)", color: "#fff", padding: "15px 40px", borderRadius: "8px", fontSize: "13px", fontWeight: 600, textDecoration: "none", display: "inline-block", letterSpacing: "0.08em", textTransform: "uppercase", boxShadow: "0 4px 28px rgba(0,120,255,0.4)", transition: "all 0.2s" }}>Browse Cards</a>
+            <a href="/optcg" className="cta-secondary" style={{ background: "transparent", color: "#8899bb", padding: "15px 32px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", fontSize: "13px", textDecoration: "none", display: "inline-block", transition: "all 0.2s" }}>☠️ Join Tournament</a>
           </div>
         </div>
-      </div>
-
-      {/* FINAL CTA */}
-      <div style={{ padding: "100px 48px", textAlign: "center", maxWidth: "600px", margin: "0 auto" }}>
-        <div className="syne" style={{ fontSize: "clamp(28px,4vw,44px)", fontWeight: 800, color: "#fff", lineHeight: 1.1, marginBottom: "18px", letterSpacing: "-0.02em" }}>
-          Start trading in<br />30 seconds.
-        </div>
-        <p style={{ fontSize: "15px", color: "rgba(255,255,255,0.4)", lineHeight: 1.8, marginBottom: "36px", fontWeight: 300 }}>
-          Connect your Sui wallet, list your first card for free, and get paid instantly when it sells. No approval needed.
-        </p>
-        <div style={{ display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
-          <a href="/marketplace" className="hb1">Browse Marketplace</a>
-          <a href="/sell" className="hb2">List a Card Free</a>
-        </div>
-      </div>
+      </section>
 
       {/* FOOTER */}
-      <div style={{ background: "#0d0d18", borderTop: "1px solid rgba(255,255,255,0.05)", padding: "56px 48px 32px" }}>
+      <footer style={{ background: "#020210", borderTop: "1px solid rgba(255,255,255,0.04)", padding: "48px clamp(12px,4vw,48px) 32px" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: "80px", marginBottom: "48px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: "60px", marginBottom: "40px", flexWrap: "wrap" }}>
             <div>
-              <div className="syne" style={{ fontSize: "16px", fontWeight: 800, color: "#fff", marginBottom: "12px", letterSpacing: "0.04em" }}>WAVE<span style={{ color: "#2563eb" }}>.</span>TCG</div>
-              <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.25)", lineHeight: 1.75, fontWeight: 300 }}>The Web3 TCG Marketplace built on Sui blockchain.</p>
+              <div style={{ fontFamily: "Cinzel, serif", fontSize: "18px", fontWeight: 700, color: "#fff", marginBottom: "10px" }}>WaveTCG</div>
+              <p style={{ fontSize: "12px", color: "#222240", lineHeight: 1.7, fontWeight: 300 }}>The Web3 TCG Marketplace built on Sui blockchain.</p>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "24px" }}>
               {[
                 { title: "Market", links: [{ l: "Browse Cards", h: "/marketplace" }, { l: "List a Card", h: "/sell" }, { l: "Price Checker", h: "/price-checker" }, { l: "Alerts", h: "/alerts" }] },
                 { title: "Features", links: [{ l: "AI Oracle", h: "/oracle" }, { l: "Tournaments", h: "/optcg" }, { l: "Deck Builder", h: "/deckbuilder" }, { l: "Portfolio", h: "/portfolio" }] },
-                { title: "Account", links: [{ l: "Dashboard", h: "/dashboard" }, { l: "Orders", h: "/orders" }, { l: "Profile", h: "/profile/0x91fa18b29e0603c18005f61479dd47e50cb52c85ede36c6dc44d85bc147c77f5" }, { l: "Swap", h: "/swap" }] },
-                { title: "Help", links: [{ l: "Guide", h: "/guide" }, { l: "FAQ", h: "/guide?tab=faq" }, { l: "Collectors", h: "/users" }, { l: "Analytics", h: "/analytics" }] },
+                { title: "Account", links: [{ l: "Dashboard", h: "/dashboard" }, { l: "Orders", h: "/orders" }, { l: "Swap", h: "/swap" }, { l: "Analytics", h: "/analytics" }] },
+                { title: "Help", links: [{ l: "Guide", h: "/guide" }, { l: "FAQ", h: "/guide?tab=faq" }, { l: "Collectors", h: "/users" }, { l: "Download", h: "/download" }] },
               ].map((col, i) => (
                 <div key={i}>
-                  <div style={{ fontSize: "10px", fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: "14px" }}>{col.title}</div>
-                  {col.links.map((lk, j) => <a key={j} href={lk.h} className="flink">{lk.l}</a>)}
+                  <div style={{ fontSize: "10px", fontWeight: 600, color: "#0099ff", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: "14px" }}>{col.title}</div>
+                  {col.links.map((lk, j) => <a key={j} href={lk.h} style={{ display: "block", fontSize: "12px", color: "#222240", textDecoration: "none", marginBottom: "9px", transition: "color 0.15s" }} onMouseEnter={e => (e.currentTarget.style.color = "#0099ff")} onMouseLeave={e => (e.currentTarget.style.color = "#222240")}>{lk.l}</a>)}
                 </div>
               ))}
             </div>
           </div>
-          <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
-            <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.2)" }}>© 2026 WaveTCG · Built on Sui Blockchain</span>
+          <div style={{ borderTop: "1px solid rgba(255,255,255,0.04)", paddingTop: "20px", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
+            <span style={{ fontSize: "11px", color: "#161630" }}>© 2026 WaveTCG · Built on Sui Blockchain</span>
             <div style={{ display: "flex", gap: "6px" }}>
               {["1% fee", "Free listings", "Instant pay", "On-chain"].map((t, i) => (
-                <span key={i} style={{ fontSize: "11px", padding: "3px 10px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "6px", color: "rgba(255,255,255,0.2)" }}>{t}</span>
+                <span key={i} style={{ fontSize: "10px", padding: "3px 9px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)", borderRadius: "5px", color: "#161630" }}>{t}</span>
               ))}
             </div>
           </div>
         </div>
-      </div>
+      </footer>
     </div>
   );
 }
