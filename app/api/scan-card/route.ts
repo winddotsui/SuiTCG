@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
                 type: "image",
                 source: {
                   type: "base64",
-                  media_type: "image/jpeg",
+                  media_type: mediaType as any,
                   data: base64,
                 },
               },
