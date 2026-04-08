@@ -44,18 +44,29 @@ export default function ScanPage() {
     setMode("idle");
   };
 
-  const capturePhoto = useCallback(() => {
+  const capturePhoto = () => {
     if (!videoRef.current || !canvasRef.current) return;
     const canvas = canvasRef.current;
     const video = videoRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext("2d")?.drawImage(video, 0, 0);
+    const w = video.videoWidth || 1280;
+    const h = video.videoHeight || 720;
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0, w, h);
     const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
+    if (!dataUrl || dataUrl === "data:,") {
+      setError("Could not capture photo. Please try uploading instead.");
+      return;
+    }
+    // Stop stream
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    setStream(null);
+    setMode("idle");
     setPreview(dataUrl);
-    stopCamera();
     analyzeImage(dataUrl);
-  }, [stream]);
+  };
 
   const processFile = (file: File) => {
     if (!file || !file.type.startsWith("image/")) return;
@@ -220,7 +231,7 @@ export default function ScanPage() {
         {mode === "camera" && (
           <div>
             <div style={{ position:"relative", borderRadius:"16px", overflow:"hidden", background:"#000", marginBottom:"14px", aspectRatio:"4/3" }}>
-              <video ref={videoRef} style={{ width:"100%", height:"100%", objectFit:"cover" }} playsInline muted autoPlay />
+              <video ref={videoRef} style={{ width:"100%", height:"100%", objectFit:"cover" }} playsInline muted autoPlay onCanPlay={e => (e.currentTarget as HTMLVideoElement).play()} />
               <div style={{ position:"absolute", inset:0, border:"2px solid rgba(0,153,255,0.2)" }} />
               <div style={{ position:"absolute", top:"8%", left:"5%", width:"90%", height:"82%", border:"2px solid rgba(0,153,255,0.7)", borderRadius:"8px" }}>
                 <div className="scan-line" />
