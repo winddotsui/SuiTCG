@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { showSuccess, showError } from "../../lib/toast";
 
 const CONTRACT_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
@@ -35,8 +36,30 @@ function SellContent() {
   const [cardSuggestions, setCardSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
+  const searchParams = useSearchParams();
+
   useEffect(() => {
     fetch("/api/sui-price").then(r => r.json()).then(d => setSuiPrice(d.price || 0.87)).catch(() => {});
+    // Pre-fill from scan
+    const name = searchParams.get("name");
+    const game = searchParams.get("game");
+    const set_name = searchParams.get("set_name");
+    const card_number = searchParams.get("card_number");
+    const condition = searchParams.get("condition");
+    const price_usd = searchParams.get("price_usd");
+    const description = searchParams.get("description");
+    if (name || game) {
+      setForm(f => ({
+        ...f,
+        name: name || f.name,
+        game: game || f.game,
+        set_name: set_name || f.set_name,
+        card_number: card_number || f.card_number,
+        condition: condition || f.condition,
+        price_usd: price_usd || f.price_usd,
+        description: description || f.description,
+      }));
+    }
   }, []);
 
   useEffect(() => {
@@ -276,7 +299,12 @@ function SellContent() {
                   </div>
                 </div>
                 <div style={{ position: "relative" }}>
-                  <label style={labelStyle}>Card Name *</label>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "7px" }}>
+                    <label style={{ ...labelStyle, marginBottom: 0 }}>Card Name *</label>
+                    <a href="/scan" style={{ fontSize: "11px", color: "#0099ff", textDecoration: "none", display: "flex", alignItems: "center", gap: "4px", padding: "4px 10px", background: "rgba(0,153,255,0.08)", border: "1px solid rgba(0,153,255,0.2)", borderRadius: "6px", fontWeight: 500 }}>
+                      📷 Scan Card
+                    </a>
+                  </div>
                   <input value={form.name} onChange={e => { setForm(p => ({ ...p, name: e.target.value })); searchCards(e.target.value); }} onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} placeholder={`Search ${form.game} cards...`} style={inputStyle} />
                   {showSuggestions && cardSuggestions.length > 0 && (
                     <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#050515", border: "1px solid rgba(0,153,255,0.2)", borderRadius: "10px", zIndex: 100, marginTop: "4px", boxShadow: "0 8px 32px rgba(0,0,0,0.6)", overflow: "hidden" }}>
