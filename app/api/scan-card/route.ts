@@ -5,16 +5,16 @@ export async function POST(req: NextRequest) {
     const { image } = await req.json();
     if (!image) return NextResponse.json({ error: "No image provided" }, { status: 400 });
 
-    // Detect actual image type from data URL
-    let mediaType = "image/jpeg";
+    // Strip data URL prefix and detect type
     let base64 = image;
+    let mediaType: string = "image/jpeg";
     if (image.includes(",")) {
       const header = image.split(",")[0];
       base64 = image.split(",")[1];
       if (header.includes("webp")) mediaType = "image/webp";
       else if (header.includes("png")) mediaType = "image/png";
       else if (header.includes("gif")) mediaType = "image/gif";
-      else if (header.includes("jpeg") || header.includes("jpg")) mediaType = "image/jpeg";
+      else mediaType = "image/jpeg";
     }
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -35,14 +35,13 @@ export async function POST(req: NextRequest) {
                 type: "image",
                 source: {
                   type: "base64",
-                  media_type: mediaType as any,
+                  media_type: mediaType,
                   data: base64,
                 },
               },
               {
                 type: "text",
                 text: `You are a world-class TCG card expert. Analyze this trading card image and identify it precisely.
-
 Return ONLY a valid JSON object (no markdown, no explanation, no backticks):
 {
   "name": "exact card name",
