@@ -410,15 +410,7 @@ export default function Home() {
                 <p style={{margin:0,fontSize:"12px",color:"rgba(245,245,245,0.7)",lineHeight:1.7}}>What is Gear 5 Luffy OP05-119 worth?</p>
               </div>
               <div style={{background:"rgba(0,229,255,0.05)",border:"1px solid rgba(0,229,255,0.12)",borderRadius:"10px",padding:"12px 14px",marginBottom:"10px",marginRight:"20%"}}>
-                <p style={{margin:0,fontSize:"12px",color:"rgba(245,245,245,0.85)",lineHeight:1.75,whiteSpace:"pre-line"}}>{"Monkey D. Luffy OP05-119 SEC
-
-📊 Market Value:
-• Raw NM: $350–$420
-• Alt Art: $1,200–$1,500
-• Manga Rare: $3,500–$4,500
-• PSA 10: $800–$1,100
-
-📈 High investment potential."}</p>
+                <p style={{margin:0,fontSize:"12px",color:"rgba(245,245,245,0.85)",lineHeight:1.75,whiteSpace:"pre-line"}}>{"Monkey D. Luffy OP05-119 SEC\n\n📊 Market Value:\n• Raw NM: $350-$420\n• Alt Art: $1,200-$1,500\n• Manga Rare: $3,500-$4,500\n• PSA 10: $800-$1,100\n\n📈 High investment potential."}</p>
               </div>
               <div style={{display:"flex",alignItems:"center",gap:"8px",padding:"10px 14px",background:"rgba(245,245,245,0.03)",borderRadius:"8px",border:"1px solid rgba(245,245,245,0.07)"}}>
                 <span style={{fontSize:"12px",color:"rgba(148,163,184,0.4)",flex:1}}>Ask about any card...</span>
