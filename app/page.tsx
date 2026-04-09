@@ -421,15 +421,7 @@ export default function Home() {
               </div>
               {[
                 {r:"user",t:"What is Gear 5 Luffy OP05-119 worth?"},
-                {r:"ai",t:"Monkey D. Luffy OP05-119 (Gear 5) — SEC
-
-📊 Current Market Value:
-• Raw NM: $350 – $420
-• Alt Art (p1): $1,200 – $1,500
-• Manga Rare (p2): $3,500 – $4,500
-• PSA 10: $800 – $1,100
-
-📈 High investment potential — one of the most iconic cards in OPTCG history."},
+                {r:"ai",t:"Monkey D. Luffy OP05-119 (Gear 5) — SEC\n\n📊 Current Market Value:\n• Raw NM: $350-$420\n• Alt Art: $1,200-$1,500\n• Manga Rare: $3,500-$4,500\n• PSA 10: $800-$1,100\n\n📈 High investment potential."},
               ].map((m,i) => (
                 <div key={i} className="chat-bubble" style={{background:m.r==="user"?"rgba(0,153,255,0.06)":"rgba(168,85,247,0.06)",border:`1px solid ${m.r==="user"?"rgba(0,153,255,0.12)":"rgba(168,85,247,0.12)"}`,color:m.r==="user"?"rgba(255,255,255,0.65)":"rgba(255,255,255,0.82)",whiteSpace:"pre-line",textAlign:m.r==="user"?"right":"left",marginLeft:m.r==="user"?"20%":"0",marginRight:m.r==="user"?"0":"20%"}}>
                   {m.t}
