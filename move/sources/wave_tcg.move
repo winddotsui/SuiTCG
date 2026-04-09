@@ -177,7 +177,7 @@ module wave_tcg::marketplace {
         listing: &mut Listing,
         ctx: &mut TxContext
     ) {
-        assert!(listing.seller == tx_context::sender(ctx), 4);
+        assert!(listing.seller == tx_context::sender(ctx), ENotOwner);
         assert!(listing.is_active, ENotActive);
         listing.is_active = false;
     }
@@ -187,7 +187,7 @@ module wave_tcg::marketplace {
         new_price_mist: u64,
         ctx: &mut TxContext
     ) {
-        assert!(listing.seller == tx_context::sender(ctx), 4);
+        assert!(listing.seller == tx_context::sender(ctx), ENotOwner);
         assert!(listing.is_active, ENotActive);
         assert!(new_price_mist > 0, EInvalidPrice);
         listing.price_mist = new_price_mist;
@@ -274,6 +274,13 @@ module wave_tcg::marketplace {
         transfer::public_transfer(fee_coin, registry.platform_wallet);
         transfer::public_transfer(seller_coin, offer.seller);
 
+        // Return any dust/remainder to buyer
+        let dust = coin::value(&offer.payment);
+        if (dust > 0) {
+            let dust_coin = coin::split(&mut offer.payment, dust, ctx);
+            transfer::public_transfer(dust_coin, offer.buyer);
+        };
+
         event::emit(OfferAccepted {
             offer_id: object::id(offer),
             buyer: offer.buyer,
@@ -297,6 +304,53 @@ module wave_tcg::marketplace {
         event::emit(OfferCancelled {
             offer_id: object::id(offer),
             buyer: offer.buyer,
+        });
+    }
+
+
+    public struct PrizeWithdrawn has copy, drop {
+        tournament_id: ID,
+        winner: address,
+        amount_mist: u64,
+    }
+
+    public struct TournamentCancelled has copy, drop {
+        tournament_id: ID,
+        organizer: address,
+    }
+
+    public fun cancel_tournament(
+        tournament: &mut Tournament,
+        ctx: &mut TxContext
+    ) {
+        assert!(tournament.organizer == tx_context::sender(ctx), ENotOwner);
+        assert!(tournament.is_active, ENotActive);
+        tournament.is_active = false;
+        event::emit(TournamentCancelled {
+            tournament_id: object::id(tournament),
+            organizer: tournament.organizer,
+        });
+    }
+
+    public fun withdraw_prize(
+        tournament: &mut Tournament,
+        winner: address,
+        amount_mist: u64,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext
+    ) {
+        assert!(tournament.organizer == tx_context::sender(ctx), ENotOwner);
+        assert!(amount_mist <= tournament.prize_pool_mist, EInsufficientPayment);
+        assert!(coin::value(&payment) >= amount_mist, EInsufficientPayment);
+        tournament.prize_pool_mist = tournament.prize_pool_mist - amount_mist;
+        let mut payment_mut = payment;
+        let prize_coin = coin::split(&mut payment_mut, amount_mist, ctx);
+        transfer::public_transfer(prize_coin, winner);
+        transfer::public_transfer(payment_mut, tournament.organizer);
+        event::emit(PrizeWithdrawn {
+            tournament_id: object::id(tournament),
+            winner,
+            amount_mist,
         });
     }
 
