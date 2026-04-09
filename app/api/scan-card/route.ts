@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit, getIP } from "../../../lib/rateLimit";
 
 export async function POST(req: NextRequest) {
+  const ip = getIP(req);
+  if (!rateLimit(ip, 20, 60_000)) {
+    return NextResponse.json({ error: "Too many requests. Please wait." }, { status: 429 });
+  }
   try {
     const { image } = await req.json();
     if (!image) return NextResponse.json({ error: "No image provided" }, { status: 400 });
