@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { supabase } from "../../lib/supabase";
 import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
@@ -31,6 +32,7 @@ const CustomTooltip = ({ active, payload }: any) => {
 function DashboardInner() {
   const account = useCurrentAccount();
   const client = useSuiClient();
+  const searchParams = useSearchParams();
   const [tab, setTab] = useState("Overview");
   const [profile, setProfile] = useState<any>(null);
   const [listings, setListings] = useState<any[]>([]);
@@ -52,6 +54,11 @@ function DashboardInner() {
     const addr = account?.address || (typeof window !== "undefined" ? localStorage.getItem("wavetcg_wallet_address") || "" : "");
     setWalletAddress(addr);
   }, [account?.address]);
+
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (tabParam && TABS.includes(tabParam)) setTab(tabParam);
+  }, [searchParams]);
 
   useEffect(() => { if (walletAddress) { fetchAll(); fetchPortfolio(); } else setLoading(false); }, [walletAddress]);
 
