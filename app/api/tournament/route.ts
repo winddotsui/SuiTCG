@@ -2,7 +2,14 @@ import { NextResponse } from "next/server";
 import { supabase } from "../../../lib/supabase";
 import { rateLimit, getIP } from "../../../lib/rateLimit";
 
-const TOURNAMENT_ID = process.env.NEXT_PUBLIC_TOURNAMENT_ID || "weekly-1";
+// Dynamic tournament ID based on week number since launch (April 6 2026 = Week 1)
+function getCurrentTournamentId(): string {
+  const LAUNCH_DATE = new Date("2026-04-06T00:00:00+08:00");
+  const now = new Date();
+  const weekNum = Math.max(1, Math.ceil((now.getTime() - LAUNCH_DATE.getTime()) / (7 * 24 * 60 * 60 * 1000)));
+  return process.env.NEXT_PUBLIC_TOURNAMENT_ID || `weekly-${weekNum}`;
+}
+const TOURNAMENT_ID = getCurrentTournamentId();
 
 export async function POST(request: Request) {
   const ip = getIP(request);
@@ -123,6 +130,27 @@ export async function POST(request: Request) {
 
   if (action === "report_result") {
     const { match_id, winner_wallet, player1_score, player2_score, reporter } = data;
+
+    // Validate match exists and reporter is a participant or admin
+    const { data: match } = await supabase
+      .from("tournament_matches")
+      .select("*")
+      .eq("id", match_id)
+      .single();
+
+    if (!match) return NextResponse.json({ error: "Match not found" }, { status: 404 });
+
+    const isAdmin = data?.callerWallet === ADMIN_WALLET || adminKey === process.env.ADMIN_SECRET_KEY;
+    const isParticipant = reporter === match.player1_wallet || reporter === match.player2_wallet;
+
+    if (!isAdmin && !isParticipant) {
+      return NextResponse.json({ error: "Unauthorized - not a match participant" }, { status: 401 });
+    }
+
+    // Validate winner is one of the players
+    if (winner_wallet !== match.player1_wallet && winner_wallet !== match.player2_wallet) {
+      return NextResponse.json({ error: "Invalid winner - not a match participant" }, { status: 400 });
+    }
 
     await supabase.from("tournament_matches").update({
       winner_wallet,
