@@ -82,16 +82,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             .desktop-nav { display: flex !important; }
             body { padding-top: 56px; }
           }
-        `}</style>
+                body.dark-mode { background: #111111 !important; }
+        body.dark-mode #main-nav { background: rgba(17,17,17,0.97) !important; border-bottom-color: rgba(255,255,255,0.08) !important; }
+        body.dark-mode #main-nav .nl { color: rgba(255,255,255,0.7) !important; }
+        body.dark-mode #main-nav .nl:hover { color: #00D4FF !important; background: rgba(0,212,255,0.08) !important; }
+        body.dark-mode #main-nav .more-btn { color: rgba(255,255,255,0.7) !important; }
+        body.dark-mode #main-nav .more-btn:hover { color: #00D4FF !important; }
+        body.dark-mode #main-nav .more-dropdown { background: #1F2937 !important; border-color: rgba(255,255,255,0.1) !important; }
+        body.dark-mode #main-nav .more-link { color: rgba(255,255,255,0.7) !important; }
+        body.dark-mode #main-nav .more-link:hover { color: #00D4FF !important; }
+        body.dark-mode #main-nav a.nl { color: rgba(255,255,255,0.7) !important; }
+      `}</style>
       </head>
       <body style={{ position: "relative", background: "#FFFFED", margin: 0, padding: 0 }}>
         <Providers>
-          <nav style={{
+          <nav id="main-nav" style={{
             position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
             display: "flex", alignItems: "center", justifyContent: "space-between",
             padding: "0 20px", height: "56px",
             borderBottom: "1px solid #E5E7EB",
-            background: "rgba(255,255,255,0.95)",
+            background: "rgba(255,255,255,0.97)",
             backdropFilter: "blur(32px)",
           }}>
             <a href="/" style={{
