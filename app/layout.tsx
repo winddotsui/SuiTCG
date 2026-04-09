@@ -84,7 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }
         `}</style>
       </head>
-      <body style={{ position: "relative", background: "#F8F7F4", margin: 0, padding: 0 }}>
+      <body style={{ position: "relative", background: "#FFFFED", margin: 0, padding: 0 }}>
         <Providers>
           <nav style={{
             position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
@@ -104,7 +104,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }}>WAVE</a>
             <NavClient />
           </nav>
-          <main style={{ paddingTop: "56px", position: "relative", zIndex: 1, minHeight: "100vh", background: "#F8F7F4" }}>
+          <main style={{ paddingTop: "56px", position: "relative", zIndex: 1, minHeight: "100vh", background: "#FFFFED" }}>
             {children}
           </main>
           <Toaster position="bottom-right" toastOptions={{ style: { background: "#0a1628", color: "#ffffff", border: "1px solid rgba(0,153,255,0.2)", fontFamily: "DM Sans, sans-serif", fontSize: "14px" }, success: { iconTheme: { primary: "#00ff88", secondary: "#000008" } }, error: { iconTheme: { primary: "#ff6b6b", secondary: "#000008" } } }} />

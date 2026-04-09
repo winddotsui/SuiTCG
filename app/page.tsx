@@ -50,7 +50,7 @@ export default function Home() {
     } catch {}
   }
 
-  const bg = darkMode ? "#111111" : "#F8F7F4";
+  const bg = darkMode ? "#111111" : "#FFFFED";
   const surface = darkMode ? "#1F2937" : "#FFFFFF";
   const text = darkMode ? "#F5F5F5" : "#1F2937";
   const muted = darkMode ? "#94A3B8" : "#64748B";
