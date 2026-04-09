@@ -160,7 +160,7 @@ export default function Home() {
             {code:"OP01-001",x:"5%",y:"76%",r:"5deg",del:"1.3s",sz:96,op:0.17},
           ].map((c,i) => (
             <div key={i} style={{position:"absolute",left:c.x,top:c.y,width:`${c.sz}px`,opacity:c.op,["--r" as any]:c.r,animation:`floatY ${5.5+i*0.4}s ease-in-out infinite`,animationDelay:c.del,filter:"drop-shadow(0 20px 40px rgba(0,0,0,0.95)) drop-shadow(0 0 20px rgba(0,100,255,0.15))"}}>
-              <img src={`https://en.onepiece-cardgame.com/images/cardlist/card/${c.code}.png`} alt="" style={{width:"100%",borderRadius:"10px",display:"block"}} onError={e=>{(e.target as HTMLImageElement).style.display="none"}} />
+              <img src={`https://optcgapi.com/media/static/Card_Images/${c.code}.jpg`} alt="" style={{width:"100%",borderRadius:"10px",display:"block"}} onError={e=>{(e.target as HTMLImageElement).style.display="none"}} />
             </div>
           ))}
         </div>
@@ -272,7 +272,7 @@ export default function Home() {
                 {/* Image */}
                 <div style={{width:"100%",aspectRatio:"3/4",overflow:"hidden",background:`linear-gradient(160deg,${card.color}12,#050515)`,position:"relative"}}>
                   <img
-                    src={`https://en.onepiece-cardgame.com/images/cardlist/card/${card.code}.png`}
+                    src={`https://optcgapi.com/media/static/Card_Images/${card.code}.jpg`}
                     alt={card.name}
                     style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform 0.4s ease",display:imgLoaded[card.code]===false?"none":"block"}}
                     onLoad={()=>setImgLoaded(p=>({...p,[card.code]:true}))}
