@@ -2,8 +2,15 @@ import { NextResponse } from "next/server";
 import { rateLimit, getIP } from "../../../lib/rateLimit";
 
 const CONTRACT_ID = process.env.NEXT_PUBLIC_CONTRACT_ID || "";
-const USD_PER_SUI = 3.5;
-const RPC = process.env.NEXT_PUBLIC_SUI_RPC || "https://fullnode.testnet.sui.io:443";
+// Fetch live SUI price
+async function getSuiPrice(): Promise<number> {
+  try {
+    const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=sui&vs_currencies=usd", { next: { revalidate: 60 } });
+    const data = await res.json();
+    return data?.sui?.usd || 1.0;
+  } catch { return 1.0; }
+}
+const RPC = process.env.NEXT_PUBLIC_SUI_RPC || "https://fullnode.mainnet.sui.io:443";
 
 async function rpc(method: string, params: any[]) {
   const res = await fetch(RPC, {
@@ -17,6 +24,7 @@ async function rpc(method: string, params: any[]) {
 
 export async function GET() {
   try {
+    const suiPrice = await getSuiPrice();
     // Get all ListingCreated events
     const events = await rpc("suix_queryEvents", [
       { MoveEventType: `${CONTRACT_ID}::marketplace::ListingCreated` },
@@ -57,7 +65,7 @@ export async function GET() {
         game: p.game,
         condition: p.condition || "NM",
         price_sui: Number(p.price_mist) / 1_000_000_000,
-        price_usd: (Number(p.price_mist) / 1_000_000_000) * USD_PER_SUI,
+        price_usd: (Number(p.price_mist) / 1_000_000_000) * suiPrice,
         seller_address: p.seller,
         image_url: "",
         is_chain: true,
