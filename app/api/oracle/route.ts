@@ -1,5 +1,6 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
+import { rateLimit, getIP } from "../../../lib/rateLimit";
 
 async function getPokemonCards(cardName: string) {
   try {
@@ -71,6 +72,10 @@ async function getOnePieceCards(cardName: string) {
 }
 
 export async function POST(req: Request) {
+  const ip = getIP(req);
+  if (!rateLimit(ip, 10, 60_000)) {
+    return new Response(JSON.stringify({ error: "Too many requests. Please wait a moment." }), { status: 429 });
+  }
   try {
     const { messages } = await req.json();
 
