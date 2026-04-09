@@ -1,42 +1,39 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
 const HOT_CARDS = [
-  { code:"OP05-119", name:"Monkey D. Luffy", set:"Awakening of the New Era", rarity:"SEC", price:"$380", sui:"407", color:"#7C3AED", tag:"Gear 5" },
-  { code:"OP01-003", name:"Monkey D. Luffy", set:"Romance Dawn", rarity:"L", price:"$356", sui:"381", color:"#00E5FF", tag:"Leader" },
-  { code:"OP02-001", name:"Edward Newgate", set:"Paramount War", rarity:"L", price:"$210", sui:"224", color:"#00E5FF", tag:"Whitebeard" },
-  { code:"OP06-001", name:"Shanks", set:"Wings of the Captain", rarity:"L", price:"$145", sui:"155", color:"#D4AF37", tag:"Red-Haired" },
-  { code:"OP04-090", name:"Monkey D. Luffy", set:"Kingdoms of Intrigue", rarity:"SR", price:"$89", sui:"95", color:"#00E5FF", tag:"Dressrosa" },
-  { code:"OP01-001", name:"Roronoa Zoro", set:"Romance Dawn", rarity:"SR", price:"$65", sui:"69", color:"#00E5FF", tag:"Straw Hat" },
-  { code:"OP07-109", name:"Monkey D. Luffy", set:"500 Years in Future", rarity:"SR", price:"$38", sui:"40", color:"#00E5FF", tag:"Egghead" },
-  { code:"OP09-119", name:"Monkey D. Luffy", set:"Emperors in New World", rarity:"SEC", price:"$28", sui:"29", color:"#7C3AED", tag:"Emperor" },
+  { code:"OP05-119", name:"Monkey D. Luffy", set:"Awakening of the New Era", rarity:"SEC", price:"$380", sui:"407", rarityColor:"#7C3AED" },
+  { code:"OP01-003", name:"Monkey D. Luffy", set:"Romance Dawn", rarity:"L", price:"$356", sui:"381", rarityColor:"#D4AF37" },
+  { code:"OP02-001", name:"Edward Newgate", set:"Paramount War", rarity:"L", price:"$210", sui:"224", rarityColor:"#D4AF37" },
+  { code:"OP06-001", name:"Shanks", set:"Wings of Captain", rarity:"L", price:"$145", sui:"155", rarityColor:"#D4AF37" },
+  { code:"OP04-090", name:"Monkey D. Luffy", set:"Kingdoms of Intrigue", rarity:"SR", price:"$89", sui:"95", rarityColor:"#00D4FF" },
+  { code:"OP01-001", name:"Roronoa Zoro", set:"Romance Dawn", rarity:"SR", price:"$65", sui:"69", rarityColor:"#00D4FF" },
+  { code:"OP07-109", name:"Monkey D. Luffy", set:"500 Years in Future", rarity:"SR", price:"$38", sui:"40", rarityColor:"#00D4FF" },
+  { code:"OP09-119", name:"Monkey D. Luffy", set:"Emperors in New World", rarity:"SEC", price:"$28", sui:"29", rarityColor:"#7C3AED" },
 ];
 
-const RARITY_COLORS:Record<string,string> = {
-  SEC:"#D4AF37", SR:"#7C3AED", R:"#00E5FF", L:"#D4AF37", UC:"#94A3B8", C:"#4B5563", TR:"#D4AF37"
-};
-
 const FEATURES = [
-  { icon:"🃏", t:"Free Listings", d:"List any card for free. Only 1% when it sells — automatically on-chain.", c:"#00E5FF" },
-  { icon:"⚡", t:"Instant Settlement", d:"Sui blockchain settles in under a second. No waiting, no holds.", c:"#00E5FF" },
-  { icon:"🤖", t:"AI Oracle", d:"Claude AI knows every TCG card ever made. Prices, rulings, deck advice.", c:"#7C3AED" },
-  { icon:"🔒", t:"Zero Chargebacks", d:"Blockchain transactions are final. No buyer scams, ever.", c:"#D4AF37" },
-  { icon:"📊", t:"Price Checker", d:"Real-time prices vs TCGPlayer, CardMarket, eBay in one view.", c:"#00E5FF" },
-  { icon:"☠️", t:"OPTCG Tournaments", d:"Weekly Swiss tournaments with on-chain SUI prize pools.", c:"#7C3AED" },
+  { icon:"🃏", t:"Free to List", d:"No upfront cost. List any card for free — pay just 1% when it sells.", c:"#00D4FF" },
+  { icon:"⚡", t:"Instant Payment", d:"Sui blockchain settles in under a second. Get paid the moment your card sells.", c:"#7C3AED" },
+  { icon:"🤖", t:"AI Card Oracle", d:"Claude AI identifies any card, gives real prices, rulings, and deck advice.", c:"#D4AF37" },
+  { icon:"🔒", t:"Zero Chargebacks", d:"On-chain payments are final. No payment reversals or buyer fraud.", c:"#00D4FF" },
+  { icon:"📊", t:"Price Comparison", d:"See WaveTCG vs TCGPlayer vs CardMarket prices side by side.", c:"#7C3AED" },
+  { icon:"☠️", t:"OPTCG Tournaments", d:"Weekly Swiss bracket events with on-chain SUI prize pools.", c:"#D4AF37" },
 ];
 
 const STEPS = [
-  { n:"01", t:"Scan & List", d:"Photo + AI auto-identifies the card, set your price in USD", icon:"📷" },
-  { n:"02", t:"Browse & Compare", d:"Search 8+ TCGs with AI search and real-time price comparison", icon:"🔍" },
-  { n:"03", t:"Buy with SUI", d:"One-click purchase, 1% fee, instant on-chain transfer", icon:"⚡" },
-  { n:"04", t:"Ship & Complete", d:"Coordinate securely via encrypted in-app messaging", icon:"📦" },
+  { n:"1", t:"Scan Your Card", d:"Take a photo — AI identifies it instantly and fills in all details", icon:"📷" },
+  { n:"2", t:"Set Your Price", d:"Price in USD, auto-converts to SUI. Compare vs market instantly", icon:"💰" },
+  { n:"3", t:"Buyer Pays with SUI", d:"One-click purchase, 1% fee deducted automatically on-chain", icon:"⚡" },
+  { n:"4", t:"Ship & Done", d:"Chat securely with buyer, confirm shipping, get your SUI", icon:"📦" },
 ];
 
 export default function Home() {
   const [stats, setStats] = useState({ listings:0, users:0 });
   const [suiPrice, setSuiPrice] = useState(0.934);
   const [imgError, setImgError] = useState<Record<string,boolean>>({});
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     fetchStats();
@@ -53,244 +50,220 @@ export default function Home() {
     } catch {}
   }
 
+  const bg = darkMode ? "#111111" : "#F8F7F4";
+  const surface = darkMode ? "#1F2937" : "#FFFFFF";
+  const text = darkMode ? "#F5F5F5" : "#1F2937";
+  const muted = darkMode ? "#94A3B8" : "#64748B";
+  const border = darkMode ? "rgba(255,255,255,0.08)" : "#E5E7EB";
+  const surfaceBg = darkMode ? "#1a1a2e" : "#F1F5F9";
+
   return (
-    <div style={{background:"#0A0A0A",color:"#F5F5F5",fontFamily:"DM Sans,sans-serif",overflowX:"hidden"}}>
+    <div style={{background:bg,color:text,fontFamily:"DM Sans,sans-serif",overflowX:"hidden",transition:"background 0.3s,color 0.3s"}}>
       <style>{`
-        :root{--cyan:#00E5FF;--purple:#7C3AED;--gold:#D4AF37;--bg:#0A0A0A;--surface:#1F2937;--text:#F5F5F5;--muted:#94A3B8}
         *{box-sizing:border-box;margin:0;padding:0}
-
-        @keyframes floatCard{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-16px) rotate(calc(var(--r,0deg)*0.5))}}
-        @keyframes gradMove{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+        @keyframes float{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-14px) rotate(calc(var(--r,0deg)*0.4))}}
+        @keyframes shine{0%{left:-100%}100%{left:200%}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
         @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-        @keyframes shimmer{0%{transform:translateX(-100%) skewX(-15deg)}100%{transform:translateX(300%) skewX(-15deg)}}
-        @keyframes glow{0%,100%{box-shadow:0 0 20px rgba(0,229,255,0.2)}50%{box-shadow:0 0 50px rgba(0,229,255,0.5)}}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 
-        .fade-up{animation:fadeUp 0.7s ease both}
+        .fade-up{animation:fadeUp 0.6s ease both}
 
-        /* Buttons */
-        .btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--cyan);color:#0A0A0A;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:all 0.2s;letter-spacing:0.02em;padding:15px 32px;text-decoration:none}
-        .btn-primary:hover{background:#33EEFF;transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,229,255,0.4)}
-        .btn-secondary{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--text);border:1.5px solid rgba(245,245,245,0.2);border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;padding:14px 24px;text-decoration:none}
-        .btn-secondary:hover{border-color:var(--cyan);color:var(--cyan)}
-        .btn-purple{display:inline-flex;align-items:center;gap:8px;background:var(--purple);color:#F5F5F5;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;padding:15px 32px;text-decoration:none}
-        .btn-purple:hover{background:#8B5CF6;transform:translateY(-2px);box-shadow:0 12px 40px rgba(124,58,237,0.4)}
+        .card-item{background:${surface};border-radius:12px;overflow:hidden;cursor:pointer;transition:transform 0.3s cubic-bezier(0.23,1,0.32,1),box-shadow 0.3s ease;position:relative;border:1px solid ${border}}
+        .card-item:hover{transform:translateY(-8px) scale(1.02);box-shadow:${darkMode?"0 20px 60px rgba(0,0,0,0.8)":"0 20px 60px rgba(0,0,0,0.12),0 0 0 1px rgba(0,212,255,0.15)"}}
+        .card-item .card-overlay{position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,0.12) 50%,transparent 70%);opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:3}
+        .card-item:hover .card-overlay{opacity:1}
+        .card-item .buy-now{opacity:0;transform:translateY(4px);transition:all 0.2s}
+        .card-item:hover .buy-now{opacity:1;transform:translateY(0)}
 
-        /* Cards */
-        .card-wrap{position:relative;border-radius:16px;overflow:hidden;cursor:pointer;transition:transform 0.35s cubic-bezier(0.23,1,0.32,1),box-shadow 0.35s ease;background:var(--surface)}
-        .card-wrap:hover{transform:translateY(-10px) scale(1.02);box-shadow:0 30px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(0,229,255,0.15)}
-        .card-wrap .card-shine{position:absolute;inset:0;background:linear-gradient(135deg,transparent 25%,rgba(255,255,255,0.08) 50%,transparent 75%);opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:4}
-        .card-wrap:hover .card-shine{opacity:1}
-        .card-wrap .buy-btn{opacity:0;transform:translateY(5px);transition:all 0.25s}
-        .card-wrap:hover .buy-btn{opacity:1;transform:translateY(0)}
+        .btn-main{display:inline-flex;align-items:center;gap:8px;background:#00D4FF;color:#0A0A0A;border:none;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:all 0.2s;padding:14px 28px;text-decoration:none;letter-spacing:0.01em}
+        .btn-main:hover{background:#00E5FF;transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,212,255,0.35)}
+        .btn-ghost{display:inline-flex;align-items:center;gap:8px;background:transparent;color:${text};border:1.5px solid ${border};border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;padding:13px 22px;text-decoration:none}
+        .btn-ghost:hover{border-color:#00D4FF;color:#00D4FF}
+        .btn-purple{display:inline-flex;align-items:center;gap:8px;background:#7C3AED;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;padding:14px 28px;text-decoration:none}
+        .btn-purple:hover{background:#8B5CF6;transform:translateY(-1px);box-shadow:0 8px 28px rgba(124,58,237,0.35)}
 
-        /* Feature cards */
-        .feat{background:var(--surface);border:1px solid rgba(245,245,245,0.07);border-radius:16px;padding:28px;transition:all 0.3s;position:relative;overflow:hidden}
-        .feat::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent-color,#00E5FF);opacity:0;transition:opacity 0.3s;border-radius:16px 16px 0 0}
-        .feat:hover{border-color:rgba(0,229,255,0.2);transform:translateY(-4px)}
-        .feat:hover::after{opacity:1}
+        .feat-card{background:${surface};border:1px solid ${border};border-radius:14px;padding:28px;transition:all 0.25s;position:relative;overflow:hidden}
+        .feat-card:hover{border-color:#00D4FF;transform:translateY(-3px);box-shadow:${darkMode?"0 12px 40px rgba(0,0,0,0.5)":"0 12px 40px rgba(0,0,0,0.08)"}}
+        .feat-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--fc,#00D4FF);opacity:0;transition:opacity 0.25s;border-radius:14px 14px 0 0}
+        .feat-card:hover::before{opacity:1}
 
-        /* Step cards */
-        .step{background:var(--surface);border:1px solid rgba(245,245,245,0.07);border-radius:16px;padding:32px 24px;text-align:center;transition:all 0.3s;position:relative;overflow:hidden}
-        .step:hover{border-color:rgba(0,229,255,0.2);transform:translateY(-4px)}
-        .step-num{position:absolute;bottom:-8px;right:8px;font-family:Cinzel,serif;font-size:72px;font-weight:900;color:rgba(245,245,245,0.04);line-height:1;pointer-events:none}
+        .step-card{background:${surface};border:1px solid ${border};border-radius:14px;padding:32px 24px;text-align:center;transition:all 0.25s;position:relative;overflow:hidden}
+        .step-card:hover{border-color:#00D4FF;transform:translateY(-3px);box-shadow:${darkMode?"0 12px 40px rgba(0,0,0,0.5)":"0 12px 40px rgba(0,0,0,0.08)"}}
+        .step-num-bg{position:absolute;bottom:-10px;right:8px;font-size:80px;font-weight:900;color:${darkMode?"rgba(255,255,255,0.04)":"rgba(0,0,0,0.04)"};line-height:1;pointer-events:none;font-family:Georgia,serif}
 
-        /* Game chips */
-        .game-chip{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:1.5px solid rgba(245,245,245,0.1);border-radius:50px;background:rgba(245,245,245,0.03);cursor:pointer;transition:all 0.2s;text-decoration:none;white-space:nowrap;position:relative}
-        .game-chip:hover{border-color:var(--cyan);background:rgba(0,229,255,0.06);transform:translateY(-2px)}
+        .game-pill{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border:1.5px solid ${border};border-radius:50px;background:${surface};cursor:pointer;transition:all 0.2s;text-decoration:none;white-space:nowrap;position:relative}
+        .game-pill:hover{border-color:#00D4FF;box-shadow:0 4px 16px rgba(0,212,255,0.12);transform:translateY(-2px)}
 
-        /* Testimonials */
-        .testi{background:var(--surface);border:1px solid rgba(245,245,245,0.07);border-radius:16px;padding:28px;transition:all 0.3s}
-        .testi:hover{border-color:rgba(0,229,255,0.15);transform:translateY(-4px)}
+        .testi{background:${surface};border:1px solid ${border};border-radius:14px;padding:28px;transition:all 0.25s}
+        .testi:hover{border-color:rgba(0,212,255,0.3);box-shadow:${darkMode?"0 8px 32px rgba(0,0,0,0.4)":"0 8px 32px rgba(0,0,0,0.06)"}}
 
-        /* Stat block */
-        .stat{padding:28px 20px;text-align:center;background:#111111;position:relative;overflow:hidden}
-        .stat::after{content:"";position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(245,245,245,0.02),transparent);animation:shimmer 5s infinite}
+        .stat-block{padding:28px 20px;text-align:center;background:${surface};border-right:1px solid ${border}}
+        .stat-block:last-child{border-right:none}
 
-        /* Section label */
-        .sec-label{display:inline-flex;align-items:center;gap:6px;padding:"4px 12px";background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.2);border-radius:50px;font-size:10px;color:var(--cyan);font-weight:700;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:14px}
+        .section-label{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);border-radius:20px;font-size:10px;color:#00D4FF;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;margin-bottom:12px}
 
-        /* Oracle chat */
-        .chat-box{background:#111111;border:1px solid rgba(124,58,237,0.2);border-radius:16px;padding:20px;font-family:monospace}
+        .chat-demo{background:${darkMode?"#0d0d1a":"#F8FAFF"};border:1px solid ${darkMode?"rgba(124,58,237,0.2)":"rgba(124,58,237,0.15)"};border-radius:14px;padding:20px;font-family:ui-monospace,monospace}
+
+        .dark-toggle{background:${darkMode?"#374151":"#F3F4F6"};border:1.5px solid ${border};border-radius:50px;padding:4px 6px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.2s;font-size:14px}
 
         @media(max-width:768px){
-          .float-bg{display:none!important}
+          .float-cards-bg{display:none!important}
           .hot-grid{grid-template-columns:1fr 1fr!important}
           .feat-grid{grid-template-columns:1fr!important}
           .steps-grid{grid-template-columns:1fr 1fr!important}
           .testi-grid{grid-template-columns:1fr!important}
-          .stats-row{grid-template-columns:1fr 1fr!important}
-          .cta-row{flex-direction:column!important;align-items:stretch!important}
-          .oracle-grid{grid-template-columns:1fr!important}
-          .footer-cols{grid-template-columns:1fr 1fr!important}
-          .footer-main{grid-template-columns:1fr!important;gap:32px!important}
+          .stats-bar{grid-template-columns:1fr 1fr!important}
+          .cta-btns{flex-direction:column!important;align-items:stretch!important}
+          .oracle-layout{grid-template-columns:1fr!important}
+          .footer-links{grid-template-columns:1fr 1fr!important}
+          .footer-layout{grid-template-columns:1fr!important;gap:32px!important}
+          .hero-btns{flex-direction:column!important;align-items:stretch!important}
         }
         @media(min-width:769px){
           .hot-grid{grid-template-columns:repeat(4,1fr)!important}
           .feat-grid{grid-template-columns:repeat(3,1fr)!important}
           .steps-grid{grid-template-columns:repeat(4,1fr)!important}
           .testi-grid{grid-template-columns:repeat(3,1fr)!important}
-          .stats-row{grid-template-columns:repeat(5,1fr)!important}
-          .footer-cols{grid-template-columns:repeat(4,1fr)!important}
+          .stats-bar{grid-template-columns:repeat(5,1fr)!important}
+          .footer-links{grid-template-columns:repeat(4,1fr)!important}
         }
       `}</style>
 
-      {/* ════════════════════════════
-          HERO
-      ════════════════════════════ */}
-      <section style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",padding:"clamp(100px,12vw,130px) clamp(20px,5vw,60px) clamp(60px,8vw,100px)",position:"relative",overflow:"hidden"}}>
+      {/* ═══════ DARK MODE TOGGLE (fixed) ═══════ */}
+      <div style={{position:"fixed",bottom:"24px",right:"24px",zIndex:1000}}>
+        <button className="dark-toggle" onClick={()=>setDarkMode(!darkMode)} title="Toggle dark mode">
+          {darkMode ? "☀️" : "🌙"}
+          <span style={{fontSize:"11px",color:muted,fontFamily:"DM Sans,sans-serif"}}>{darkMode?"Light":"Dark"}</span>
+        </button>
+      </div>
+
+      {/* ═══════ HERO ═══════ */}
+      <section style={{minHeight:"92vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",padding:"clamp(100px,12vw,130px) clamp(20px,5vw,60px) clamp(60px,7vw,90px)",position:"relative",overflow:"hidden",background:darkMode?"#0d0d1a":bg}}>
 
         {/* Subtle grid */}
-        <div style={{position:"absolute",inset:0,backgroundImage:"linear-gradient(rgba(0,229,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.04) 1px,transparent 1px)",backgroundSize:"72px 72px",maskImage:"radial-gradient(ellipse 75% 75% at 50% 40%,black 30%,transparent 100%)",pointerEvents:"none"}} />
+        <div style={{position:"absolute",inset:0,backgroundImage:`linear-gradient(${darkMode?"rgba(0,212,255,0.04)":"rgba(0,212,255,0.06)"} 1px,transparent 1px),linear-gradient(90deg,${darkMode?"rgba(0,212,255,0.04)":"rgba(0,212,255,0.06)"} 1px,transparent 1px)`,backgroundSize:"80px 80px",maskImage:"radial-gradient(ellipse 70% 70% at 50% 40%,black 20%,transparent 100%)",pointerEvents:"none"}} />
 
-        {/* Glow blobs */}
-        <div style={{position:"absolute",width:"700px",height:"700px",top:"50%",left:"50%",transform:"translate(-50%,-60%)",background:"radial-gradient(circle,rgba(0,229,255,0.07) 0%,transparent 60%)",pointerEvents:"none"}} />
-        <div style={{position:"absolute",width:"350px",height:"350px",top:"10%",left:"8%",background:"radial-gradient(circle,rgba(124,58,237,0.06) 0%,transparent 70%)",pointerEvents:"none",animation:"pulse 6s ease-in-out infinite"}} />
-        <div style={{position:"absolute",width:"300px",height:"300px",bottom:"15%",right:"8%",background:"radial-gradient(circle,rgba(0,229,255,0.05) 0%,transparent 70%)",pointerEvents:"none",animation:"pulse 6s ease-in-out infinite 3s"}} />
+        {/* Glow */}
+        <div style={{position:"absolute",width:"600px",height:"400px",top:"30%",left:"50%",transform:"translate(-50%,-50%)",background:`radial-gradient(ellipse,${darkMode?"rgba(0,212,255,0.06)":"rgba(0,212,255,0.07)"} 0%,transparent 65%)`,pointerEvents:"none"}} />
 
         {/* Floating cards */}
-        <div className="float-bg" style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:1}}>
+        <div className="float-cards-bg" style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:1}}>
           {[
-            {code:"OP05-119",x:"2%",y:"12%",r:"-9deg",del:"0s",sz:115,op:0.18},
-            {code:"OP01-003",x:"80%",y:"6%",r:"7deg",del:"0.6s",sz:108,op:0.16},
-            {code:"OP02-001",x:"86%",y:"52%",r:"-5deg",del:"1.1s",sz:100,op:0.13},
-            {code:"OP06-001",x:"0%",y:"64%",r:"8deg",del:"1.6s",sz:104,op:0.16},
-            {code:"OP04-090",x:"76%",y:"74%",r:"-6deg",del:"0.9s",sz:94,op:0.12},
-            {code:"OP01-001",x:"4%",y:"78%",r:"5deg",del:"1.3s",sz:98,op:0.14},
+            {code:"OP05-119",x:"2%",y:"10%",r:"-8deg",del:"0s",sz:110,op:darkMode?0.2:0.15},
+            {code:"OP01-003",x:"81%",y:"5%",r:"7deg",del:"0.5s",sz:105,op:darkMode?0.18:0.12},
+            {code:"OP02-001",x:"87%",y:"52%",r:"-5deg",del:"1s",sz:98,op:darkMode?0.15:0.1},
+            {code:"OP06-001",x:"0%",y:"65%",r:"8deg",del:"1.5s",sz:102,op:darkMode?0.18:0.12},
+            {code:"OP01-001",x:"4%",y:"80%",r:"5deg",del:"1.2s",sz:96,op:darkMode?0.15:0.1},
           ].map((c,i) => (
-            <div key={i} style={{position:"absolute",left:c.x,top:c.y,width:`${c.sz}px`,opacity:c.op,["--r" as any]:c.r,animation:`floatCard ${5.5+i*0.4}s ease-in-out infinite`,animationDelay:c.del,filter:"drop-shadow(0 24px 48px rgba(0,0,0,0.95)) drop-shadow(0 0 24px rgba(0,229,255,0.1))"}}>
-              <img src={`https://optcgapi.com/media/static/Card_Images/${c.code}.jpg`} alt="" style={{width:"100%",borderRadius:"10px",display:"block"}} onError={e=>{(e.target as HTMLImageElement).style.display="none"}} />
+            <div key={i} style={{position:"absolute",left:c.x,top:c.y,width:`${c.sz}px`,opacity:c.op,["--r" as any]:c.r,animation:`float ${5.5+i*0.4}s ease-in-out infinite`,animationDelay:c.del,filter:`drop-shadow(0 20px 40px rgba(0,0,0,${darkMode?0.9:0.25})) drop-shadow(0 0 20px rgba(0,212,255,0.1))`}}>
+              <img src={`https://optcgapi.com/media/static/Card_Images/${c.code}.jpg`} alt="" style={{width:"100%",borderRadius:"8px",display:"block"}} onError={e=>{(e.target as HTMLImageElement).style.display="none"}} />
             </div>
           ))}
         </div>
 
-        {/* Content */}
-        <div style={{position:"relative",zIndex:10,maxWidth:"840px",width:"100%"}}>
-
+        <div style={{position:"relative",zIndex:10,maxWidth:"800px",width:"100%"}}>
           {/* Live badge */}
-          <div className="fade-up" style={{display:"inline-flex",alignItems:"center",gap:"10px",padding:"7px 18px",background:"rgba(0,229,255,0.08)",border:"1px solid rgba(0,229,255,0.25)",borderRadius:"50px",marginBottom:"36px",animationDelay:"0s"}}>
-            <span style={{width:"7px",height:"7px",borderRadius:"50%",background:"#00E5FF",display:"inline-block",animation:"glow 2s infinite",boxShadow:"0 0 10px rgba(0,229,255,0.8)"}} />
-            <span style={{fontSize:"11px",letterSpacing:"0.2em",textTransform:"uppercase",color:"#00E5FF",fontWeight:700}}>Live on Sui Mainnet</span>
-            <span style={{width:"1px",height:"12px",background:"rgba(245,245,245,0.1)"}} />
-            <span style={{fontSize:"11px",color:"var(--muted)"}}>SUI ${suiPrice.toFixed(3)}</span>
+          <div className="fade-up" style={{display:"inline-flex",alignItems:"center",gap:"10px",padding:"6px 16px",background:darkMode?"rgba(0,212,255,0.08)":"rgba(0,212,255,0.1)",border:"1px solid rgba(0,212,255,0.25)",borderRadius:"50px",marginBottom:"32px"}}>
+            <span style={{width:"7px",height:"7px",borderRadius:"50%",background:"#00D4FF",display:"inline-block",animation:"pulse 2s infinite",boxShadow:"0 0 8px rgba(0,212,255,0.8)"}} />
+            <span style={{fontSize:"11px",letterSpacing:"0.18em",textTransform:"uppercase",color:"#00D4FF",fontWeight:700}}>Live on Sui Mainnet</span>
+            <span style={{width:"1px",height:"12px",background:border}} />
+            <span style={{fontSize:"11px",color:muted}}>SUI ${suiPrice.toFixed(3)}</span>
           </div>
 
-          {/* Headline */}
-          <h1 className="fade-up" style={{fontFamily:"Cinzel,serif",fontSize:"clamp(40px,8vw,96px)",fontWeight:900,lineHeight:0.98,marginBottom:"24px",letterSpacing:"-0.025em",animationDelay:"0.1s"}}>
-            <span style={{display:"block",color:"#F5F5F5"}}>Ride the Wave.</span>
-            <span style={{display:"block",background:"linear-gradient(135deg,#00E5FF 0%,#7C3AED 50%,#D4AF37 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",backgroundSize:"300% 300%",animation:"gradMove 6s ease infinite"}}>Trade Any Card.</span>
+          <h1 className="fade-up" style={{fontFamily:"Cinzel,serif",fontSize:"clamp(38px,7.5vw,88px)",fontWeight:900,lineHeight:1.0,marginBottom:"22px",letterSpacing:"-0.02em",animationDelay:"0.1s"}}>
+            <span style={{display:"block",color:text}}>Ride the Wave.</span>
+            <span style={{display:"block",background:"linear-gradient(135deg,#00D4FF 0%,#7C3AED 50%,#D4AF37 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",backgroundSize:"300%",animation:"gradShift 5s ease infinite"}}>Trade Any Card.</span>
           </h1>
 
-          {/* Sub */}
-          <p className="fade-up" style={{fontSize:"clamp(15px,2.2vw,19px)",color:"var(--muted)",lineHeight:1.85,marginBottom:"44px",maxWidth:"580px",margin:"0 auto 44px",fontWeight:300,animationDelay:"0.2s"}}>
-            Buy, sell & collect <strong style={{color:"#F5F5F5",fontWeight:600}}>One Piece, Pokémon, Magic, Yu-Gi-Oh!</strong> and more. Free listings, 1% fee, instant Sui settlement.
+          <p className="fade-up" style={{fontSize:"clamp(15px,2.2vw,18px)",color:muted,lineHeight:1.85,marginBottom:"40px",maxWidth:"560px",margin:"0 auto 40px",fontWeight:400,animationDelay:"0.2s"}}>
+            Buy, sell & collect <strong style={{color:text,fontWeight:700}}>One Piece, Pokémon, Magic, Yu-Gi-Oh!</strong> and more. Free listings, 1% on-chain fee, instant Sui settlement.
           </p>
 
-          {/* CTAs */}
-          <div className="cta-row fade-up" style={{display:"flex",gap:"12px",justifyContent:"center",flexWrap:"wrap",marginBottom:"56px",animationDelay:"0.3s"}}>
-            <a href="/marketplace" className="btn-primary">🃏 Browse Marketplace</a>
-            <a href="/sell" className="btn-secondary">+ List a Card</a>
-            <a href="/scan" className="btn-secondary">📷 Scan Card</a>
-            <a href="/oracle" className="btn-secondary">🤖 AI Oracle</a>
+          <div className="hero-btns fade-up" style={{display:"flex",gap:"10px",justifyContent:"center",flexWrap:"wrap",marginBottom:"48px",animationDelay:"0.3s"}}>
+            <a href="/marketplace" className="btn-main">🃏 Browse Marketplace</a>
+            <a href="/sell" className="btn-ghost">+ List a Card</a>
+            <a href="/scan" className="btn-ghost">📷 Scan Card</a>
+            <a href="/oracle" className="btn-ghost">🤖 AI Oracle</a>
           </div>
 
-          {/* Trust */}
-          <div className="fade-up" style={{display:"flex",gap:"24px",justifyContent:"center",flexWrap:"wrap",animationDelay:"0.4s"}}>
-            {["✓ Free to list","✓ 1% fee only","✓ Instant settlement","✓ 8 TCG games","✓ AI-powered"].map(b => (
-              <span key={b} style={{fontSize:"12px",color:"rgba(148,163,184,0.5)",letterSpacing:"0.04em"}}>{b}</span>
+          <div className="fade-up" style={{display:"flex",gap:"20px",justifyContent:"center",flexWrap:"wrap",animationDelay:"0.4s"}}>
+            {["✓ Free to list","✓ 1% fee only","✓ Instant settlement","✓ 8 TCG games","✓ AI-powered"].map(b=>(
+              <span key={b} style={{fontSize:"12px",color:muted,letterSpacing:"0.03em"}}>{b}</span>
             ))}
           </div>
         </div>
-
-        {/* Scroll hint */}
-        <div style={{position:"absolute",bottom:"28px",left:"50%",transform:"translateX(-50%)",display:"flex",flexDirection:"column",alignItems:"center",gap:"6px",opacity:0.2,pointerEvents:"none"}}>
-          <span style={{fontSize:"9px",letterSpacing:"0.2em",textTransform:"uppercase",color:"#F5F5F5"}}>Scroll</span>
-          <div style={{width:"1px",height:"44px",background:"linear-gradient(to bottom,#F5F5F5,transparent)"}} />
-        </div>
       </section>
 
-      {/* ════════════════════════════
-          STATS
-      ════════════════════════════ */}
-      <div style={{background:"#111111",borderTop:"1px solid rgba(245,245,245,0.06)",borderBottom:"1px solid rgba(245,245,245,0.06)"}}>
-        <div className="stats-row" style={{maxWidth:"1280px",margin:"0 auto",display:"grid",background:"rgba(245,245,245,0.02)"}}>
+      {/* ═══════ STATS BAR ═══════ */}
+      <div style={{background:surface,borderTop:`1px solid ${border}`,borderBottom:`1px solid ${border}`,boxShadow:darkMode?"none":"0 1px 0 #E5E7EB"}}>
+        <div className="stats-bar" style={{maxWidth:"1280px",margin:"0 auto",display:"grid"}}>
           {[
-            {v:stats.listings>0?stats.listings.toLocaleString():"0",l:"Active Listings",c:"#00E5FF",i:"🃏"},
-            {v:stats.users>0?stats.users.toLocaleString():"0",l:"Collectors",c:"#00E5FF",i:"👥"},
+            {v:stats.listings>0?stats.listings.toLocaleString():"0",l:"Active Listings",c:"#00D4FF",i:"🃏"},
+            {v:stats.users>0?stats.users.toLocaleString():"0",l:"Collectors",c:"#7C3AED",i:"👥"},
             {v:"1%",l:"Platform Fee",c:"#D4AF37",i:"⚡"},
-            {v:`$${suiPrice.toFixed(3)}`,l:"SUI Price",c:"#7C3AED",i:"💎"},
-            {v:"8+",l:"TCG Games",c:"#00E5FF",i:"🎮"},
-          ].map((s,i) => (
-            <div key={i} className="stat" style={{borderLeft:i>0?"1px solid rgba(245,245,245,0.05)":"none"}}>
-              <div style={{fontSize:"18px",marginBottom:"10px"}}>{s.i}</div>
-              <div style={{fontFamily:"Cinzel,serif",fontSize:"clamp(26px,3.5vw,40px)",fontWeight:800,color:s.c,marginBottom:"6px",letterSpacing:"-0.02em"}}>{s.v}</div>
-              <div style={{fontSize:"10px",letterSpacing:"0.18em",textTransform:"uppercase",color:"var(--muted)",fontWeight:500}}>{s.l}</div>
+            {v:`$${suiPrice.toFixed(3)}`,l:"SUI Price",c:"#00D4FF",i:"💎"},
+            {v:"8+",l:"TCG Games",c:"#7C3AED",i:"🎮"},
+          ].map((s,i)=>(
+            <div key={i} className="stat-block">
+              <div style={{fontSize:"20px",marginBottom:"10px"}}>{s.i}</div>
+              <div style={{fontFamily:"Cinzel,serif",fontSize:"clamp(22px,3vw,36px)",fontWeight:800,color:s.c,marginBottom:"5px"}}>{s.v}</div>
+              <div style={{fontSize:"10px",letterSpacing:"0.16em",textTransform:"uppercase",color:muted,fontWeight:600}}>{s.l}</div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* ════════════════════════════
-          HOT CARDS
-      ════════════════════════════ */}
-      <section style={{padding:"clamp(56px,7vw,100px) clamp(20px,5vw,60px)",maxWidth:"1280px",margin:"0 auto"}}>
-        <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",marginBottom:"36px",flexWrap:"wrap",gap:"14px"}}>
+      {/* ═══════ TRENDING CARDS ═══════ */}
+      <section style={{padding:"clamp(52px,6vw,88px) clamp(20px,5vw,60px)",maxWidth:"1280px",margin:"0 auto"}}>
+        <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",marginBottom:"32px",flexWrap:"wrap",gap:"12px"}}>
           <div>
-            <div style={{display:"inline-flex",alignItems:"center",gap:"7px",padding:"4px 14px",background:"rgba(212,175,55,0.08)",border:"1px solid rgba(212,175,55,0.2)",borderRadius:"20px",marginBottom:"12px"}}>
+            <div style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"4px 12px",background:"rgba(212,175,55,0.1)",border:"1px solid rgba(212,175,55,0.25)",borderRadius:"20px",marginBottom:"10px"}}>
               <span style={{width:"5px",height:"5px",borderRadius:"50%",background:"#D4AF37",display:"inline-block",animation:"pulse 1.5s infinite"}} />
-              <span style={{fontSize:"10px",color:"#D4AF37",fontWeight:700,letterSpacing:"0.16em",textTransform:"uppercase"}}>Live Market</span>
+              <span style={{fontSize:"10px",color:"#D4AF37",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase"}}>Live Prices</span>
             </div>
-            <h2 style={{fontFamily:"Cinzel,serif",fontSize:"clamp(24px,4.5vw,46px)",fontWeight:700,color:"#F5F5F5",margin:0,letterSpacing:"-0.01em"}}>Trending Cards</h2>
+            <h2 style={{fontFamily:"Cinzel,serif",fontSize:"clamp(22px,4vw,42px)",fontWeight:700,color:text,margin:0}}>Trending Cards</h2>
           </div>
-          <a href="/marketplace" style={{textDecoration:"none",fontSize:"12px",color:"var(--cyan)",letterSpacing:"0.1em",textTransform:"uppercase",border:"1px solid rgba(0,229,255,0.2)",padding:"9px 20px",borderRadius:"8px",transition:"all 0.2s",display:"inline-block"}} onMouseEnter={e=>(e.currentTarget.style.background="rgba(0,229,255,0.06)")} onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>View All →</a>
+          <a href="/marketplace" style={{textDecoration:"none",fontSize:"13px",color:"#00D4FF",fontWeight:600,border:"1.5px solid rgba(0,212,255,0.3)",padding:"8px 18px",borderRadius:"8px",transition:"all 0.2s",display:"inline-block"}} onMouseEnter={e=>(e.currentTarget.style.background="rgba(0,212,255,0.06)")} onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>View All →</a>
         </div>
 
         <div className="hot-grid" style={{display:"grid",gap:"14px"}}>
-          {HOT_CARDS.map((card,i) => (
+          {HOT_CARDS.map((card,i)=>(
             <a key={i} href="/marketplace" style={{textDecoration:"none"}}>
-              <div className="card-wrap">
-                {/* Rarity top line */}
-                <div style={{position:"absolute",top:0,left:0,right:0,height:"2px",background:`linear-gradient(90deg,transparent,${RARITY_COLORS[card.rarity]||"#00E5FF"},transparent)`,zIndex:3}} />
-                <div className="card-shine" />
+              <div className="card-item">
+                {/* Rarity top border */}
+                <div style={{position:"absolute",top:0,left:0,right:0,height:"3px",background:`linear-gradient(90deg,transparent,${card.rarityColor},transparent)`,zIndex:4}} />
+                <div className="card-overlay" />
 
                 {/* Image */}
-                <div style={{width:"100%",aspectRatio:"3/4",overflow:"hidden",background:`linear-gradient(160deg,${card.color}18,#1F2937)`,position:"relative"}}>
+                <div style={{width:"100%",aspectRatio:"3/4",overflow:"hidden",background:darkMode?`linear-gradient(160deg,${card.rarityColor}18,#1F2937)`:`linear-gradient(160deg,${card.rarityColor}08,#F1F5F9)`,position:"relative"}}>
                   {!imgError[card.code] ? (
-                    <img
-                      src={`https://optcgapi.com/media/static/Card_Images/${card.code}.jpg`}
-                      alt={card.name}
-                      style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform 0.4s ease"}}
+                    <img src={`https://optcgapi.com/media/static/Card_Images/${card.code}.jpg`} alt={card.name}
+                      style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform 0.35s ease"}}
                       onError={()=>setImgError(p=>({...p,[card.code]:true}))}
                     />
-                  ) : (
-                    <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:"10px",padding:"20px"}}>
-                      <span style={{fontSize:"32px"}}>🃏</span>
-                      <span style={{fontFamily:"Cinzel,serif",fontSize:"11px",color:"var(--muted)",textAlign:"center",lineHeight:1.4}}>{card.name}</span>
+                  ):(
+                    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"10px",padding:"20px",textAlign:"center"}}>
+                      <span style={{fontSize:"36px"}}>🃏</span>
+                      <span style={{fontFamily:"Cinzel,serif",fontSize:"11px",color:muted,lineHeight:1.4}}>{card.name}</span>
                     </div>
                   )}
-
                   {/* Badges */}
-                  <div style={{position:"absolute",top:"10px",left:"10px",zIndex:4}}>
-                    <span style={{fontSize:"9px",fontWeight:800,padding:"3px 8px",borderRadius:"5px",background:`${RARITY_COLORS[card.rarity]||"#00E5FF"}20`,color:RARITY_COLORS[card.rarity]||"#00E5FF",border:`1px solid ${RARITY_COLORS[card.rarity]||"#00E5FF"}50`,letterSpacing:"0.1em"}}>{card.rarity}</span>
+                  <div style={{position:"absolute",top:"8px",left:"8px",zIndex:4}}>
+                    <span style={{fontSize:"9px",fontWeight:800,padding:"3px 8px",borderRadius:"5px",background:`${card.rarityColor}20`,color:card.rarityColor,border:`1px solid ${card.rarityColor}40`,letterSpacing:"0.1em"}}>{card.rarity}</span>
                   </div>
-                  <div style={{position:"absolute",top:"10px",right:"10px",zIndex:4}}>
-                    <span style={{fontSize:"9px",padding:"3px 8px",borderRadius:"5px",background:"rgba(0,0,0,0.65)",color:"rgba(245,245,245,0.5)",backdropFilter:"blur(4px)"}}>{card.tag}</span>
-                  </div>
-
-                  {/* Hover overlay */}
-                  <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(10,10,10,0.6) 0%,transparent 60%)",zIndex:2}} />
                 </div>
 
                 {/* Info */}
-                <div style={{padding:"14px 16px 16px",background:"#1F2937"}}>
-                  <div style={{fontFamily:"Cinzel,serif",fontSize:"12px",fontWeight:700,color:"#F5F5F5",marginBottom:"3px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{card.name}</div>
-                  <div style={{fontSize:"10px",color:"var(--muted)",marginBottom:"12px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{card.set}</div>
+                <div style={{padding:"14px 16px 16px"}}>
+                  <div style={{fontFamily:"Cinzel,serif",fontSize:"12px",fontWeight:700,color:text,marginBottom:"3px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{card.name}</div>
+                  <div style={{fontSize:"10px",color:muted,marginBottom:"12px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{card.set}</div>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-                    <span style={{fontFamily:"Cinzel,serif",fontSize:"18px",fontWeight:800,color:"#F5F5F5"}}>{card.price}</span>
-                    <span style={{fontSize:"10px",color:"var(--muted)"}}>{card.sui} SUI</span>
+                    <span style={{fontFamily:"Cinzel,serif",fontSize:"17px",fontWeight:800,color:text}}>{card.price}</span>
+                    <span style={{fontSize:"10px",color:muted}}>{card.sui} SUI</span>
                   </div>
-                  <button className="buy-btn" style={{width:"100%",background:"var(--cyan)",color:"#0A0A0A",border:"none",padding:"10px",borderRadius:"8px",fontSize:"12px",fontWeight:800,cursor:"pointer",fontFamily:"inherit",letterSpacing:"0.04em"}}>Buy Now →</button>
+                  <button className="buy-now" style={{width:"100%",background:"#00D4FF",color:"#0A0A0A",border:"none",padding:"9px",borderRadius:"7px",fontSize:"12px",fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>Buy Now →</button>
                 </div>
               </div>
             </a>
@@ -298,14 +271,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════════
-          GAMES
-      ════════════════════════════ */}
-      <section style={{padding:"clamp(40px,5vw,72px) clamp(20px,5vw,60px)",background:"#111111",borderTop:"1px solid rgba(245,245,245,0.05)",borderBottom:"1px solid rgba(245,245,245,0.05)"}}>
+      {/* ═══════ GAMES ═══════ */}
+      <section style={{padding:"clamp(36px,4vw,60px) clamp(20px,5vw,60px)",background:surfaceBg,borderTop:`1px solid ${border}`,borderBottom:`1px solid ${border}`}}>
         <div style={{maxWidth:"1280px",margin:"0 auto"}}>
-          <div style={{textAlign:"center",marginBottom:"32px"}}>
-            <div style={{fontSize:"10px",letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--cyan)",marginBottom:"10px",fontWeight:700}}>8 Supported Games</div>
-            <h2 style={{fontFamily:"Cinzel,serif",fontSize:"clamp(20px,3.5vw,36px)",fontWeight:700,color:"#F5F5F5",margin:0}}>All Your Favorite TCGs</h2>
+          <div style={{textAlign:"center",marginBottom:"28px"}}>
+            <div style={{fontSize:"10px",letterSpacing:"0.18em",textTransform:"uppercase",color:"#00D4FF",marginBottom:"8px",fontWeight:700}}>Supported Games</div>
+            <h2 style={{fontFamily:"Cinzel,serif",fontSize:"clamp(18px,3vw,32px)",fontWeight:700,color:text,margin:0}}>All Your Favorite TCGs</h2>
           </div>
           <div style={{display:"flex",gap:"10px",justifyContent:"center",flexWrap:"wrap"}}>
             {[
@@ -317,138 +288,137 @@ export default function Home() {
               {i:"🌟",n:"Lorcana",h:"/marketplace?game=lorcana"},
               {i:"⚔️",n:"Flesh & Blood",h:"/marketplace?game=fab"},
               {i:"🎭",n:"Digimon",h:"/marketplace?game=digimon"},
-            ].map((g,i) => (
-              <a key={i} href={g.h} className="game-chip" style={{textDecoration:"none"}}>
-                {g.hot && <span style={{position:"absolute",top:"-7px",right:"-5px",background:"linear-gradient(135deg,#D4AF37,#EAB308)",color:"#0A0A0A",fontSize:"8px",padding:"2px 6px",borderRadius:"6px",fontWeight:800,letterSpacing:"0.08em"}}>HOT</span>}
-                <span style={{fontSize:"20px"}}>{g.i}</span>
-                <span style={{fontFamily:"Cinzel,serif",fontSize:"12px",fontWeight:600,color:"#F5F5F5"}}>{g.n}</span>
+            ].map((g,i)=>(
+              <a key={i} href={g.h} className="game-pill" style={{textDecoration:"none"}}>
+                {g.hot && <span style={{position:"absolute",top:"-7px",right:"-5px",background:"#D4AF37",color:"#0A0A0A",fontSize:"8px",padding:"2px 6px",borderRadius:"5px",fontWeight:800}}>HOT</span>}
+                <span style={{fontSize:"18px"}}>{g.i}</span>
+                <span style={{fontSize:"12px",fontWeight:600,color:text,fontFamily:"Cinzel,serif"}}>{g.n}</span>
               </a>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ════════════════════════════
-          FEATURES
-      ════════════════════════════ */}
-      <section style={{padding:"clamp(56px,7vw,100px) clamp(20px,5vw,60px)",maxWidth:"1280px",margin:"0 auto"}}>
-        <div style={{textAlign:"center",marginBottom:"56px"}}>
-          <div style={{fontSize:"10px",letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--cyan)",marginBottom:"12px",fontWeight:700}}>Why WaveTCG</div>
-          <h2 style={{fontFamily:"Cinzel,serif",fontSize:"clamp(24px,4.5vw,48px)",fontWeight:700,color:"#F5F5F5",marginBottom:"14px",letterSpacing:"-0.01em"}}>Built for Serious Collectors</h2>
-          <p style={{fontSize:"16px",color:"var(--muted)",maxWidth:"500px",margin:"0 auto",lineHeight:1.85}}>Everything you need to trade physical TCG cards safely, instantly, and on-chain.</p>
+      {/* ═══════ FEATURES ═══════ */}
+      <section style={{padding:"clamp(52px,6vw,88px) clamp(20px,5vw,60px)",maxWidth:"1280px",margin:"0 auto"}}>
+        <div style={{textAlign:"center",marginBottom:"48px"}}>
+          <div style={{fontSize:"10px",letterSpacing:"0.18em",textTransform:"uppercase",color:"#00D4FF",marginBottom:"10px",fontWeight:700}}>Why WaveTCG</div>
+          <h2 style={{fontFamily:"Cinzel,serif",fontSize:"clamp(22px,4vw,44px)",fontWeight:700,color:text,marginBottom:"12px"}}>Built for Collectors</h2>
+          <p style={{fontSize:"16px",color:muted,maxWidth:"480px",margin:"0 auto",lineHeight:1.8}}>Everything you need to trade TCG cards safely, instantly, and on-chain.</p>
         </div>
         <div className="feat-grid" style={{display:"grid",gap:"16px"}}>
-          {FEATURES.map((f,i) => (
-            <div key={i} className="feat" style={{["--accent-color" as any]:f.c}}>
-              <div style={{width:"52px",height:"52px",borderRadius:"14px",background:`${f.c}12`,border:`1px solid ${f.c}25`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"24px",marginBottom:"20px"}}>{f.icon}</div>
-              <div style={{fontFamily:"Cinzel,serif",fontSize:"15px",fontWeight:700,color:"#F5F5F5",marginBottom:"10px"}}>{f.t}</div>
-              <p style={{fontSize:"13px",color:"var(--muted)",lineHeight:1.9,margin:0}}>{f.d}</p>
+          {FEATURES.map((f,i)=>(
+            <div key={i} className="feat-card" style={{["--fc" as any]:f.c}}>
+              <div style={{width:"48px",height:"48px",borderRadius:"12px",background:`${f.c}12`,border:`1.5px solid ${f.c}25`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"22px",marginBottom:"18px"}}>{f.icon}</div>
+              <div style={{fontFamily:"Cinzel,serif",fontSize:"15px",fontWeight:700,color:text,marginBottom:"8px"}}>{f.t}</div>
+              <p style={{fontSize:"13px",color:muted,lineHeight:1.85,margin:0}}>{f.d}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ════════════════════════════
-          HOW IT WORKS
-      ════════════════════════════ */}
-      <section style={{padding:"clamp(56px,6vw,88px) clamp(20px,5vw,60px)",background:"#111111",borderTop:"1px solid rgba(245,245,245,0.05)"}}>
+      {/* ═══════ HOW IT WORKS ═══════ */}
+      <section style={{padding:"clamp(52px,6vw,80px) clamp(20px,5vw,60px)",background:surfaceBg,borderTop:`1px solid ${border}`}}>
         <div style={{maxWidth:"1280px",margin:"0 auto"}}>
-          <div style={{textAlign:"center",marginBottom:"56px"}}>
-            <div style={{fontSize:"10px",letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--cyan)",marginBottom:"12px",fontWeight:700}}>Simple Process</div>
-            <h2 style={{fontFamily:"Cinzel,serif",fontSize:"clamp(24px,4.5vw,48px)",fontWeight:700,color:"#F5F5F5",margin:0,letterSpacing:"-0.01em"}}>How It Works</h2>
+          <div style={{textAlign:"center",marginBottom:"48px"}}>
+            <div style={{fontSize:"10px",letterSpacing:"0.18em",textTransform:"uppercase",color:"#00D4FF",marginBottom:"10px",fontWeight:700}}>Simple Process</div>
+            <h2 style={{fontFamily:"Cinzel,serif",fontSize:"clamp(22px,4vw,44px)",fontWeight:700,color:text,margin:0}}>How It Works</h2>
           </div>
-          <div className="steps-grid" style={{display:"grid",gap:"16px"}}>
-            {STEPS.map((s,i) => (
-              <div key={i} className="step">
-                <div className="step-num">{s.n}</div>
-                <div style={{fontSize:"40px",marginBottom:"20px"}}>{s.icon}</div>
-                <div style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"3px 10px",background:"rgba(0,229,255,0.07)",border:"1px solid rgba(0,229,255,0.18)",borderRadius:"20px",marginBottom:"14px"}}>
-                  <span style={{fontSize:"9px",color:"var(--cyan)",fontWeight:700,letterSpacing:"0.14em"}}>STEP {s.n}</span>
+          <div className="steps-grid" style={{display:"grid",gap:"14px"}}>
+            {STEPS.map((s,i)=>(
+              <div key={i} className="step-card">
+                <div className="step-num-bg">{s.n}</div>
+                <div style={{fontSize:"36px",marginBottom:"16px"}}>{s.icon}</div>
+                <div style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"3px 10px",background:"rgba(0,212,255,0.08)",border:"1px solid rgba(0,212,255,0.2)",borderRadius:"20px",marginBottom:"12px"}}>
+                  <span style={{fontSize:"9px",color:"#00D4FF",fontWeight:700,letterSpacing:"0.12em"}}>STEP {s.n}</span>
                 </div>
-                <div style={{fontFamily:"Cinzel,serif",fontSize:"15px",fontWeight:700,color:"#F5F5F5",marginBottom:"10px"}}>{s.t}</div>
-                <p style={{fontSize:"13px",color:"var(--muted)",lineHeight:1.85,margin:0}}>{s.d}</p>
+                <div style={{fontFamily:"Cinzel,serif",fontSize:"14px",fontWeight:700,color:text,marginBottom:"8px"}}>{s.t}</div>
+                <p style={{fontSize:"13px",color:muted,lineHeight:1.8,margin:0}}>{s.d}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ════════════════════════════
-          AI ORACLE
-      ════════════════════════════ */}
-      <section style={{padding:"clamp(56px,7vw,100px) clamp(20px,5vw,60px)",maxWidth:"1280px",margin:"0 auto"}}>
-        <div style={{background:"linear-gradient(160deg,#1F2937,#111827)",border:"1px solid rgba(124,58,237,0.2)",borderRadius:"24px",padding:"clamp(36px,5vw,72px)",position:"relative",overflow:"hidden"}}>
-          <div style={{position:"absolute",top:"-80px",right:"-80px",width:"500px",height:"500px",background:"radial-gradient(circle,rgba(124,58,237,0.08) 0%,transparent 65%)",pointerEvents:"none"}} />
+      {/* ═══════ AI ORACLE ═══════ */}
+      <section style={{padding:"clamp(52px,6vw,88px) clamp(20px,5vw,60px)",maxWidth:"1280px",margin:"0 auto"}}>
+        <div style={{background:darkMode?"linear-gradient(160deg,#1F2937,#111827)":"linear-gradient(160deg,#F0F4FF,#FAF9FF)",border:`1px solid ${darkMode?"rgba(124,58,237,0.2)":"rgba(124,58,237,0.15)"}`,borderRadius:"20px",padding:"clamp(32px,5vw,64px)",position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:"-60px",right:"-60px",width:"400px",height:"400px",background:"radial-gradient(circle,rgba(124,58,237,0.06) 0%,transparent 65%)",pointerEvents:"none"}} />
 
-          <div className="oracle-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"56px",alignItems:"center",position:"relative",zIndex:1}}>
+          <div className="oracle-layout" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"48px",alignItems:"center",position:"relative",zIndex:1}}>
             <div>
-              <div style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"5px 14px",background:"rgba(124,58,237,0.1)",border:"1px solid rgba(124,58,237,0.25)",borderRadius:"50px",marginBottom:"24px"}}>
-                <span style={{fontSize:"14px"}}>🤖</span>
-                <span style={{fontSize:"10px",color:"#8B5CF6",fontWeight:700,letterSpacing:"0.16em",textTransform:"uppercase"}}>Powered by Claude AI</span>
+              <div style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"5px 14px",background:"rgba(124,58,237,0.08)",border:"1px solid rgba(124,58,237,0.2)",borderRadius:"50px",marginBottom:"20px"}}>
+                <span style={{fontSize:"13px"}}>🤖</span>
+                <span style={{fontSize:"10px",color:"#7C3AED",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase"}}>Claude AI Powered</span>
               </div>
-              <h2 style={{fontFamily:"Cinzel,serif",fontSize:"clamp(26px,4vw,44px)",fontWeight:700,color:"#F5F5F5",marginBottom:"18px",lineHeight:1.12}}>Your Personal TCG Expert</h2>
-              <p style={{fontSize:"15px",color:"var(--muted)",lineHeight:1.9,marginBottom:"32px"}}>Ask anything about any card from any TCG. Prices, rulings, investment outlook, fake detection, deck advice — Claude AI knows it all.</p>
-              <div style={{display:"flex",flexDirection:"column",gap:"8px",marginBottom:"32px"}}>
+              <h2 style={{fontFamily:"Cinzel,serif",fontSize:"clamp(24px,3.5vw,40px)",fontWeight:700,color:text,marginBottom:"16px",lineHeight:1.15}}>Your Personal TCG Expert</h2>
+              <p style={{fontSize:"15px",color:muted,lineHeight:1.85,marginBottom:"28px"}}>Ask anything about any TCG card — current prices, fake detection, rulings, investment advice, deck recommendations.</p>
+              <div style={{display:"flex",flexDirection:"column",gap:"8px",marginBottom:"28px"}}>
                 {[
-                  "💬 What is Gear 5 Luffy OP05-119 worth graded PSA 10?",
-                  "💬 Is my 1st Edition Charizard real or fake?",
-                  "💬 Best counter to the current OPTCG meta?",
-                ].map((q,i) => (
-                  <div key={i} style={{padding:"10px 16px",background:"rgba(124,58,237,0.06)",border:"1px solid rgba(124,58,237,0.14)",borderRadius:"8px",fontSize:"13px",color:"var(--muted)",fontStyle:"italic"}}>{q}</div>
+                  "💬 What is Gear 5 Luffy OP05-119 worth?",
+                  "💬 Is my 1st Edition Charizard real?",
+                  "💬 Best OPTCG deck for beginners?",
+                ].map((q,i)=>(
+                  <div key={i} style={{padding:"9px 14px",background:"rgba(124,58,237,0.06)",border:"1px solid rgba(124,58,237,0.12)",borderRadius:"8px",fontSize:"13px",color:muted,fontStyle:"italic"}}>{q}</div>
                 ))}
               </div>
               <a href="/oracle" className="btn-purple">Try AI Oracle Free →</a>
             </div>
 
-            {/* Chat demo */}
-            <div className="chat-box">
-              <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"16px",paddingBottom:"12px",borderBottom:"1px solid rgba(245,245,245,0.06)"}}>
-                <div style={{width:"8px",height:"8px",borderRadius:"50%",background:"#00E5FF",boxShadow:"0 0 8px rgba(0,229,255,0.8)",animation:"pulse 2s infinite"}} />
-                <span style={{fontSize:"11px",color:"var(--muted)",letterSpacing:"0.08em"}}>WaveTCG Oracle · Online</span>
+            <div className="chat-demo">
+              <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"14px",paddingBottom:"12px",borderBottom:`1px solid ${border}`}}>
+                <div style={{width:"8px",height:"8px",borderRadius:"50%",background:"#00D4FF",animation:"pulse 2s infinite"}} />
+                <span style={{fontSize:"11px",color:muted,letterSpacing:"0.06em"}}>WaveTCG Oracle · Online</span>
               </div>
-              <div style={{background:"rgba(124,58,237,0.07)",border:"1px solid rgba(124,58,237,0.14)",borderRadius:"10px",padding:"12px 14px",marginBottom:"10px",marginLeft:"20%"}}>
-                <p style={{margin:0,fontSize:"12px",color:"rgba(245,245,245,0.7)",lineHeight:1.7}}>What is Gear 5 Luffy OP05-119 worth?</p>
+              <div style={{background:"rgba(124,58,237,0.06)",border:"1px solid rgba(124,58,237,0.12)",borderRadius:"10px",padding:"11px 14px",marginBottom:"10px",marginLeft:"15%"}}>
+                <p style={{margin:0,fontSize:"12px",color:muted,lineHeight:1.7}}>What is Gear 5 Luffy OP05-119 worth?</p>
               </div>
-              <div style={{background:"rgba(0,229,255,0.05)",border:"1px solid rgba(0,229,255,0.12)",borderRadius:"10px",padding:"12px 14px",marginBottom:"10px",marginRight:"20%"}}>
-                <p style={{margin:0,fontSize:"12px",color:"rgba(245,245,245,0.85)",lineHeight:1.75,whiteSpace:"pre-line"}}>{"Monkey D. Luffy OP05-119 SEC\n\n📊 Market Value:\n• Raw NM: $350-$420\n• Alt Art: $1,200-$1,500\n• Manga Rare: $3,500-$4,500\n• PSA 10: $800-$1,100\n\n📈 High investment potential."}</p>
+              <div style={{background:darkMode?"rgba(0,212,255,0.05)":"rgba(0,212,255,0.06)",border:"1px solid rgba(0,212,255,0.12)",borderRadius:"10px",padding:"11px 14px",marginBottom:"10px",marginRight:"15%"}}>
+                <p style={{margin:0,fontSize:"12px",color:text,lineHeight:1.75,whiteSpace:"pre-line"}}>{"OP05-119 Monkey D. Luffy (Gear 5) — SEC
+
+📊 Market Value:
+• Raw NM: $350–$420
+• Alt Art: $1,200–$1,500
+• Manga Rare: $3,500–$4,500
+• PSA 10: $800–$1,100
+
+📈 High investment potential."}</p>
               </div>
-              <div style={{display:"flex",alignItems:"center",gap:"8px",padding:"10px 14px",background:"rgba(245,245,245,0.03)",borderRadius:"8px",border:"1px solid rgba(245,245,245,0.07)"}}>
-                <span style={{fontSize:"12px",color:"rgba(148,163,184,0.4)",flex:1}}>Ask about any card...</span>
-                <div style={{width:"2px",height:"14px",background:"var(--purple)",animation:"blink 1s infinite"}} />
+              <div style={{display:"flex",alignItems:"center",gap:"6px",padding:"9px 13px",background:darkMode?"rgba(255,255,255,0.03)":"rgba(0,0,0,0.03)",borderRadius:"8px",border:`1px solid ${border}`}}>
+                <span style={{fontSize:"12px",color:muted,flex:1,opacity:0.6}}>Ask about any card...</span>
+                <div style={{width:"2px",height:"13px",background:"#7C3AED",animation:"blink 1s infinite"}} />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ════════════════════════════
-          TESTIMONIALS
-      ════════════════════════════ */}
-      <section style={{padding:"clamp(56px,6vw,88px) clamp(20px,5vw,60px)",background:"#111111",borderTop:"1px solid rgba(245,245,245,0.05)"}}>
+      {/* ═══════ TESTIMONIALS ═══════ */}
+      <section style={{padding:"clamp(52px,6vw,80px) clamp(20px,5vw,60px)",background:surfaceBg,borderTop:`1px solid ${border}`}}>
         <div style={{maxWidth:"1280px",margin:"0 auto"}}>
-          <div style={{textAlign:"center",marginBottom:"52px"}}>
-            <div style={{fontSize:"10px",letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--cyan)",marginBottom:"12px",fontWeight:700}}>Community</div>
-            <h2 style={{fontFamily:"Cinzel,serif",fontSize:"clamp(24px,4vw,46px)",fontWeight:700,color:"#F5F5F5",margin:0,letterSpacing:"-0.01em"}}>Collectors Love WaveTCG</h2>
+          <div style={{textAlign:"center",marginBottom:"44px"}}>
+            <div style={{fontSize:"10px",letterSpacing:"0.18em",textTransform:"uppercase",color:"#00D4FF",marginBottom:"10px",fontWeight:700}}>Community</div>
+            <h2 style={{fontFamily:"Cinzel,serif",fontSize:"clamp(22px,4vw,44px)",fontWeight:700,color:text,margin:0}}>Collectors Love WaveTCG</h2>
           </div>
           <div className="testi-grid" style={{display:"grid",gap:"16px"}}>
             {[
-              {name:"0xShanks",av:"☠️",role:"One Piece Collector",text:"Sold my Gear 5 Luffy in 10 minutes. Payment hit my wallet instantly. Never going back to eBay fees and chargebacks."},
-              {name:"PikachuTrader",av:"⚡",role:"Pokémon Investor",text:"The AI Oracle told me my 1st Ed Charizard PSA 9 was worth $4,200. Sold it the next day at that exact price."},
-              {name:"MagicMarket",av:"✨",role:"MTG Vendor",text:"Listed 50 cards in 20 minutes using the card scanner. Zero fees until they sell. This is how card trading should work."},
-            ].map((t,i) => (
+              {name:"0xShanks",av:"☠️",role:"One Piece Collector",text:"Sold my Gear 5 Luffy in 10 minutes. SUI hit my wallet instantly. Never going back to eBay fees and payment holds."},
+              {name:"PikachuTrader",av:"⚡",role:"Pokémon Investor",text:"The AI Oracle priced my 1st Ed Charizard PSA 9 at $4,200. Sold it the next day at exactly that price. Incredible."},
+              {name:"MagicMarket",av:"✨",role:"MTG Card Vendor",text:"Listed 50 cards in 20 minutes using the card scanner. Zero upfront fees. This is how trading should work."},
+            ].map((t,i)=>(
               <div key={i} className="testi">
-                <div style={{display:"flex",gap:"3px",marginBottom:"16px"}}>
-                  {Array(5).fill("★").map((s,j)=><span key={j} style={{color:"#D4AF37",fontSize:"13px"}}>{s}</span>)}
+                <div style={{display:"flex",gap:"3px",marginBottom:"14px"}}>
+                  {Array(5).fill("★").map((s,j)=><span key={j} style={{color:"#D4AF37",fontSize:"14px"}}>{s}</span>)}
                 </div>
-                <p style={{fontSize:"14px",color:"var(--muted)",lineHeight:1.9,margin:"0 0 22px",fontStyle:"italic"}}>"{t.text}"</p>
+                <p style={{fontSize:"14px",color:muted,lineHeight:1.85,margin:"0 0 20px",fontStyle:"italic"}}>"{t.text}"</p>
                 <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
-                  <div style={{width:"42px",height:"42px",borderRadius:"50%",background:"linear-gradient(135deg,#00E5FF20,#7C3AED20)",border:"1px solid rgba(0,229,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"18px",flexShrink:0}}>{t.av}</div>
+                  <div style={{width:"40px",height:"40px",borderRadius:"50%",background:`linear-gradient(135deg,rgba(0,212,255,0.15),rgba(124,58,237,0.15))`,border:`1.5px solid ${border}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"18px",flexShrink:0}}>{t.av}</div>
                   <div>
-                    <div style={{fontSize:"13px",fontWeight:700,color:"#F5F5F5",display:"flex",alignItems:"center",gap:"6px"}}>
+                    <div style={{fontSize:"13px",fontWeight:700,color:text,display:"flex",alignItems:"center",gap:"6px"}}>
                       {t.name}
-                      <span style={{fontSize:"9px",background:"rgba(0,229,255,0.08)",color:"var(--cyan)",padding:"1px 6px",borderRadius:"4px",border:"1px solid rgba(0,229,255,0.2)",fontWeight:600}}>✓ Verified</span>
+                      <span style={{fontSize:"9px",background:"rgba(0,212,255,0.1)",color:"#00D4FF",padding:"1px 6px",borderRadius:"4px",border:"1px solid rgba(0,212,255,0.2)",fontWeight:600}}>✓ Verified</span>
                     </div>
-                    <div style={{fontSize:"11px",color:"var(--muted)"}}>{t.role}</div>
+                    <div style={{fontSize:"11px",color:muted}}>{t.role}</div>
                   </div>
                 </div>
               </div>
@@ -457,47 +427,39 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════════
-          FINAL CTA
-      ════════════════════════════ */}
-      <section style={{padding:"clamp(72px,9vw,130px) clamp(20px,5vw,60px)",textAlign:"center",position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse 65% 55% at 50% 50%,rgba(0,229,255,0.05) 0%,transparent 70%)",pointerEvents:"none"}} />
-        <div style={{position:"absolute",inset:0,backgroundImage:"linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px)",backgroundSize:"72px 72px",maskImage:"radial-gradient(ellipse 55% 55% at 50% 50%,black 0%,transparent 100%)",pointerEvents:"none"}} />
-        <div style={{position:"relative",zIndex:1,maxWidth:"640px",margin:"0 auto"}}>
-          <div style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"6px 18px",background:"rgba(0,229,255,0.07)",border:"1px solid rgba(0,229,255,0.2)",borderRadius:"50px",marginBottom:"26px"}}>
-            <span style={{width:"6px",height:"6px",borderRadius:"50%",background:"#00E5FF",animation:"glow 2s infinite",display:"inline-block"}} />
-            <span style={{fontSize:"11px",color:"var(--cyan)",fontWeight:700,letterSpacing:"0.16em",textTransform:"uppercase"}}>Live on Sui Mainnet</span>
+      {/* ═══════ CTA ═══════ */}
+      <section style={{padding:"clamp(64px,8vw,110px) clamp(20px,5vw,60px)",textAlign:"center",position:"relative",overflow:"hidden",background:darkMode?"#0d0d1a":bg}}>
+        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse 60% 50% at 50% 50%,rgba(0,212,255,0.05) 0%,transparent 70%)",pointerEvents:"none"}} />
+        <div style={{position:"relative",zIndex:1,maxWidth:"600px",margin:"0 auto"}}>
+          <div style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"6px 16px",background:"rgba(0,212,255,0.08)",border:"1px solid rgba(0,212,255,0.2)",borderRadius:"50px",marginBottom:"24px"}}>
+            <span style={{width:"6px",height:"6px",borderRadius:"50%",background:"#00D4FF",animation:"pulse 2s infinite",display:"inline-block"}} />
+            <span style={{fontSize:"11px",color:"#00D4FF",fontWeight:700,letterSpacing:"0.16em",textTransform:"uppercase"}}>Free to Get Started</span>
           </div>
-          <h2 style={{fontFamily:"Cinzel,serif",fontSize:"clamp(30px,5.5vw,64px)",fontWeight:900,color:"#F5F5F5",marginBottom:"18px",lineHeight:1.02,letterSpacing:"-0.025em"}}>Ready to Ride<br/>the Wave?</h2>
-          <p style={{fontSize:"clamp(14px,2vw,17px)",color:"var(--muted)",marginBottom:"44px",fontWeight:300,lineHeight:1.85}}>Join collectors trading TCG cards on-chain. Free to list, 1% when it sells, instant payment.</p>
-          <div className="cta-row" style={{display:"flex",gap:"12px",justifyContent:"center",flexWrap:"wrap"}}>
-            <a href="/marketplace" className="btn-primary">Start Trading →</a>
-            <a href="/sell" className="btn-secondary">+ List a Card</a>
-            <a href="/optcg" className="btn-secondary">☠️ Join Tournament</a>
+          <h2 style={{fontFamily:"Cinzel,serif",fontSize:"clamp(28px,5vw,58px)",fontWeight:900,color:text,marginBottom:"16px",lineHeight:1.05}}>Ready to Ride the Wave?</h2>
+          <p style={{fontSize:"clamp(14px,2vw,17px)",color:muted,marginBottom:"40px",lineHeight:1.85}}>Join collectors trading TCG cards on-chain. Free to list, 1% when it sells.</p>
+          <div className="cta-btns" style={{display:"flex",gap:"10px",justifyContent:"center",flexWrap:"wrap"}}>
+            <a href="/marketplace" className="btn-main">Start Trading →</a>
+            <a href="/sell" className="btn-ghost">+ List a Card</a>
+            <a href="/optcg" className="btn-ghost">☠️ Join Tournament</a>
           </div>
         </div>
       </section>
 
-      {/* ════════════════════════════
-          FOOTER
-      ════════════════════════════ */}
-      <footer style={{background:"#080808",borderTop:"1px solid rgba(245,245,245,0.06)",padding:"clamp(48px,5vw,72px) clamp(20px,5vw,60px) 28px"}}>
+      {/* ═══════ FOOTER ═══════ */}
+      <footer style={{background:darkMode?"#080808":"#1F2937",color:"#F5F5F5",padding:"clamp(44px,5vw,64px) clamp(20px,5vw,60px) 24px"}}>
         <div style={{maxWidth:"1280px",margin:"0 auto"}}>
-          <div className="footer-main" style={{display:"grid",gridTemplateColumns:"240px 1fr",gap:"64px",marginBottom:"52px"}}>
+          <div className="footer-layout" style={{display:"grid",gridTemplateColumns:"220px 1fr",gap:"56px",marginBottom:"44px"}}>
             <div>
-              <div style={{fontFamily:"Cinzel,serif",fontSize:"24px",fontWeight:900,background:"linear-gradient(135deg,#00E5FF,#7C3AED)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",marginBottom:"14px",letterSpacing:"0.04em"}}>WAVE</div>
-              <p style={{fontSize:"12px",color:"var(--muted)",lineHeight:1.95,marginBottom:"20px",opacity:0.7}}>The Web3 TCG Marketplace built on Sui blockchain. Free listings, 1% fee, instant settlement.</p>
-              <div style={{display:"flex",gap:"6px",flexWrap:"wrap",marginBottom:"20px"}}>
+              <div style={{fontFamily:"Cinzel,serif",fontSize:"22px",fontWeight:900,background:"linear-gradient(135deg,#00D4FF,#7C3AED)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",marginBottom:"12px"}}>WAVE</div>
+              <p style={{fontSize:"12px",color:"#94A3B8",lineHeight:1.9,marginBottom:"16px"}}>The Web3 TCG Marketplace built on Sui blockchain.</p>
+              <div style={{display:"flex",gap:"6px",flexWrap:"wrap",marginBottom:"16px"}}>
                 {["Free Listings","1% Fee","Sui Network","8 TCGs"].map(t=>(
-                  <span key={t} style={{fontSize:"10px",padding:"3px 8px",background:"rgba(245,245,245,0.04)",border:"1px solid rgba(245,245,245,0.08)",borderRadius:"4px",color:"var(--muted)",opacity:0.7}}>{t}</span>
+                  <span key={t} style={{fontSize:"10px",padding:"3px 8px",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"4px",color:"#94A3B8"}}>{t}</span>
                 ))}
               </div>
-              <div style={{display:"flex",alignItems:"center",gap:"6px"}}>
-                <span style={{fontSize:"11px",color:"var(--muted)",opacity:0.5}}>Powered by</span>
-                <span style={{fontSize:"11px",fontWeight:700,color:"rgba(0,229,255,0.5)",letterSpacing:"0.04em"}}>⬡ Sui Blockchain</span>
-              </div>
+              <span style={{fontSize:"11px",color:"rgba(0,212,255,0.5)",fontWeight:600}}>⬡ Powered by Sui Blockchain</span>
             </div>
-            <div className="footer-cols" style={{display:"grid",gap:"24px"}}>
+            <div className="footer-links" style={{display:"grid",gap:"24px"}}>
               {[
                 {title:"Marketplace",links:[{l:"Browse Cards",h:"/marketplace"},{l:"List a Card",h:"/sell"},{l:"Price Checker",h:"/price-checker"},{l:"Alerts",h:"/alerts"},{l:"Card Scanner",h:"/scan"}]},
                 {title:"Features",links:[{l:"AI Oracle",h:"/oracle"},{l:"Tournaments",h:"/optcg"},{l:"Deck Builder",h:"/deckbuilder"},{l:"Swap",h:"/swap"},{l:"Portfolio",h:"/dashboard?tab=Portfolio"}]},
@@ -505,17 +467,17 @@ export default function Home() {
                 {title:"Help",links:[{l:"Guide",h:"/guide"},{l:"FAQ",h:"/guide?tab=faq"},{l:"Download",h:"/download"}]},
               ].map((col,i)=>(
                 <div key={i}>
-                  <div style={{fontSize:"10px",fontWeight:700,color:"var(--cyan)",textTransform:"uppercase",letterSpacing:"0.18em",marginBottom:"16px"}}>{col.title}</div>
+                  <div style={{fontSize:"10px",fontWeight:700,color:"#00D4FF",textTransform:"uppercase",letterSpacing:"0.16em",marginBottom:"14px"}}>{col.title}</div>
                   {col.links.map((lk,j)=>(
-                    <a key={j} href={lk.h} style={{display:"block",fontSize:"12px",color:"var(--muted)",textDecoration:"none",marginBottom:"10px",transition:"color 0.15s",opacity:0.7}} onMouseEnter={e=>{e.currentTarget.style.color="var(--cyan)";e.currentTarget.style.opacity="1"}} onMouseLeave={e=>{e.currentTarget.style.color="var(--muted)";e.currentTarget.style.opacity="0.7"}}>{lk.l}</a>
+                    <a key={j} href={lk.h} style={{display:"block",fontSize:"12px",color:"#94A3B8",textDecoration:"none",marginBottom:"9px",transition:"color 0.15s"}} onMouseEnter={e=>(e.currentTarget.style.color="#00D4FF")} onMouseLeave={e=>(e.currentTarget.style.color="#94A3B8")}>{lk.l}</a>
                   ))}
                 </div>
               ))}
             </div>
           </div>
-          <div style={{borderTop:"1px solid rgba(245,245,245,0.06)",paddingTop:"22px",display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:"10px",alignItems:"center"}}>
-            <span style={{fontSize:"11px",color:"var(--muted)",opacity:0.35}}>© 2026 WaveTCG · Built on Sui Blockchain · Not affiliated with Bandai, Nintendo, Wizards of the Coast, or Konami</span>
-            <span style={{fontSize:"11px",color:"var(--muted)",opacity:0.35}}>wavetcgmarket.com</span>
+          <div style={{borderTop:"1px solid rgba(255,255,255,0.08)",paddingTop:"20px",display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:"8px"}}>
+            <span style={{fontSize:"11px",color:"#4B5563"}}>© 2026 WaveTCG · Built on Sui Blockchain · Not affiliated with Bandai, Nintendo, WotC, or Konami</span>
+            <span style={{fontSize:"11px",color:"#4B5563"}}>wavetcgmarket.com</span>
           </div>
         </div>
       </footer>
