@@ -58,15 +58,15 @@ export default function NavClient() {
   return (
     <>
       <style>{`
-        .nl { color: rgba(255,255,255,0.45); font-size: 13px; font-weight: 500; padding: 7px 12px; border-radius: 8px; text-decoration: none; transition: all 0.15s; letter-spacing: 0.01em; white-space: nowrap; }
-        .nl:hover { color: #fff; background: rgba(255,255,255,0.06); }
-        .more-btn { display: flex; align-items: center; gap: 4px; color: rgba(255,255,255,0.45); font-size: 13px; background: none; border: none; cursor: pointer; font-weight: 500; padding: 7px 12px; border-radius: 8px; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
-        .more-btn:hover, .more-btn.active { color: #fff; background: rgba(255,255,255,0.06); }
-        .more-dropdown { position: absolute; top: calc(100% + 6px); right: 0; background: #0d0d1f; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 6px; min-width: 210px; box-shadow: 0 20px 60px rgba(0,0,0,0.7); z-index: 9999; }
-        .more-link { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 8px; color: rgba(255,255,255,0.6); font-size: 13px; text-decoration: none; font-weight: 500; transition: all 0.12s; }
-        .more-link:hover { background: rgba(0,153,255,0.08); color: #fff; }
-        .nav-cta { background: linear-gradient(135deg,#0055ff,#0099ff); border: none; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
-        .nav-cta:hover { opacity: 0.9; transform: translateY(-1px); }
+        .nl { color: #374151; font-size: 13px; font-weight: 500; padding: 7px 12px; border-radius: 8px; text-decoration: none; transition: all 0.15s; letter-spacing: 0.01em; white-space: nowrap; }
+        .nl:hover { color: #00D4FF; background: rgba(0,212,255,0.06); }
+        .more-btn { display: flex; align-items: center; gap: 4px; color: #374151; font-size: 13px; background: none; border: none; cursor: pointer; font-weight: 500; padding: 7px 12px; border-radius: 8px; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+        .more-btn:hover, .more-btn.active { color: #00D4FF; background: rgba(0,212,255,0.06); }
+        .more-dropdown { position: absolute; top: calc(100% + 6px); right: 0; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 6px; min-width: 210px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); z-index: 9999; }
+        .more-link { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 8px; color: #374151; font-size: 13px; text-decoration: none; font-weight: 500; transition: all 0.12s; }
+        .more-link:hover { background: rgba(0,212,255,0.06); color: #00D4FF; }
+        .nav-cta { background: #00D4FF; border: none; color: #0A0A0A; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+        .nav-cta:hover { background: #00E5FF; transform: translateY(-1px); }
       `}</style>
 
       <div className="desktop-nav" style={{ gap: "0", alignItems: "center", flex: 1, justifyContent: "space-between" }}>
