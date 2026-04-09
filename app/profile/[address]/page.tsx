@@ -230,6 +230,7 @@ export default function ProfilePage({ params }: { params: Promise<{ address: str
               Active Listings <span style={{ fontSize: "14px", color: "#0099ff", fontFamily: "DM Sans, sans-serif" }}>({listings.length})</span>
             </h2>
             {isOwner && <a href="/sell" style={{ fontSize: "12px", color: "#0099ff", textDecoration: "none", border: "1px solid rgba(0,153,255,0.25)", padding: "6px 14px", borderRadius: "6px" }}>+ List a Card</a>}
+              {isOwner && <a href="/dashboard" style={{ fontSize: "12px", color: "#00ff88", textDecoration: "none", border: "1px solid rgba(0,255,136,0.25)", padding: "6px 14px", borderRadius: "6px" }}>📊 My Dashboard</a>}
           </div>
           {listings.length === 0 ? (
             <div style={{ textAlign: "center", padding: "60px 20px", background: "#050515", borderRadius: "14px", border: "1px solid rgba(0,153,255,0.1)" }}>
