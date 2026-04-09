@@ -233,7 +233,7 @@ export default function ScanPage() {
             </div>
 
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"10px", marginBottom:"10px" }}>
-              <button className="btn-blue" onClick={startCamera}>📷 Live Scanner</button>
+              <button className="btn-blue" onClick={() => { startCamera(); setTimeout(() => startAutoScan(), 1500); }}>⚡ Auto Scan</button>
               <button className="btn-ghost" onClick={()=>cameraInputRef.current?.click()}>📸 Take Photo</button>
             </div>
             <button className="btn-ghost" onClick={()=>fileInputRef.current?.click()} style={{ marginBottom:"20px" }}>🖼️ Upload from Gallery</button>
