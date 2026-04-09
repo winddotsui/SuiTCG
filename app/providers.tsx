@@ -17,7 +17,7 @@ const wagmiConfig = getDefaultConfig({
   ssr: true,
 });
 
-const suiNetwork = (process.env.NEXT_PUBLIC_SUI_NETWORK || "testnet") as "testnet" | "mainnet";
+const suiNetwork = (process.env.NEXT_PUBLIC_SUI_NETWORK || "mainnet") as "testnet" | "mainnet";
 const suiRpc = process.env.NEXT_PUBLIC_SUI_RPC || "https://fullnode.testnet.sui.io:443";
 
 const suiNetworks = {
