@@ -402,7 +402,7 @@ export default function Home() {
               <h2 style={{fontFamily:"Cinzel,serif",fontSize:"clamp(26px,4vw,44px)",fontWeight:700,color:"#fff",marginBottom:"18px",lineHeight:1.12,letterSpacing:"-0.01em"}}>Your Personal TCG Expert</h2>
               <p style={{fontSize:"15px",color:"rgba(255,255,255,0.38)",lineHeight:1.85,marginBottom:"32px"}}>Ask anything about any card from any TCG. Prices, rulings, investment outlook, deck builds, fake detection — Claude AI knows it all.</p>
               <div style={{display:"flex",flexDirection:"column",gap:"10px",marginBottom:"32px"}}>
-                {["💬 "What is Gear 5 Luffy OP05-119 worth graded PSA 10?"","💬 "Is my 1st Edition Charizard real or fake?"","💬 "Best counter to the current OPTCG meta?""].map((q,i) => (
+                {["💬 What is Gear 5 Luffy OP05-119 worth graded PSA 10?","💬 Is my 1st Edition Charizard real or fake?","💬 Best counter to the current OPTCG meta?"].map((q,i) => (
                   <div key={i} style={{padding:"10px 16px",background:"rgba(168,85,247,0.05)",border:"1px solid rgba(168,85,247,0.12)",borderRadius:"8px",fontSize:"13px",color:"rgba(255,255,255,0.5)",fontStyle:"italic"}}>{q}</div>
                 ))}
               </div>
