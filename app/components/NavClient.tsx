@@ -16,13 +16,13 @@ const NAV_LINKS = [
 const MORE_LINKS = [
   { href: "/optcg", label: "☠️ OPTCG Hub" },
   { href: "/deckbuilder", label: "🎴 Deck Builder" },
-  { href: "/portfolio", label: "💼 Portfolio" },
+  { href: "/dashboard?tab=Portfolio", label: "💼 Portfolio" },
   { href: "/swap", label: "💱 Swap" },
   { href: "/alerts", label: "🔔 Alerts" },
   { href: "/users", label: "👥 Collectors" },
   { href: "/analytics", label: "📊 Analytics" },
   { href: "/guide", label: "📖 Guide" },
-  { href: "/orders", label: "📦 Orders" },
+  { href: "/dashboard?tab=Orders", label: "📦 Orders" },
   { href: "/scan", label: "📷 Card Scanner" },
 ];
 

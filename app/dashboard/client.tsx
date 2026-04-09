@@ -472,10 +472,26 @@ function DashboardInner() {
         <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}} onClick={e=>{if(e.target===e.currentTarget)setEditing(false)}}>
           <div style={{background:"#050515",border:"1px solid rgba(0,153,255,0.2)",borderRadius:"16px",padding:"32px",width:"100%",maxWidth:"480px",maxHeight:"90vh",overflowY:"auto"}}>
             <div style={{fontFamily:"Cinzel, serif",fontSize:"18px",fontWeight:700,color:"#fff",marginBottom:"24px"}}>Edit Profile</div>
+            {/* OAuth Connect Buttons */}
+            <div style={{marginBottom:"20px"}}>
+              <label style={lbl}>Connect Socials</label>
+              <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
+                <button onClick={()=>{localStorage.setItem("wavetcg_wallet_address",walletAddress);window.location.href="/api/auth/twitter";}} style={{flex:1,background:"rgba(29,161,242,0.1)",border:"1px solid rgba(29,161,242,0.3)",color:"#1da1f2",padding:"10px 14px",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",fontSize:"12px",fontWeight:600}}>
+                  {profile?.twitter ? `✓ @${profile.twitter}` : "🐦 Connect Twitter"}
+                </button>
+                <button onClick={()=>{localStorage.setItem("wavetcg_wallet_address",walletAddress);window.location.href="/api/auth/discord";}} style={{flex:1,background:"rgba(88,101,242,0.1)",border:"1px solid rgba(88,101,242,0.3)",color:"#5865f2",padding:"10px 14px",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",fontSize:"12px",fontWeight:600}}>
+                  {profile?.discord ? `✓ ${profile.discord}` : "💬 Connect Discord"}
+                </button>
+                <button onClick={()=>{localStorage.setItem("wavetcg_wallet_address",walletAddress);window.location.href="/api/auth/linkedin";}} style={{flex:1,background:"rgba(0,119,181,0.1)",border:"1px solid rgba(0,119,181,0.3)",color:"#0077b5",padding:"10px 14px",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",fontSize:"12px",fontWeight:600}}>
+                  💼 LinkedIn
+                </button>
+              </div>
+            </div>
+
             {[
               {label:"Username",key:"username",placeholder:"Your username"},
               {label:"Email",key:"email",placeholder:"your@email.com"},
-              {label:"Twitter",key:"twitter",placeholder:"@handle"},
+              {label:"Twitter handle",key:"twitter",placeholder:"@handle (or connect above)"},
               {label:"Discord",key:"discord",placeholder:"user#1234"},
               {label:"Telegram",key:"telegram",placeholder:"@username"},
             ].map(f => (
